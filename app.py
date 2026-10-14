@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
-from scipy.stats import chi2_contingency, mannwhitneyu
+from scipy.stats import chi2_contingency, mannwhitneyu, proportions_ztest
 
 st.set_page_config(page_title="ZaloPay Test", layout="centered")
 
@@ -402,25 +402,28 @@ Biểu đồ phải tiết lộ điểm nghẽn thực sự: **{pct_below:.1%} u
 
 Bài toán không phải chăm sóc nhóm 7–13 giao dịch (tệp quá nhỏ, tự giữ được). Bài toán là đẩy {pct_below:.1%} user đang tắc nghẽn ở 1–3 giao dịch vượt qua mốc thứ 4.""")
 
-    _ct2 = pd.crosstab(m0_all["m0_txn"] >= THRESHOLD, m0_all["retained"])
-    _, p_txn, *_ = chi2_contingency(_ct2)
+    _grp_high = m0_all[m0_all["m0_txn"] >= THRESHOLD]["retained"]
+    _grp_low  = m0_all[m0_all["m0_txn"] <  THRESHOLD]["retained"]
+    _z_stat, _z_p = proportions_ztest(
+        count=[_grp_high.sum(), _grp_low.sum()],
+        nobs=[len(_grp_high), len(_grp_low)],
+        alternative="larger"
+    )
     st.markdown(f"""
-**Kiểm định thống kê (mô tả - không phải validation)**
+**Kiểm định thống kê (exploratory - không phải validation)**
 
-*Chi-square test of independence (two-tailed): kiểm định xem nhóm <{THRESHOLD} txn và nhóm ≥{THRESHOLD} txn có tỷ lệ retention M1 khác nhau không.*
+*Z-test for proportions (one-tailed): kiểm định xem tỷ lệ retention M1 của nhóm ≥{THRESHOLD} txn có cao hơn nhóm <{THRESHOLD} txn không.*
 
-⚠️ **Giới hạn quan trọng:** N = {THRESHOLD} được xác định bằng cách quan sát biểu đồ trên chính bộ data này. Kiểm định trên cùng bộ data là **circular** - ta chọn N={THRESHOLD} vì nó *trông* có sự khác biệt, nên kết quả significant không xác nhận đây là ngưỡng đúng. Cần validate trên holdout hoặc cohort mới để có kết luận tin cậy.
+H₀: p(retained | ≥{THRESHOLD} txn) ≤ p(retained | <{THRESHOLD} txn)
 
-H₀: Tỷ lệ retention M1 không khác nhau giữa nhóm <{THRESHOLD} txn và nhóm ≥{THRESHOLD} txn
+H₁: p(retained | ≥{THRESHOLD} txn) > p(retained | <{THRESHOLD} txn)
 
-H₁: Tỷ lệ retention M1 khác nhau giữa hai nhóm
-
-**Kết quả mô tả tại N = {THRESHOLD}:**
+**Kết quả tại N = {THRESHOLD}:**
 - Nhóm <{THRESHOLD} txn (n={n_low:,}): retention **{p_low:.1%}**
 - Nhóm ≥{THRESHOLD} txn (n={n_high:,}): retention **{p_high:.1%}** (+{p_high-p_low:.1%}pp)
-- Chi-square: p = {p_txn:.4f} - sự khác biệt có ý nghĩa thống kê trên tập này
+- Z-test (one-tailed): z = {_z_stat:.2f}, p = {_z_p:.4f} → có bằng chứng ủng hộ H₁
 
-→ Chênh lệch quan sát được là **{p_high-p_low:.1%}pp**. Đây là exploratory finding, chưa phải confirmation.
+⚠️ **Giới hạn:** N = {THRESHOLD} được xác định bằng cách quan sát biểu đồ trên chính bộ data này (data snooping). Test trên cùng data là circular - kết quả significant không xác nhận N={THRESHOLD} là ngưỡng tối ưu. Cần validate trên holdout hoặc cohort mới.
 """)
 
     st.markdown("---")
