@@ -390,7 +390,7 @@ with tabs[2]:
 
     # ── Phần 1: Validate ─────────────────────────────────────────────────────
     st.markdown("**1. Dữ liệu lịch sử ủng hộ giả thuyết - nhưng không đồng nghĩa là nhân quả**")
-    st.markdown(f"""Biểu đồ trái cho thấy xu hướng rõ ràng: user giao dịch càng nhiều trong M0, tỷ lệ quay lại M1 càng cao. Nhóm chỉ phát sinh 1 giao dịch có tỷ lệ giữ chân thấp nhất ({freq.loc[1,'ret']:.1%}), thấp hơn trung bình toàn ví ({avg_ret:.1%}). Nhóm 4 giao dịch trở lên đạt {freq.loc[4,'ret']:.1%}.
+    st.markdown(f"""Biểu đồ trên cho thấy xu hướng rõ ràng: user giao dịch càng nhiều trong M0, tỷ lệ quay lại M1 càng cao. Nhóm chỉ phát sinh 1 giao dịch có tỷ lệ giữ chân thấp nhất ({freq.loc[1,'ret']:.1%}), thấp hơn trung bình toàn ví ({avg_ret:.1%}).
 
 Tuy nhiên dữ liệu chỉ cho thấy **xu hướng (association)** - không phải **nhân quả (causation)**. Chi tiết ở mục 4.""")
 
@@ -406,21 +406,19 @@ H₀: Không có mối tương quan dương giữa số giao dịch M0 và reten
 H₁: Số giao dịch M0 càng cao, tỷ lệ retention M1 càng cao (ρ > 0)
 
 Spearman ρ = {_rho_1c:.3f}, p = {_rho_p_1c / 2:.4f} (one-tailed) → có bằng chứng ủng hộ H₁.
-
-*Lưu ý: N = {THRESHOLD} quan sát từ biểu đồ là exploratory finding - xác định vùng có marginal lift cao nhất, không phải kết quả của kiểm định.*
 """)
     st.info(f"**KẾT LUẬN 1:** Giả thuyết được ủng hộ bởi data - Spearman ρ = {_rho_1c:.3f} (p < 0.05). Association giữa số giao dịch M0 và retention M1 có ý nghĩa thống kê. Đây là tương quan, chưa phải nhân quả.")
 
     st.markdown("---")
 
     # ── Phần 2: N=4 + Bottleneck ─────────────────────────────────────────────
-    st.markdown("**2. Ngưỡng bão hòa N = 4 và Điểm nghẽn (Bottleneck)**")
-    st.markdown(f"""Biểu đồ trái cho thấy tỷ lệ quay lại tăng tiến đều theo từng giao dịch tháng đầu: 1 giao dịch ({freq.loc[1,'ret']:.1%}) → 2 giao dịch ({freq.loc[2,'ret']:.1%}) → 3 giao dịch ({freq.loc[3,'ret']:.1%}). Đến giao dịch thứ 4, tỷ lệ nhảy vọt lên {freq.loc[4,'ret']:.1%} rồi đi ngang - **N = 4 là điểm bão hòa thói quen.** Không có "ngưỡng bật-tắt": mỗi giao dịch thêm đều mang lại marginal lift, hiệu ứng chỉ dừng tại N = 4.
+    st.markdown("**2. What is N? - Ngưỡng bão hòa quan sát từ biểu đồ**")
+    st.markdown(f"""Từ biểu đồ trên: tỷ lệ quay lại tăng dần theo từng giao dịch - 1 ({freq.loc[1,'ret']:.1%}) → 2 ({freq.loc[2,'ret']:.1%}) → 3 ({freq.loc[3,'ret']:.1%}) → đến giao dịch thứ 4 nhảy lên {freq.loc[4,'ret']:.1%} rồi đi ngang. **N = 4 là điểm bão hòa quan sát được.** Không có "ngưỡng bật-tắt": mỗi giao dịch thêm đều có marginal lift, hiệu ứng dừng tại N = 4.
 
-Biểu đồ phải tiết lộ điểm nghẽn thực sự: **{pct_below:.1%} user mới ({n_low:,}/{total_u:,}) đang bị kẹt ở vùng đỏ (1–3 giao dịch)**. Đây là tệp lớn nhất hệ thống - nhưng retention thấp nhất. Nhóm ≥4 giao dịch chỉ chiếm {1-pct_below:.1%} nhưng quay lại với tỷ lệ {p_high:.1%}.
+Điểm nghẽn thực sự: **{pct_below:.1%} user mới ({n_low:,}/{total_u:,}) đang bị kẹt ở vùng đỏ (1–3 giao dịch)** - tệp lớn nhất nhưng retention thấp nhất. Nhóm ≥{THRESHOLD} giao dịch chỉ chiếm {1-pct_below:.1%} nhưng quay lại với tỷ lệ {p_high:.1%}.
 
-Bài toán không phải chăm sóc nhóm 7–13 giao dịch (tệp quá nhỏ, tự giữ được). Bài toán là đẩy {pct_below:.1%} user đang tắc nghẽn ở 1–3 giao dịch vượt qua mốc thứ 4.""")
-    st.info(f"**KẾT LUẬN 2:** N = {THRESHOLD} là điểm bão hòa quan sát được từ data. {pct_below:.1%} user mới ({n_low:,}/{total_u:,}) bị tắc ở 1–3 giao dịch - đây là bottleneck lớn nhất.")
+⚠️ *N = {THRESHOLD} được xác định bằng cách quan sát biểu đồ trên chính bộ data này (exploratory). Đây không phải kết quả kiểm định - cần A/B test trên data mới để xác nhận.*""")
+    st.info(f"**KẾT LUẬN 2 - What is N?** N = {THRESHOLD} là điểm bão hòa quan sát được (exploratory). {pct_below:.1%} user ({n_low:,}/{total_u:,}) bị tắc ở 1–3 giao dịch là bottleneck lớn nhất.")
 
     st.markdown("---")
 
@@ -479,7 +477,7 @@ Bài toán không phải chăm sóc nhóm 7–13 giao dịch (tệp quá nhỏ, 
     gmv1 = f"{r1['med_gmv']/1000:.0f}K" if r1 is not None else "133K"
     gmv4 = f"{r4['med_gmv']/1000:.0f}K" if r4 is not None else "747K"
     st.markdown(f"""- **Chi tiêu vì tần suất, không phải vì giá trị đơn hàng:** AOV trung bình phẳng lặng ở tất cả các nhóm (~133K). Nhưng tổng GMV tháng đầu của nhóm ≥4 giao dịch vọt lên gấp nhiều lần nhóm 1 giao dịch ({gmv1} → {gmv4}). Khách hàng ở lại lâu hơn vì đã quen dùng Trả Sau cho nhiều nhu cầu khác nhau - không phải vì họ mua đồ đắt hơn.
-- **Gánh nặng phí cố định:** Nhóm 1 giao dịch (GMV {gmv1}) chịu phí thực tế {fee1} trên tổng chi tiêu - tạo ra Fee Shock khiến họ rời bỏ. Nhóm ≥4 giao dịch (GMV {gmv4}) chỉ chịu {fee4} - sản phẩm trở nên kinh tế và đáng dùng lại. Khớp với kết quả kiểm định Fee Shock ở Part 2.
+- **Gánh nặng phí cố định:** Nhóm 1 giao dịch (GMV {gmv1}) chịu phí thực tế {fee1} trên tổng chi tiêu - tạo ra Fee Shock khiến họ rời bỏ. Nhóm ≥4 giao dịch (GMV {gmv4}) chỉ chịu {fee4} - sản phẩm trở nên kinh tế và đáng dùng lại. Khớp với phân tích fee burden ở tab Churn Analysis.
 - **Lợi thế dài hạn:** Hành vi ≥4 giao dịch trong tháng đầu duy trì lợi thế bền vững đến M6 - tỷ lệ giữ chân gần gấp đôi nhóm 1 giao dịch.""")
     st.info(f"**KẾT LUẬN 3:** AOV bằng nhau ở mọi nhóm (~133K) - user ở lại không vì mua đồ đắt hơn, mà vì dùng nhiều hơn. GMV cao → fee/GMV thấp → sản phẩm worth it. Cơ chế kinh tế rõ ràng.")
 
