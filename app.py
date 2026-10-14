@@ -120,8 +120,8 @@ Do vậy để xác định metric thật sự có ý nghĩa đối với Zalo P
 
 | Nguồn thu | Bên nhận |
 |---|---|
-| Merchant fee (mỗi giao dịch) | ZaloPay |
-| Phí dịch vụ 20.000đ/kỳ | Chưa xác nhận - có thể split |
+| Merchant fee (mỗi giao dịch) | **ZaloPay** |
+| Phí dịch vụ 20.000đ/kỳ | Đối tác / chia tỉ lệ |
 | Lãi suất quá hạn | CIMB / LOTTE Finance |
 | Phí trễ hạn | CIMB / LOTTE Finance |
 """)
@@ -135,16 +135,35 @@ Như vậy, Nguồn doanh thu thu trực tiếp của ZaloPay gắn với giao d
 
 #### 1. Active user
 
-| Định nghĩa | Trạng thái user | Ý nghĩa với BNPL |
-|---|---|---|
-| User có ít nhất 1 giao dịch mua trong tháng | User tạo doanh thu trực tiếp | Cao |
-| User có Outstanding > 0 | User còn dư nợ chưa trả | Thấp - credit portfolio của lender |
-| User mở mới hồ sơ BNPL | User thực hiện đăng ký, chưa sử dụng | Chưa tạo doanh thu trực tiếp |
 
 """)
-
+    st.markdown("""
+<table style="width:100%;border-collapse:collapse;font-size:14px">
+<thead><tr style="background:#f3f4f6">
+  <th style="padding:10px 14px;text-align:left;border-bottom:2px solid #e5e7eb">Định nghĩa</th>
+  <th style="padding:10px 14px;text-align:left;border-bottom:2px solid #e5e7eb">Trạng thái user</th>
+  <th style="padding:10px 14px;text-align:left;border-bottom:2px solid #e5e7eb">Ý nghĩa với BNPL</th>
+</tr></thead>
+<tbody>
+<tr style="background:#f0fdf4">
+  <td style="padding:10px 14px;border-bottom:1px solid #e5e7eb">User có ít nhất 1 giao dịch mua trong tháng</td>
+  <td style="padding:10px 14px;border-bottom:1px solid #e5e7eb"><strong>User tạo doanh thu trực tiếp cho ZaloPay</strong></td>
+  <td style="padding:10px 14px;border-bottom:1px solid #e5e7eb;color:#15803d;font-weight:600">Cao ✓</td>
+</tr>
+<tr style="background:#fefce8">
+  <td style="padding:10px 14px;border-bottom:1px solid #e5e7eb">User có Outstanding > 0</td>
+  <td style="padding:10px 14px;border-bottom:1px solid #e5e7eb">User còn dư nợ chưa trả</td>
+  <td style="padding:10px 14px;border-bottom:1px solid #e5e7eb;color:#92400e">Thấp - revenue thuộc lender</td>
+</tr>
+<tr style="background:#fef2f2">
+  <td style="padding:10px 14px">User mở mới hồ sơ BNPL</td>
+  <td style="padding:10px 14px">User thực hiện đăng ký, chưa sử dụng</td>
+  <td style="padding:10px 14px;color:#991b1b">Chưa tạo doanh thu trực tiếp</td>
+</tr>
+</tbody>
+</table>
+""", unsafe_allow_html=True)
     st.info("Active User = có ít nhất ≥1 giao dịch mua trong kỳ.")
-
     st.markdown("""
 #### 2. Measurement period
 
