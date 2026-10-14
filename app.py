@@ -700,6 +700,50 @@ p = {_p_div:.4f} → bác bỏ H₀. Chiều hướng: dùng ít loại dịch v
         st.plotly_chart(fig2, use_container_width=True, config={"displayModeBar": False})
 
     st.markdown("---")
+    st.markdown("**Churn Rate: Số giao dịch × Số loại dịch vụ**")
+
+    _hm = m0s_filt.copy()
+    _hm["txn_bin"] = pd.cut(_hm["m0_txn"], bins=[0,1,2,3,4,6,9,float("inf")],
+                            labels=["1","2","3","4","5-6","7-9","10+"])
+    _hm_grp = _hm.groupby(["n_carriers","txn_bin"], observed=True).agg(
+        n=("retained","count"), churn=("retained", lambda x: 1-x.mean())
+    ).reset_index()
+    _hm_grp = _hm_grp[_hm_grp["n"] >= 30]
+
+    _hm_pivot = _hm_grp.pivot(index="n_carriers", columns="txn_bin", values="churn")
+    _hm_n = _hm_grp.pivot(index="n_carriers", columns="txn_bin", values="n")
+
+    _hm_text = _hm_pivot.copy().astype(object)
+    for r in _hm_pivot.index:
+        for c in _hm_pivot.columns:
+            v = _hm_pivot.loc[r, c]
+            n = _hm_n.loc[r, c] if r in _hm_n.index and c in _hm_n.columns else float("nan")
+            if pd.isna(v):
+                _hm_text.loc[r, c] = ""
+            else:
+                _hm_text.loc[r, c] = f"{v:.0%}<br><sub>n={int(n):,}</sub>"
+
+    fig_hm = go.Figure(go.Heatmap(
+        z=_hm_pivot.values,
+        x=[str(c) for c in _hm_pivot.columns],
+        y=[f"{int(r)} loại" for r in _hm_pivot.index],
+        text=_hm_text.values,
+        texttemplate="%{text}",
+        colorscale=[[0,"#dbeafe"],[0.5,"#f97316"],[1,"#ef4444"]],
+        zmin=0, zmax=_hm_pivot.values[~np.isnan(_hm_pivot.values)].max(),
+        colorbar=dict(title="Churn rate", tickformat=".0%", thickness=14),
+        hovertemplate="Churn: %{z:.1%}<extra></extra>",
+    ))
+    fig_hm = clean_fig(fig_hm, height=280)
+    fig_hm.update_layout(
+        xaxis_title="Số giao dịch M0",
+        yaxis_title="Số loại dịch vụ",
+        yaxis=dict(autorange="reversed"),
+    )
+    st.plotly_chart(fig_hm, use_container_width=True, config={"displayModeBar": False})
+    st.caption("Ô trống = dưới 30 user (không đủ mẫu). Màu càng đỏ = churn càng cao.")
+
+    st.markdown("---")
     st.markdown("**Retention rate by GMV (Gross Merchandise Value)**")
 
     _m = m0s_filt.copy()
