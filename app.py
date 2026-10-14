@@ -808,45 +808,50 @@ p = {p_chi:.4f} → bác bỏ H₀. Chiều hướng: churn giảm theo GMV.
     from scipy.stats import spearmanr as _spearmanr
     _rho, _rho_p = _spearmanr(_fee_clean["fee_pct"], _fee_clean["retained"])
 
-    _fb_col1, _fb_col2 = st.columns([2, 3])
+    fig_fee = go.Figure()
+    for _grp, _col, _lbl in [
+        (False, "rgba(239,68,68,0.55)", "Churned"),
+        (True,  "rgba(29,78,216,0.55)", "Retained M1"),
+    ]:
+        _d = _fee_clean[_fee_clean["retained"]==_grp]["fee_pct"]
+        _d_clip = _d[_d <= 0.30]
+        fig_fee.add_trace(go.Histogram(
+            x=_d_clip, name=_lbl,
+            histnorm="percent", nbinsx=40,
+            marker_color=_col,
+            hovertemplate=f"{_lbl}<br>Fee/GMV: %{{x:.0%}}<br>%{{y:.1f}}%<extra></extra>",
+        ))
+    fig_fee = clean_fig(fig_fee, height=300)
+    fig_fee.update_layout(
+        barmode="overlay",
+        title=dict(text="Phân phối Fee/GMV theo nhóm (clip 30%)", font=dict(size=15), x=0.5, xanchor="center"),
+        xaxis=dict(tickformat=".0%", title="Fee / GMV (M0)"),
+        yaxis=dict(title="% users", ticksuffix="%"),
+        legend=dict(orientation="h", y=1.12, x=0.5, xanchor="center"),
+    )
+    st.plotly_chart(fig_fee, use_container_width=True, config={"displayModeBar": False})
+
+    _fb_col1, _fb_col2 = st.columns(2)
     with _fb_col1:
         st.markdown(f"""
-Median fee/GMV của nhóm churn là **{_fee_c.median():.1%}**, nhóm retained là **{_fee_r.median():.1%}**.
-
 **Kiểm định:**
 
-*Mann-Whitney U (one-tailed): so sánh phân phối fee/GMV giữa 2 nhóm độc lập, không giả định phân phối chuẩn.*
+*Mann-Whitney U (one-tailed): so sánh phân phối fee/GMV giữa 2 nhóm.*
 
 H₀: Phân phối fee/GMV của nhóm churn bằng nhóm còn lại
 
 H₁: Nhóm churn có fee/GMV cao hơn nhóm còn lại
 
-Mann-Whitney U: p = {_mw_p:.4f} → bác bỏ H₀.
-
-*Spearman correlation: đo mức độ tương quan đơn điệu giữa fee/GMV và khả năng churn.*
+p = {_mw_p:.4f} → bác bỏ H₀.
+""")
+    with _fb_col2:
+        st.markdown(f"""
+*Spearman correlation: tương quan đơn điệu giữa fee/GMV và churn.*
 
 Spearman ρ = {_rho:.3f}, p = {_rho_p:.4f} - có ý nghĩa thống kê, effect size nhỏ.
 
-*Lưu ý: fee/GMV = 20K/GMV nên không thể tách rời effect của phí vs mức chi tiêu.*
+*Lưu ý: fee/GMV = 20K/GMV, không tách được effect phí vs chi tiêu.*
 """)
-    with _fb_col2:
-        _fee_plot = _fee_clean.copy()
-        _fee_plot["Nhóm"] = _fee_plot["retained"].map({False: "Churned", True: "Retained M1"})
-        fig_fee = go.Figure()
-        for _grp, _col in [("Churned","#ef4444"), ("Retained M1","#1d4ed8")]:
-            _d = _fee_plot[_fee_plot["Nhóm"]==_grp]["fee_pct"]
-            fig_fee.add_trace(go.Box(
-                y=_d, name=_grp, marker_color=_col,
-                boxmean=True, width=0.4,
-                hovertemplate="%{y:.1%}<extra></extra>",
-            ))
-        fig_fee = clean_fig(fig_fee, height=300)
-        fig_fee.update_layout(
-            title=dict(text="Phân phối Fee/GMV (M0)", font=dict(size=15), x=0.5, xanchor="center"),
-            yaxis=dict(tickformat=".0%", title="Fee / GMV"),
-            showlegend=False,
-        )
-        st.plotly_chart(fig_fee, use_container_width=True, config={"displayModeBar": False})
 
     st.info("""**How do they differ?**
 - Nhóm churn: ít loại dịch vụ (48% dùng 1 loại), ít giao dịch, GMV thấp → phí 20K chiếm tỷ lệ lớn
