@@ -293,6 +293,8 @@ with tabs[1]:
     st.markdown("**Hypothesis on the cause:**")
     st.write("Phí 20K/tháng cố định tạo gánh nặng không đồng đều theo tổng GMV tháng. Với user giao dịch ít, phí chiếm tỷ lệ lớn → không worth it để tiếp tục. Kiểm định đầy đủ ở Part 2.")
 
+    st.info("**KẾT LUẬN Q1b:** M1 retention ổn định 73.6% qua 18 cohorts - không có dấu hiệu sản phẩm xấu đi. Điểm rời tập trung ở M1 → can thiệp hiệu quả nhất là trong M0. Quick Ratio < 1 từ 11/2024 cho thấy đây là structural problem, không phải bad quarter.")
+
 # ═══════════════════════════════════════════════════════════════════════════════
 with tabs[2]:
     st.subheader('"Users who complete at least N transactions in M0 retain at a higher rate in M1." Validate or disprove. What is N?')
@@ -407,6 +409,7 @@ Spearman ρ = {_rho_1c:.3f}, p = {_rho_p_1c / 2:.4f} (one-tailed) → có bằng
 
 *Lưu ý: N = {THRESHOLD} quan sát từ biểu đồ là exploratory finding - xác định vùng có marginal lift cao nhất, không phải kết quả của kiểm định.*
 """)
+    st.info(f"**KẾT LUẬN 1:** Giả thuyết được ủng hộ bởi data - Spearman ρ = {_rho_1c:.3f} (p < 0.05). Association giữa số giao dịch M0 và retention M1 có ý nghĩa thống kê. Đây là tương quan, chưa phải nhân quả.")
 
     st.markdown("---")
 
@@ -417,6 +420,7 @@ Spearman ρ = {_rho_1c:.3f}, p = {_rho_p_1c / 2:.4f} (one-tailed) → có bằng
 Biểu đồ phải tiết lộ điểm nghẽn thực sự: **{pct_below:.1%} user mới ({n_low:,}/{total_u:,}) đang bị kẹt ở vùng đỏ (1–3 giao dịch)**. Đây là tệp lớn nhất hệ thống - nhưng retention thấp nhất. Nhóm ≥4 giao dịch chỉ chiếm {1-pct_below:.1%} nhưng quay lại với tỷ lệ {p_high:.1%}.
 
 Bài toán không phải chăm sóc nhóm 7–13 giao dịch (tệp quá nhỏ, tự giữ được). Bài toán là đẩy {pct_below:.1%} user đang tắc nghẽn ở 1–3 giao dịch vượt qua mốc thứ 4.""")
+    st.info(f"**KẾT LUẬN 2:** N = {THRESHOLD} là điểm bão hòa quan sát được từ data. {pct_below:.1%} user mới ({n_low:,}/{total_u:,}) bị tắc ở 1–3 giao dịch - đây là bottleneck lớn nhất.")
 
     st.markdown("---")
 
@@ -477,6 +481,7 @@ Bài toán không phải chăm sóc nhóm 7–13 giao dịch (tệp quá nhỏ, 
     st.markdown(f"""- **Chi tiêu vì tần suất, không phải vì giá trị đơn hàng:** AOV trung bình phẳng lặng ở tất cả các nhóm (~133K). Nhưng tổng GMV tháng đầu của nhóm ≥4 giao dịch vọt lên gấp nhiều lần nhóm 1 giao dịch ({gmv1} → {gmv4}). Khách hàng ở lại lâu hơn vì đã quen dùng Trả Sau cho nhiều nhu cầu khác nhau - không phải vì họ mua đồ đắt hơn.
 - **Gánh nặng phí cố định:** Nhóm 1 giao dịch (GMV {gmv1}) chịu phí thực tế {fee1} trên tổng chi tiêu - tạo ra Fee Shock khiến họ rời bỏ. Nhóm ≥4 giao dịch (GMV {gmv4}) chỉ chịu {fee4} - sản phẩm trở nên kinh tế và đáng dùng lại. Khớp với kết quả kiểm định Fee Shock ở Part 2.
 - **Lợi thế dài hạn:** Hành vi ≥4 giao dịch trong tháng đầu duy trì lợi thế bền vững đến M6 - tỷ lệ giữ chân gần gấp đôi nhóm 1 giao dịch.""")
+    st.info(f"**KẾT LUẬN 3:** AOV bằng nhau ở mọi nhóm (~133K) - user ở lại không vì mua đồ đắt hơn, mà vì dùng nhiều hơn. GMV cao → fee/GMV thấp → sản phẩm worth it. Cơ chế kinh tế rõ ràng.")
 
     st.markdown("---")
 
@@ -485,6 +490,7 @@ Bài toán không phải chăm sóc nhóm 7–13 giao dịch (tệp quá nhỏ, 
     st.markdown(f"""- **Correlation vs. Causation:** Khách hàng tự nguyện quẹt trên 4 lần vì bản thân họ vốn đã có nhiều nhu cầu. Nếu "gượng ép" hành vi bằng cách rải voucher để ép đủ 4 lần, chưa chắc tạo ra thói quen thực tế khi hết khuyến mãi.
 - **Nhóm siêu tần suất (7+ txn):** M6 retention vượt trội (20.1%) so với nhóm 4–6 txn (18.2%). Nếu mục tiêu là LTV dài hạn, đây mới là tệp lõi - N = 4 là ngưỡng thiết kế intervention ngắn hạn, chưa phải mục tiêu cuối.
 - **Khuyến nghị A/B Test:** Tặng voucher/hoàn tiền tập trung vào giao dịch thứ 3 và thứ 4 của user mới. Đo M1 retention của nhóm can thiệp vs. nhóm control. MDE = 5pp → ~1,300 user/nhóm; ở acquisition ~600 user/tháng hiện tại: ~4 tháng để đủ mẫu.""")
+    st.info(f"**KẾT LUẬN Q1c:** Giả thuyết được ủng hộ - users hoàn thành ≥{THRESHOLD} giao dịch trong M0 có retention M1 cao hơn có ý nghĩa thống kê (Spearman ρ = {_rho_1c:.3f}, p < 0.05). N = {THRESHOLD} là điểm bão hòa exploratory, cần A/B test để xác nhận nhân quả.")
 
 # ═══════════════════════════════════════════════════════════════════════════════
 with tabs[3]:
@@ -844,12 +850,10 @@ Spearman ρ = {_rho:.3f}, p = {_rho_p:.4f} - có ý nghĩa thống kê, effect s
         )
         st.plotly_chart(fig_fee, use_container_width=True, config={"displayModeBar": False})
 
-    st.markdown(f"""
-**Tổng hợp từ data:**
-- Nhóm churn tập trung ở profile: **ít loại dịch vụ** (48% dùng 1 loại), **ít giao dịch**, **GMV thấp**
-- GMV thấp → phí 20K cố định chiếm tỷ lệ lớn trong tổng chi tiêu
-- Hai nhóm có AOV bằng nhau → không phải vấn đề ticket size, mà là tần suất và độ rộng sử dụng
-""")
+    st.info("""**KẾT LUẬN - How do they differ?**
+- Nhóm churn: ít loại dịch vụ (48% dùng 1 loại), ít giao dịch, GMV thấp → phí 20K chiếm tỷ lệ lớn
+- AOV hai nhóm bằng nhau → không phải vấn đề ticket size, mà là tần suất và độ rộng sử dụng
+- Churn rate có liên hệ thống kê với cả carrier diversity (p < 0.05), GMV tier (p < 0.05), và fee/GMV (p < 0.05)""")
 
     st.markdown("---")
     st.markdown("#### 3. What to recommend?")
@@ -863,6 +867,8 @@ Spearman ρ = {_rho:.3f}, p = {_rho_p:.4f} - có ý nghĩa thống kê, effect s
 
     st.markdown("**R3 - Monitor compound segment at-risk**")
     st.write("Segment dùng Game/VNG + n_txn ≤ 2 trong M0: n=1,084 user (6%), churn rate 35.4%. Tag trong CRM, ưu tiên nudge R1 cho nhóm này trước.")
+
+    st.info("**KẾT LUẬN - What to recommend?** R1 (product discovery trong M0) là đòn bẩy nhanh và rẻ nhất - target 48% user đang dùng 1 loại dịch vụ. R2 (cấu trúc phí) cần finance validate. R3 là early warning system cho segment nguy cơ cao nhất.")
 
 # ═══════════════════════════════════════════════════════════════════════════════
 with tabs[4]:
