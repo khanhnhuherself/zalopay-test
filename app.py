@@ -392,16 +392,6 @@ with tabs[2]:
 
 Tuy nhiên dữ liệu chỉ cho thấy **xu hướng (association)** - không phải **nhân quả (causation)**. Chi tiết ở mục 4.""")
 
-    st.markdown("---")
-
-    # ── Phần 2: N=4 + Bottleneck ─────────────────────────────────────────────
-    st.markdown("**2. Ngưỡng bão hòa N = 4 và Điểm nghẽn (Bottleneck)**")
-    st.markdown(f"""Biểu đồ trái cho thấy tỷ lệ quay lại tăng tiến đều theo từng giao dịch tháng đầu: 1 giao dịch ({freq.loc[1,'ret']:.1%}) → 2 giao dịch ({freq.loc[2,'ret']:.1%}) → 3 giao dịch ({freq.loc[3,'ret']:.1%}). Đến giao dịch thứ 4, tỷ lệ nhảy vọt lên {freq.loc[4,'ret']:.1%} rồi đi ngang - **N = 4 là điểm bão hòa thói quen.** Không có "ngưỡng bật-tắt": mỗi giao dịch thêm đều mang lại marginal lift, hiệu ứng chỉ dừng tại N = 4.
-
-Biểu đồ phải tiết lộ điểm nghẽn thực sự: **{pct_below:.1%} user mới ({n_low:,}/{total_u:,}) đang bị kẹt ở vùng đỏ (1–3 giao dịch)**. Đây là tệp lớn nhất hệ thống - nhưng retention thấp nhất. Nhóm ≥4 giao dịch chỉ chiếm {1-pct_below:.1%} nhưng quay lại với tỷ lệ {p_high:.1%}.
-
-Bài toán không phải chăm sóc nhóm 7–13 giao dịch (tệp quá nhỏ, tự giữ được). Bài toán là đẩy {pct_below:.1%} user đang tắc nghẽn ở 1–3 giao dịch vượt qua mốc thứ 4.""")
-
     from scipy.stats import spearmanr as _spearmanr1c
     _rho_1c, _rho_p_1c = _spearmanr1c(m0_all["m0_txn"], m0_all["retained"])
     st.markdown(f"""
@@ -417,6 +407,16 @@ Spearman ρ = {_rho_1c:.3f}, p = {_rho_p_1c / 2:.4f} (one-tailed) → có bằng
 
 *Lưu ý: N = {THRESHOLD} quan sát từ biểu đồ là exploratory finding - xác định vùng có marginal lift cao nhất, không phải kết quả của kiểm định.*
 """)
+
+    st.markdown("---")
+
+    # ── Phần 2: N=4 + Bottleneck ─────────────────────────────────────────────
+    st.markdown("**2. Ngưỡng bão hòa N = 4 và Điểm nghẽn (Bottleneck)**")
+    st.markdown(f"""Biểu đồ trái cho thấy tỷ lệ quay lại tăng tiến đều theo từng giao dịch tháng đầu: 1 giao dịch ({freq.loc[1,'ret']:.1%}) → 2 giao dịch ({freq.loc[2,'ret']:.1%}) → 3 giao dịch ({freq.loc[3,'ret']:.1%}). Đến giao dịch thứ 4, tỷ lệ nhảy vọt lên {freq.loc[4,'ret']:.1%} rồi đi ngang - **N = 4 là điểm bão hòa thói quen.** Không có "ngưỡng bật-tắt": mỗi giao dịch thêm đều mang lại marginal lift, hiệu ứng chỉ dừng tại N = 4.
+
+Biểu đồ phải tiết lộ điểm nghẽn thực sự: **{pct_below:.1%} user mới ({n_low:,}/{total_u:,}) đang bị kẹt ở vùng đỏ (1–3 giao dịch)**. Đây là tệp lớn nhất hệ thống - nhưng retention thấp nhất. Nhóm ≥4 giao dịch chỉ chiếm {1-pct_below:.1%} nhưng quay lại với tỷ lệ {p_high:.1%}.
+
+Bài toán không phải chăm sóc nhóm 7–13 giao dịch (tệp quá nhỏ, tự giữ được). Bài toán là đẩy {pct_below:.1%} user đang tắc nghẽn ở 1–3 giao dịch vượt qua mốc thứ 4.""")
 
     st.markdown("---")
 
