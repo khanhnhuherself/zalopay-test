@@ -809,26 +809,32 @@ p = {p_chi:.4f} → bác bỏ H₀. Chiều hướng: churn giảm theo GMV.
     from scipy.stats import spearmanr as _spearmanr
     _rho, _rho_p = _spearmanr(_fee_clean["fee_pct"], _fee_clean["retained"])
 
-    fig_fee = go.Figure()
-    for _grp, _col, _lbl in [
-        (False, "rgba(239,68,68,0.55)", "Churned"),
-        (True,  "rgba(29,78,216,0.55)", "Retained M1"),
-    ]:
-        _d = _fee_clean[_fee_clean["retained"]==_grp]["fee_pct"]
-        _d_clip = _d[_d <= 0.30]
-        fig_fee.add_trace(go.Histogram(
-            x=_d_clip, name=_lbl,
-            histnorm="percent", nbinsx=40,
-            marker_color=_col,
-            hovertemplate=f"{_lbl}<br>Fee/GMV: %{{x:.0%}}<br>%{{y:.1f}}%<extra></extra>",
-        ))
+    _fee_buck = _fee_clean.copy()
+    _fee_buck = _fee_buck[_fee_buck["fee_pct"] <= 0.30]
+    _fee_buck["fee_bin"] = pd.cut(_fee_buck["fee_pct"],
+        bins=[0, 0.03, 0.05, 0.08, 0.12, 0.20, 0.30],
+        labels=["<3%", "3-5%", "5-8%", "8-12%", "12-20%", "20-30%"])
+    _fee_grp = _fee_buck.groupby("fee_bin", observed=True).agg(
+        n=("retained","count"), churn=("retained", lambda x: 1-x.mean())
+    ).reset_index()
+    _fee_colors = ["#ef4444" if c > (1-m0s_filt["retained"].mean()) else "#6b7280"
+                   for c in _fee_grp["churn"]]
+
+    fig_fee = go.Figure(go.Bar(
+        x=_fee_grp["fee_bin"].astype(str), y=_fee_grp["churn"],
+        marker_color=_fee_colors, width=0.6,
+        text=[f"{v:.0%}" for v in _fee_grp["churn"]], textposition="outside",
+        customdata=_fee_grp["n"],
+        hovertemplate="Fee/GMV: %{x}<br>Churn: %{y:.1%}<br>n=%{customdata:,}<extra></extra>",
+    ))
     fig_fee = clean_fig(fig_fee, height=300)
+    _avg_churn_fee = 1 - m0s_filt["retained"].mean()
+    fig_fee.add_hline(y=_avg_churn_fee, line_dash="dot", line_color="#9ca3af",
+                      annotation_text=f"Avg {_avg_churn_fee:.0%}", annotation_position="top right")
     fig_fee.update_layout(
-        barmode="overlay",
-        title=dict(text="Phân phối Fee/GMV theo nhóm (clip 30%)", font=dict(size=15), x=0.5, xanchor="center"),
-        xaxis=dict(tickformat=".0%", title="Fee / GMV (M0)"),
-        yaxis=dict(title="% users", ticksuffix="%"),
-        legend=dict(orientation="h", y=1.12, x=0.5, xanchor="center"),
+        title=dict(text="Churn Rate theo Fee/GMV bucket", font=dict(size=15), x=0.5, xanchor="center"),
+        xaxis=dict(title="Fee / GMV (M0)"),
+        yaxis=dict(tickformat=".0%", title="Churn rate", range=[0, _fee_grp["churn"].max()*1.3]),
     )
     st.plotly_chart(fig_fee, use_container_width=True, config={"displayModeBar": False})
 
