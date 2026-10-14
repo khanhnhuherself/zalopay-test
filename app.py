@@ -646,7 +646,7 @@ Trong tình huống này, đổ thêm ngân sách vào acquisition chỉ bù đ�
     st.caption("AOV bằng nhau (137K) - ticket size không phải vấn đề. Hai nhóm rất giống nhau về profile; điểm khác biệt thực là tỷ lệ phí/GMV.")
 
     st.markdown("---")
-    st.markdown("**Retention Rate by Carrier Diversity**")
+    st.markdown("**Churn Rate by Carrier Diversity**")
 
     ct_div = m0s_filt.groupby("n_carriers").agg(
         n=("retained","count"), churn=("retained", lambda x: 1-x.mean()), med_gmv=("gmv","median")
@@ -686,11 +686,11 @@ Khi mở rộng sang ≥2 loại, GMV tăng từ {_gmv1} lên {_gmv2} (gấp 2.4
 
 **Kiểm định (chi-square):**
 
-H₀: Tỷ lệ retention không khác nhau giữa các nhóm số loại dịch vụ
+H₀: Tỷ lệ churn không khác nhau giữa các nhóm số loại dịch vụ
 
-H₁: Tỷ lệ retention khác nhau có ý nghĩa giữa các nhóm
+H₁: Tỷ lệ churn khác nhau giữa các nhóm
 
-p = {_p_div:.4f} → bác bỏ H₀. Sự khác biệt có ý nghĩa thống kê.
+p = {_p_div:.4f} → bác bỏ H₀. Chiều hướng: dùng ít loại dịch vụ hơn có churn cao hơn.
 
 *Lưu ý: đây là xu hướng quan sát được từ data, không thể kết luận dùng nhiều loại dịch vụ là nguyên nhân khiến user ở lại.*
 """)
