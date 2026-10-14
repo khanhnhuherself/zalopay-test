@@ -703,7 +703,7 @@ p = {_p_div:.4f} → bác bỏ H₀. Chiều hướng: dùng ít loại dịch v
     st.markdown("**Churn Rate: Số giao dịch × Số loại dịch vụ**")
 
     _hm = m0s_filt.copy()
-    _hm["txn_bin"] = pd.cut(_hm["m0_txn"], bins=[0,1,2,3,4,6,9,float("inf")],
+    _hm["txn_bin"] = pd.cut(_hm["n_txn"], bins=[0,1,2,3,4,6,9,float("inf")],
                             labels=["1","2","3","4","5-6","7-9","10+"])
     _hm_grp = _hm.groupby(["n_carriers","txn_bin"], observed=True).agg(
         n=("retained","count"), churn=("retained", lambda x: 1-x.mean())
