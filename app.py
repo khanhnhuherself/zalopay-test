@@ -630,6 +630,7 @@ Trong tình huống này, đổ thêm ngân sách vào acquisition chỉ bù đ�
 
     st.markdown("---")
     st.markdown("#### 2. How do they differ?")
+    st.markdown("Nhìn vào M0 - tháng user phát sinh giao dịch mua đầu tiên - hai nhóm có profile gần giống nhau. Sự khác biệt nằm ở **tần suất**, **độ rộng sử dụng** và **gánh nặng phí tương đối**.")
     st.markdown("**Chân dung hai nhóm**")
     grp_c = m0s_filt[~m0s_filt["retained"]]
     grp_a = m0s_filt[ m0s_filt["retained"]]
@@ -638,12 +639,12 @@ Trong tình huống này, đổ thêm ngân sách vào acquisition chỉ bù đ�
         ("Số giao dịch - Median", f"{grp_c['n_txn'].median():.0f}", f"{grp_a['n_txn'].median():.0f}", "−1 txn"),
         ("GMV - Median", f"{grp_c['gmv'].median()/1000:.0f}K", f"{grp_a['gmv'].median()/1000:.0f}K", "−66K"),
         ("AOV - Median", f"{grp_c['med_aov'].median()/1000:.0f}K", f"{grp_a['med_aov'].median()/1000:.0f}K", "= bằng nhau"),
-        ("Utilization rate - Median", f"{grp_c['util'].median():.1%}", f"{grp_a['util'].median():.1%}", "sai chiều → bác bỏ"),
+        ("Utilization rate - Median", f"{grp_c['util'].median():.1%}", f"{grp_a['util'].median():.1%}", "nhóm churn cao hơn - không phải yếu tố phân biệt"),
         ("Phí/GMV - Median", f"{grp_c['fee_pct'].median():.1%}", f"{grp_a['fee_pct'].median():.1%}", "+1.0pp"),
     ]
     st.dataframe(pd.DataFrame(rows, columns=["Chỉ số (M0)", "Churned", "Active M1", "Chênh lệch"]),
                  use_container_width=True, hide_index=True)
-    st.caption("AOV bằng nhau (137K) - ticket size không phải vấn đề. Hai nhóm rất giống nhau về profile; điểm khác biệt thực là tỷ lệ phí/GMV.")
+    st.caption("AOV bằng nhau - ticket size không phải vấn đề. Utilization rate của nhóm churn cao hơn cho thấy họ không thiếu hạn mức; điểm khác biệt là số giao dịch, GMV và gánh nặng phí tương đối.")
 
     st.markdown("---")
     st.markdown("**Churn Rate by Carrier Diversity**")
@@ -701,6 +702,7 @@ p = {_p_div:.4f} → bác bỏ H₀. Chiều hướng: dùng ít loại dịch v
 
     st.markdown("---")
     st.markdown("**Churn Rate: Số giao dịch × Số loại dịch vụ**")
+    st.markdown("Hai biến - số loại dịch vụ và số giao dịch - không hoạt động độc lập. Matrix dưới đây cho thấy churn rate tại từng điểm giao nhau: **ô đỏ = nguy cơ cao, ô xanh = dưới mức trung bình.**")
 
     _hm = m0s_filt.copy()
     _txn_labels = ["1","2","3","4","5-6","7-9","10+"]
@@ -797,6 +799,7 @@ p = {p_chi:.4f} → bác bỏ H₀. Chiều hướng: churn giảm theo GMV.
 
     st.markdown("---")
     st.markdown("**Fee burden by GMV (Gross Merchandise Value)**")
+    st.markdown("Phí 20K cố định mỗi kỳ tạo gánh nặng không đồng đều theo mức chi tiêu. Câu hỏi: nhóm churn có chịu fee/GMV cao hơn nhóm còn lại không?")
 
     # Mann-Whitney U: fee_pct của churned vs retained
     _fee_clean = m0s_filt[m0s_filt["fee_pct"] <= 2]
@@ -806,8 +809,10 @@ p = {p_chi:.4f} → bác bỏ H₀. Chiều hướng: churn giảm theo GMV.
     from scipy.stats import spearmanr as _spearmanr
     _rho, _rho_p = _spearmanr(_fee_clean["fee_pct"], _fee_clean["retained"])
 
-    st.markdown(f"""
-Nhóm churn chịu gánh nặng phí cao hơn nhóm còn lại (median fee/GMV: **{_fee_c.median():.1%}** vs **{_fee_r.median():.1%}**). Kiểm định Mann-Whitney U xác nhận sự khác biệt có ý nghĩa thống kê (p = {_mw_p:.4f}).
+    _fb_col1, _fb_col2 = st.columns([2, 3])
+    with _fb_col1:
+        st.markdown(f"""
+Median fee/GMV của nhóm churn là **{_fee_c.median():.1%}**, nhóm retained là **{_fee_r.median():.1%}**.
 
 **Kiểm định:**
 
@@ -821,12 +826,35 @@ Mann-Whitney U: p = {_mw_p:.4f} → bác bỏ H₀.
 
 *Spearman correlation: đo mức độ tương quan đơn điệu giữa fee/GMV và khả năng churn.*
 
-Spearman ρ = {_rho:.3f}, p = {_rho_p:.4f} - tương quan có ý nghĩa thống kê nhưng effect size nhỏ.
+Spearman ρ = {_rho:.3f}, p = {_rho_p:.4f} - có ý nghĩa thống kê, effect size nhỏ.
 
-*Lưu ý: fee/GMV = 20K/GMV, nên không thể tách rời effect của phí vs mức chi tiêu. Kết quả xác nhận xu hướng quan sát được từ data, không xác nhận nhân quả.*
+*Lưu ý: fee/GMV = 20K/GMV nên không thể tách rời effect của phí vs mức chi tiêu.*
 """)
+    with _fb_col2:
+        _fee_plot = _fee_clean.copy()
+        _fee_plot["Nhóm"] = _fee_plot["retained"].map({False: "Churned", True: "Retained M1"})
+        fig_fee = go.Figure()
+        for _grp, _col in [("Churned","#ef4444"), ("Retained M1","#1d4ed8")]:
+            _d = _fee_plot[_fee_plot["Nhóm"]==_grp]["fee_pct"]
+            fig_fee.add_trace(go.Box(
+                y=_d, name=_grp, marker_color=_col,
+                boxmean=True, width=0.4,
+                hovertemplate="%{y:.1%}<extra></extra>",
+            ))
+        fig_fee = clean_fig(fig_fee, height=300)
+        fig_fee.update_layout(
+            title=dict(text="Phân phối Fee/GMV (M0)", font=dict(size=15), x=0.5, xanchor="center"),
+            yaxis=dict(tickformat=".0%", title="Fee / GMV"),
+            showlegend=False,
+        )
+        st.plotly_chart(fig_fee, use_container_width=True, config={"displayModeBar": False})
 
-    st.info("**Synthesis:** Churn là quyết định có chủ đích - user còn dư hạn mức, chủ động không dùng tiếp. Cơ chế: ít loại dịch vụ → ít giao dịch → GMV thấp → phí 20K chiếm tỷ lệ lớn → không worth it → rời bỏ sản phẩm.")
+    st.markdown(f"""
+**Tổng hợp từ data:**
+- Nhóm churn tập trung ở profile: **ít loại dịch vụ** (48% dùng 1 loại), **ít giao dịch**, **GMV thấp**
+- GMV thấp → phí 20K cố định chiếm tỷ lệ lớn trong tổng chi tiêu
+- Hai nhóm có AOV bằng nhau → không phải vấn đề ticket size, mà là tần suất và độ rộng sử dụng
+""")
 
     st.markdown("---")
     st.markdown("#### 3. What to recommend?")
