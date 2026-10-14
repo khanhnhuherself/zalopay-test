@@ -737,8 +737,9 @@ p = {_p_div:.4f} → bác bỏ H₀. Chiều hướng: dùng ít loại dịch v
         y=_ys,
         text=_texts,
         texttemplate="%{text}",
-        colorscale=[[0,"#fff5f5"],[0.5,"#fc8181"],[1,"#c53030"]],
-        zmin=0,
+        colorscale=[[0,"#1d4ed8"],[0.5,"#f9fafb"],[1,"#c53030"]],
+        zmid=float(_zflat.mean()) if len(_zflat) else 0.26,
+        zmin=float(_zflat.min()) if len(_zflat) else 0.1,
         zmax=float(_zflat.max()) if len(_zflat) else 0.4,
         colorbar=dict(title="Churn rate", tickformat=".0%", thickness=14),
         hovertemplate="Churn: %{z:.1%}<extra></extra>",
@@ -749,7 +750,7 @@ p = {_p_div:.4f} → bác bỏ H₀. Chiều hướng: dùng ít loại dịch v
         yaxis=dict(title="Số loại dịch vụ", autorange="reversed"),
     )
     st.plotly_chart(fig_hm, use_container_width=True, config={"displayModeBar": False})
-    st.caption("Ô trống = dưới 30 user (không đủ mẫu). Màu càng đỏ = churn càng cao.")
+    st.caption(f"Đỏ = churn trên mức trung bình ({_zflat.mean():.0%}). Xanh = dưới trung bình. Ô trống = dưới 30 user.")
 
     st.markdown("---")
     st.markdown("**Churn Rate by GMV (Gross Merchandise Value)**")
