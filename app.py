@@ -405,22 +405,22 @@ Bài toán không phải chăm sóc nhóm 7–13 giao dịch (tệp quá nhỏ, 
     _ct2 = pd.crosstab(m0_all["m0_txn"] >= THRESHOLD, m0_all["retained"])
     _, p_txn, *_ = chi2_contingency(_ct2)
     st.markdown(f"""
-**Kiểm định thống kê**
+**Kiểm định thống kê (mô tả - không phải validation)**
 
-*Chi-square test of independence (two-tailed): kiểm định xem số giao dịch M0 (< hay ≥ {THRESHOLD}) và việc user có quay lại M1 có liên hệ với nhau không. N = {THRESHOLD} được quan sát từ biểu đồ trên cùng bộ data.*
+*Chi-square test of independence (two-tailed): kiểm định xem nhóm <{THRESHOLD} txn và nhóm ≥{THRESHOLD} txn có tỷ lệ retention M1 khác nhau không.*
 
-**H₀:** Tỷ lệ retention M1 không khác nhau giữa nhóm <{THRESHOLD} txn và nhóm ≥{THRESHOLD} txn
+⚠️ **Giới hạn quan trọng:** N = {THRESHOLD} được xác định bằng cách quan sát biểu đồ trên chính bộ data này. Kiểm định trên cùng bộ data là **circular** - ta chọn N={THRESHOLD} vì nó *trông* có sự khác biệt, nên kết quả significant không xác nhận đây là ngưỡng đúng. Cần validate trên holdout hoặc cohort mới để có kết luận tin cậy.
 
-**H₁:** Tỷ lệ retention M1 khác nhau giữa hai nhóm
+H₀: Tỷ lệ retention M1 không khác nhau giữa nhóm <{THRESHOLD} txn và nhóm ≥{THRESHOLD} txn
 
-**Kết quả tại N = {THRESHOLD}:**
+H₁: Tỷ lệ retention M1 khác nhau giữa hai nhóm
+
+**Kết quả mô tả tại N = {THRESHOLD}:**
 - Nhóm <{THRESHOLD} txn (n={n_low:,}): retention **{p_low:.1%}**
 - Nhóm ≥{THRESHOLD} txn (n={n_high:,}): retention **{p_high:.1%}** (+{p_high-p_low:.1%}pp)
-- Chi-square test: **p = {p_txn:.4f}** → bác bỏ H₀
+- Chi-square: p = {p_txn:.4f} - sự khác biệt có ý nghĩa thống kê trên tập này
 
-→ **Chênh lệch có ý nghĩa thống kê. Chiều hướng: nhóm ≥{THRESHOLD} txn có retention cao hơn ({p_high:.1%} vs {p_low:.1%}).**
-
-*Lưu ý: N = {THRESHOLD} xác định từ cùng bộ data (exploratory). Cần validate trên holdout hoặc cohort mới để loại trừ data snooping bias.*
+→ Chênh lệch quan sát được là **{p_high-p_low:.1%}pp**. Đây là exploratory finding, chưa phải confirmation.
 """)
 
     st.markdown("---")
