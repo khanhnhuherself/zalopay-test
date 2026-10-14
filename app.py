@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
-from scipy.stats import chi2_contingency, mannwhitneyu, proportions_ztest
+from scipy.stats import chi2_contingency, mannwhitneyu, norm as _norm
 
 st.set_page_config(page_title="ZaloPay Test", layout="centered")
 
@@ -404,11 +404,12 @@ Bài toán không phải chăm sóc nhóm 7–13 giao dịch (tệp quá nhỏ, 
 
     _grp_high = m0_all[m0_all["m0_txn"] >= THRESHOLD]["retained"]
     _grp_low  = m0_all[m0_all["m0_txn"] <  THRESHOLD]["retained"]
-    _z_stat, _z_p = proportions_ztest(
-        count=[_grp_high.sum(), _grp_low.sum()],
-        nobs=[len(_grp_high), len(_grp_low)],
-        alternative="larger"
-    )
+    _n1, _n2  = len(_grp_high), len(_grp_low)
+    _p1, _p2  = _grp_high.mean(), _grp_low.mean()
+    _p_pool   = (_grp_high.sum() + _grp_low.sum()) / (_n1 + _n2)
+    _se       = np.sqrt(_p_pool * (1 - _p_pool) * (1/_n1 + 1/_n2))
+    _z_stat   = (_p1 - _p2) / _se
+    _z_p      = float(_norm.sf(_z_stat))
     st.markdown(f"""
 **Kiểm định thống kê (exploratory - không phải validation)**
 
