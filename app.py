@@ -737,8 +737,9 @@ p = {_p_div:.4f} → bác bỏ H₀. Chiều hướng: dùng ít loại dịch v
         y=_ys,
         text=_texts,
         texttemplate="%{text}",
-        colorscale=[[0,"#dbeafe"],[0.5,"#f97316"],[1,"#ef4444"]],
-        zmin=0, zmax=float(_zflat.max()) if len(_zflat) else 0.4,
+        colorscale=[[0,"#fff5f5"],[0.5,"#fc8181"],[1,"#c53030"]],
+        zmin=float(_zflat.min()) if len(_zflat) else 0.1,
+        zmax=float(_zflat.max()) if len(_zflat) else 0.4,
         colorbar=dict(title="Churn rate", tickformat=".0%", thickness=14),
         hovertemplate="Churn: %{z:.1%}<extra></extra>",
     ))
