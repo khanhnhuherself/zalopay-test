@@ -407,7 +407,7 @@ Bài toán không phải chăm sóc nhóm 7–13 giao dịch (tệp quá nhỏ, 
     st.markdown(f"""
 **Kiểm định thống kê**
 
-*N = {THRESHOLD} được quan sát từ biểu đồ trên cùng bộ data. Kiểm định xác nhận chênh lệch tỷ lệ retention có ý nghĩa thống kê hay chỉ là ngẫu nhiên.*
+*Chi-square test of independence (two-tailed): kiểm định xem số giao dịch M0 (< hay ≥ {THRESHOLD}) và việc user có quay lại M1 có liên hệ với nhau không. N = {THRESHOLD} được quan sát từ biểu đồ trên cùng bộ data.*
 
 **H₀:** Tỷ lệ retention M1 không khác nhau giữa nhóm <{THRESHOLD} txn và nhóm ≥{THRESHOLD} txn
 
@@ -686,6 +686,8 @@ Khi mở rộng sang ≥2 loại, GMV tăng từ {_gmv1} lên {_gmv2} (gấp 2.4
 
 **Kiểm định (chi-square):**
 
+*Chi-square test of independence (two-tailed): kiểm định xem số loại dịch vụ sử dụng trong M0 và tình trạng churn có liên hệ với nhau không.*
+
 H₀: Tỷ lệ churn không khác nhau giữa các nhóm số loại dịch vụ
 
 H₁: Tỷ lệ churn khác nhau giữa các nhóm
@@ -728,6 +730,8 @@ Phí 20K cố định tạo gánh nặng không đồng đều - nhóm chi tiêu
 
 **Kiểm định (chi-square):**
 
+*Chi-square test of independence (two-tailed): kiểm định xem mức GMV trong M0 và tình trạng retention có liên hệ với nhau không.*
+
 H₀: Tỷ lệ retention không khác nhau giữa các GMV tier
 
 H₁: Tỷ lệ retention khác nhau giữa các GMV tier
@@ -753,13 +757,19 @@ Nhóm churn chịu gánh nặng phí cao hơn nhóm còn lại (median fee/GMV: 
 
 **Kiểm định:**
 
+*Mann-Whitney U (one-tailed): so sánh phân phối fee/GMV giữa 2 nhóm độc lập, không giả định phân phối chuẩn.*
+
 H₀: Phân phối fee/GMV của nhóm churn bằng nhóm còn lại
 
 H₁: Nhóm churn có fee/GMV cao hơn nhóm còn lại
 
-p = {_mw_p:.4f} → bác bỏ H₀. Spearman ρ = {_rho:.3f} - effect size nhỏ.
+Mann-Whitney U: p = {_mw_p:.4f} → bác bỏ H₀.
 
-*Lưu ý: fee/GMV = 20K/GMV, nên không thể tách rời effect của phí vs mức chi tiêu. Kết quả xác nhận association, không xác nhận nhân quả.*
+*Spearman correlation: đo mức độ tương quan đơn điệu giữa fee/GMV và khả năng churn.*
+
+Spearman ρ = {_rho:.3f}, p = {_rho_p:.4f} - tương quan có ý nghĩa thống kê nhưng effect size nhỏ.
+
+*Lưu ý: fee/GMV = 20K/GMV, nên không thể tách rời effect của phí vs mức chi tiêu. Kết quả xác nhận xu hướng quan sát được từ data, không xác nhận nhân quả.*
 """)
 
     st.info("**Synthesis:** Churn là quyết định có chủ đích - user còn dư hạn mức, chủ động không dùng tiếp. Cơ chế: ít loại dịch vụ → ít giao dịch → GMV thấp → phí 20K chiếm tỷ lệ lớn → không worth it → rời bỏ sản phẩm.")
