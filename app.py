@@ -738,7 +738,7 @@ p = {_p_div:.4f} → bác bỏ H₀. Chiều hướng: dùng ít loại dịch v
         text=_texts,
         texttemplate="%{text}",
         colorscale=[[0,"#fff5f5"],[0.5,"#fc8181"],[1,"#c53030"]],
-        zmin=float(_zflat.min()) if len(_zflat) else 0.1,
+        zmin=0,
         zmax=float(_zflat.max()) if len(_zflat) else 0.4,
         colorbar=dict(title="Churn rate", tickformat=".0%", thickness=14),
         hovertemplate="Churn: %{z:.1%}<extra></extra>",
@@ -752,7 +752,7 @@ p = {_p_div:.4f} → bác bỏ H₀. Chiều hướng: dùng ít loại dịch v
     st.caption("Ô trống = dưới 30 user (không đủ mẫu). Màu càng đỏ = churn càng cao.")
 
     st.markdown("---")
-    st.markdown("**Retention rate by GMV (Gross Merchandise Value)**")
+    st.markdown("**Churn Rate by GMV (Gross Merchandise Value)**")
 
     _m = m0s_filt.copy()
     _m["gmv_tier"] = pd.cut(_m["gmv"],
@@ -761,34 +761,35 @@ p = {_p_div:.4f} → bác bỏ H₀. Chiều hướng: dùng ít loại dịch v
     ts = _m.groupby("gmv_tier", observed=True).agg(
         n=("retained","count"), m1=("retained","mean"), med=("gmv","median")
     ).reset_index()
+    ts["churn"] = 1 - ts["m1"]
     ts["fee_pct"] = 20_000 / ts["med"]
     _, p_chi, *_ = chi2_contingency(pd.crosstab(_m["gmv_tier"], _m["retained"]))
 
     fig3 = go.Figure(go.Bar(
-        x=ts["gmv_tier"].astype(str), y=ts["m1"],
+        x=ts["gmv_tier"].astype(str), y=ts["churn"],
         marker_color=["#ef4444","#f97316","#6b7280","#1d4ed8"],
-        text=[f"{v:.1%}" for v in ts["m1"]], textposition="outside", width=0.5,
+        text=[f"{v:.1%}" for v in ts["churn"]], textposition="outside", width=0.5,
     ))
     fig3 = clean_fig(fig3, height=260)
-    fig3.update_layout(yaxis=dict(tickformat=".0%", range=[0,0.88]),
+    fig3.update_layout(yaxis=dict(tickformat=".0%", range=[0, ts["churn"].max()*1.3]),
                        xaxis_title="GMV M0 tier")
 
     _gv_col1, _gv_col2 = st.columns([2, 3])
     with _gv_col1:
         st.markdown(f"""
-**Retention tăng đều theo mức chi tiêu:** nhóm GMV <200K giữ được {ts['m1'].iloc[0]:.1%} user, nhóm >700K giữ được {ts['m1'].iloc[-1]:.1%}.
+**Churn giảm đều theo mức chi tiêu:** nhóm GMV <200K churn {ts['churn'].iloc[0]:.1%}, nhóm >700K chỉ churn {ts['churn'].iloc[-1]:.1%}.
 
 Phí 20K cố định tạo gánh nặng không đồng đều - nhóm chi tiêu thấp chịu effective fee rate cao hơn gấp nhiều lần.
 
 **Kiểm định (chi-square):**
 
-*Chi-square test of independence (two-tailed): kiểm định xem mức GMV trong M0 và tình trạng retention có liên hệ với nhau không.*
+*Chi-square test of independence (two-tailed): kiểm định xem mức GMV trong M0 và tình trạng churn có liên hệ với nhau không.*
 
-H₀: Tỷ lệ retention không khác nhau giữa các GMV tier
+H₀: Tỷ lệ churn không khác nhau giữa các GMV tier
 
-H₁: Tỷ lệ retention khác nhau giữa các GMV tier
+H₁: Tỷ lệ churn khác nhau giữa các GMV tier
 
-p = {p_chi:.4f} → bác bỏ H₀. Chiều hướng: retention tăng theo GMV.
+p = {p_chi:.4f} → bác bỏ H₀. Chiều hướng: churn giảm theo GMV.
 """)
     with _gv_col2:
         st.plotly_chart(fig3, use_container_width=True, config={"displayModeBar": False})
