@@ -118,14 +118,15 @@ Sản phẩm Buy Now Pay later của ZaloPay (Tài khoản Trả Sau) là sản 
 
 Do vậy để xác định metric thật sự có ý nghĩa đối với Zalo Pay, cần nhìn nhận nguồn thu phân theo vai trò:
 
-| Nguồn thu | Về tay ai |
+| Nguồn thu | Bên nhận |
 |---|---|
 | Merchant fee (mỗi giao dịch) | ZaloPay |
 | Phí dịch vụ 20.000đ/kỳ | Chưa xác nhận - có thể split |
 | Lãi suất quá hạn | CIMB / LOTTE Finance |
 | Phí trễ hạn | CIMB / LOTTE Finance |
-
-<small>Nguồn: [ZaloPay - Tài khoản Trả Sau thanh toán được những gì?](https://zalopay.vn/tai-khoan-tra-sau-zalopay-thanh-toan-duoc-nhung-gi-6965)</small>
+""")
+    st.caption("Nguồn: ZaloPay - Tài khoản Trả Sau thanh toán được những gì?")
+    st.markdown("""
 
 Như vậy, Nguồn doanh thu thu trực tiếp của ZaloPay gắn với giao dịch mua. Từ đó, để theo dõi, tối ưu retention cho sản phẩm này, cần xác định 2 thành phần:
 
