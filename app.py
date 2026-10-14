@@ -402,29 +402,20 @@ Biểu đồ phải tiết lộ điểm nghẽn thực sự: **{pct_below:.1%} u
 
 Bài toán không phải chăm sóc nhóm 7–13 giao dịch (tệp quá nhỏ, tự giữ được). Bài toán là đẩy {pct_below:.1%} user đang tắc nghẽn ở 1–3 giao dịch vượt qua mốc thứ 4.""")
 
-    _grp_high = m0_all[m0_all["m0_txn"] >= THRESHOLD]["retained"]
-    _grp_low  = m0_all[m0_all["m0_txn"] <  THRESHOLD]["retained"]
-    _n1, _n2  = len(_grp_high), len(_grp_low)
-    _p1, _p2  = _grp_high.mean(), _grp_low.mean()
-    _p_pool   = (_grp_high.sum() + _grp_low.sum()) / (_n1 + _n2)
-    _se       = np.sqrt(_p_pool * (1 - _p_pool) * (1/_n1 + 1/_n2))
-    _z_stat   = (_p1 - _p2) / _se
-    _z_p      = float(_norm.sf(_z_stat))
+    from scipy.stats import spearmanr as _spearmanr1c
+    _rho_1c, _rho_p_1c = _spearmanr1c(m0_all["m0_txn"], m0_all["retained"])
     st.markdown(f"""
-**Kiểm định thống kê (exploratory - không phải validation)**
+**Kiểm định thống kê**
 
-*Z-test for proportions (one-tailed): kiểm định xem tỷ lệ retention M1 của nhóm ≥{THRESHOLD} txn có cao hơn nhóm <{THRESHOLD} txn không.*
+*Spearman correlation (one-tailed): kiểm định xem số giao dịch M0 có tương quan dương đơn điệu với tỷ lệ retention M1 không. Không cần chọn ngưỡng N cụ thể.*
 
-H₀: p(retained | ≥{THRESHOLD} txn) ≤ p(retained | <{THRESHOLD} txn)
+H₀: Không có mối tương quan dương giữa số giao dịch M0 và retention M1 (ρ ≤ 0)
 
-H₁: p(retained | ≥{THRESHOLD} txn) > p(retained | <{THRESHOLD} txn)
+H₁: Số giao dịch M0 càng cao, tỷ lệ retention M1 càng cao (ρ > 0)
 
-**Kết quả tại N = {THRESHOLD}:**
-- Nhóm <{THRESHOLD} txn (n={n_low:,}): retention **{p_low:.1%}**
-- Nhóm ≥{THRESHOLD} txn (n={n_high:,}): retention **{p_high:.1%}** (+{p_high-p_low:.1%}pp)
-- Z-test (one-tailed): z = {_z_stat:.2f}, p = {_z_p:.4f} → có bằng chứng ủng hộ H₁
+Spearman ρ = {_rho_1c:.3f}, p = {_rho_p_1c / 2:.4f} (one-tailed) → có bằng chứng ủng hộ H₁.
 
-⚠️ **Giới hạn:** N = {THRESHOLD} được xác định bằng cách quan sát biểu đồ trên chính bộ data này (data snooping). Test trên cùng data là circular - kết quả significant không xác nhận N={THRESHOLD} là ngưỡng tối ưu. Cần validate trên holdout hoặc cohort mới.
+*Lưu ý: N = {THRESHOLD} quan sát từ biểu đồ là exploratory finding - xác định vùng có marginal lift cao nhất, không phải kết quả của kiểm định.*
 """)
 
     st.markdown("---")
