@@ -646,7 +646,7 @@ Trong tình huống này, đổ thêm ngân sách vào acquisition chỉ bù đ�
     st.caption("AOV bằng nhau (137K) - ticket size không phải vấn đề. Hai nhóm rất giống nhau về profile; điểm khác biệt thực là tỷ lệ phí/GMV.")
 
     st.markdown("---")
-    st.markdown("**Churn Rate by Carrier Diversity**")
+    st.markdown("**Retention Rate by Carrier Diversity**")
 
     ct_div = m0s_filt.groupby("n_carriers").agg(
         n=("retained","count"), churn=("retained", lambda x: 1-x.mean()), med_gmv=("gmv","median")
