@@ -224,7 +224,27 @@ Như vậy, Nguồn doanh thu thu trực tiếp của ZaloPay gắn với giao d
 with tabs[1]:
     st.subheader("Build a cohort retention analysis. Patterns & anomalies?")
 
-    st.write("M1 retention trung bình **73.6%**, ổn định qua 18 cohorts (71.6%–76.0%). Tháng đầu là điểm rời lớn nhất - từ M2 trở đi churn rate giảm dần.")
+    # Dynamic M1 stats
+    _piv_ret = filt.groupby(["cohort","month_number"])["user_id"].nunique().unstack().div(cs_filt, axis=0)
+    _m1_col  = _piv_ret[1] if 1 in _piv_ret.columns else pd.Series(dtype=float)
+    _m1_avg  = _m1_col.mean()  if len(_m1_col) else float("nan")
+    _m1_min  = _m1_col.min()   if len(_m1_col) else float("nan")
+    _m1_max  = _m1_col.max()   if len(_m1_col) else float("nan")
+    _n_coh   = len(_piv_ret)
+    _m1_pp   = (_m1_max - _m1_min) * 100 if len(_m1_col) else float("nan")
+    # New user trend
+    _new_mon_all = filt[filt["month_number"]==0].groupby("trxn_month")["user_id"].nunique()
+    _new_peak_val = int(_new_mon_all.max()) if len(_new_mon_all) else 0
+    _new_peak_mon = _new_mon_all.idxmax() if len(_new_mon_all) else None
+    _new_last_val = int(_new_mon_all.iloc[-1]) if len(_new_mon_all) else 0
+    _new_drop_pct = (_new_last_val - _new_peak_val) / _new_peak_val if _new_peak_val else float("nan")
+    _new_peak_lbl = pd.Period(_new_peak_mon, freq="M").strftime("%m/%Y") if _new_peak_mon else "–"
+
+    _m1_avg_fmt = f"{_m1_avg:.1%}" if not np.isnan(_m1_avg) else "–"
+    _m1_rng_fmt = f"{_m1_min:.1%}–{_m1_max:.1%}" if not np.isnan(_m1_min) else "–"
+    _m1_pp_fmt  = f"{_m1_pp:.1f}pp" if not np.isnan(_m1_pp) else "–"
+
+    st.write(f"M1 retention trung bình **{_m1_avg_fmt}**, ổn định qua {_n_coh} cohorts ({_m1_rng_fmt}). Tháng đầu là điểm rời lớn nhất - từ M2 trở đi churn rate giảm dần.")
 
     # Pre-compute YoY cards
     _mau_mon  = filt.groupby("trxn_month")["user_id"].nunique()
@@ -337,7 +357,7 @@ with tabs[1]:
     fig.update_yaxes(autorange="reversed")
     st.markdown("<div style='text-align:center;font-size:18px;font-weight:700;margin-bottom:4px'>Cohort Retention Matrix</div>", unsafe_allow_html=True)
     st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
-    st.caption("M1 retention dao động 71.6%–76.0% qua 18 cohorts — dải hẹp 4.4pp cho thấy churn không liên quan đến một cohort hay đợt acquisition cụ thể, mà là vấn đề structural.")
+    st.caption(f"M1 retention dao động {_m1_rng_fmt} qua {_n_coh} cohorts — dải hẹp {_m1_pp_fmt} cho thấy churn không liên quan đến một cohort hay đợt acquisition cụ thể, mà là vấn đề structural.")
 
     pct_piv = filt.groupby(["cohort","month_number"])["user_id"].nunique().unstack().div(cs_filt, axis=0)
 
@@ -387,27 +407,27 @@ with tabs[1]:
     _m2_ret = float(avg_all.get(2, float("nan")))
     _m3_ret = float(avg_all.get(3, float("nan")))
 
-    st.caption(f"Drop lớn nhất ở M1 (−26%) — đây là điểm can thiệp quan trọng nhất. M2 giảm thêm {_m2_ret - float(avg_all.get(1,0)):.0%}, sau đó chậm dần nhưng không plateau: retention tiếp tục rơi đến M12 (~5%), không hình thành loyal floor.")
+    st.caption(f"Drop lớn nhất ở M1 (−26%) — đây là điểm can thiệp quan trọng nhất. M2 giảm thêm {_m2_ret - float(avg_all.get(1,0)):.0%}, sau đó chậm dần nhưng tiếp tục giảm đến M12 (~5%) — không hình thành nhóm user gắn bó ổn định.")
 
     st.markdown("**Patterns & Anomalies**")
     st.markdown(f"""
-**A — Retention % ổn định, nhưng absolute numbers đang sụt giảm toàn diện.**
-M1 retention dao động 71.6%–76.0% qua 18 cohorts — product không xấu đi. Tuy nhiên, cùng lúc đó:
-- **Số user mới** giảm từ ~1,382 → ~596/tháng (−57% từ 11/2024) → số user retained tuyệt đối giảm tương ứng
-- **Tổng GMV** co lại theo base user, dù chi tiêu/user tháng đầu ổn định
-- **Quick Ratio < 1 từ 11/2024** (QR = New ÷ Churned): base user đang co lại mỗi tháng
+**Retention % ổn định nhưng số lượng tuyệt đối đang giảm.**
+M1 retention dao động {_m1_rng_fmt} qua {_n_coh} cohorts — product không xấu đi. Tuy nhiên, cùng lúc đó:
+- Số user mới giảm từ ~{_new_peak_val:,} xuống ~{_new_last_val:,}/tháng ({_new_drop_pct:.0%} từ {_new_peak_lbl}) — số user retained tuyệt đối giảm tương ứng
+- Tổng GMV co lại theo base user, dù chi tiêu/user tháng đầu ổn định
+- Quick Ratio < 1 kể từ khi acquisition đạt đỉnh — base user đang giảm mỗi tháng
 
-→ Nhìn vào % retention thôi sẽ bỏ sót bức tranh thực: base user và GMV đang co lại từng tháng.
+Chỉ nhìn vào % retention sẽ bỏ sót bức tranh thực: số user và GMV đang co lại từng tháng.
 
-**B — Điểm rời tập trung hoàn toàn ở M1** (−26%). Từ M2 trở đi churn chậm dần nhưng không plateau — không hình thành loyal floor. Ai rời thì rời hẳn: returning rate chỉ {_return_rate:.1%} ({len(_returning_m2):,}/{len(_churned_m1):,} user).
+**Churn tập trung ở M1** (−26%). Từ M2 trở đi tốc độ giảm chậm dần nhưng không ổn định — không hình thành nhóm user gắn bó lâu dài. Ai rời thì rời hẳn: tỷ lệ quay lại chỉ {_return_rate:.1%} ({len(_returning_m2):,}/{len(_churned_m1):,} user).
 
-**C — Không có cohort outlier.** Dải 4.4pp qua 18 cohorts → churn không gắn với sự kiện hay đợt acquisition cụ thể, mà là vấn đề structural của sản phẩm.
+**Không có cohort nào nổi bật.** Dải {_m1_pp_fmt} qua {_n_coh} cohorts — churn không gắn với đợt acquisition hay sự kiện cụ thể nào, mà nhất quán trên toàn bộ dữ liệu.
 """)
 
-    st.markdown("**Hypothesis on the cause:**")
-    st.write("Phí 20K/tháng cố định tạo gánh nặng không đồng đều theo GMV — user giao dịch ít chịu effective fee rate cao → không worth it để tiếp tục. Kiểm định định lượng ở tab **Churn Analysis**.")
+    st.markdown("**Giả thuyết nguyên nhân:**")
+    st.write("Phí 20K/tháng cố định tạo gánh nặng không đồng đều — user giao dịch ít chịu tỷ lệ phí/GMV cao, khiến sản phẩm không còn đáng dùng. Kiểm định định lượng ở tab **Churn Analysis**.")
 
-    st.info(f"Retention % ổn định (73.6%) nhưng absolute user count và GMV đang sụt giảm toàn diện do acquisition giảm 57%. Điểm can thiệp duy nhất là M0 — returning rate {_return_rate:.1%} nên re-activation không khả thi.")
+    st.info(f"Retention % ổn định ({_m1_avg_fmt}) nhưng số user và GMV đang giảm do acquisition giảm {_new_drop_pct:.0%} từ đỉnh. Điểm can thiệp là M0 — returning rate {_return_rate:.1%} nên re-activation không khả thi.")
 
 # ═══════════════════════════════════════════════════════════════════════════════
 with tabs[2]:
@@ -499,14 +519,14 @@ with tabs[2]:
         barmode="relative",
     )
     st.markdown(f"<div style='text-align:center;font-size:17px;font-weight:700;margin-bottom:2px'>Biểu đồ phân phối số lượng KH theo số lượng giao dịch ở tháng đầu tiên và tỷ lệ quay lại ở tháng thứ 2</div>", unsafe_allow_html=True)
-    st.markdown(f"<div style='text-align:center;color:#6b7280;font-size:13px'>Phân phối lệch phải - Median: {med_txn:.1f} giao dịch | Mean: {mean_txn:.1f} giao dịch. 67.6% user tập trung ở vùng đỏ (&lt;{THRESHOLD} giao dịch).</div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='text-align:center;color:#6b7280;font-size:13px'>Phân phối lệch phải - Median: {med_txn:.1f} giao dịch | Mean: {mean_txn:.1f} giao dịch. {pct_below:.1%} user tập trung ở vùng đỏ (&lt;{THRESHOLD} giao dịch).</div>", unsafe_allow_html=True)
     st.plotly_chart(fig_combo, use_container_width=True, config={"displayModeBar": False})
 
     # ── Phần 1: Validate ─────────────────────────────────────────────────────
     st.markdown("**1. Nhìn nhận chung về giả thuyết (Validation)**")
-    st.markdown(f"""Dữ liệu thực tế ủng hộ góc nhìn của stakeholder về mặt tương quan. Người dùng phát sinh nhiều giao dịch hơn trong M0 rõ ràng có xu hướng quay lại ở những tháng sau với tỷ lệ cao hơn — nhóm 1 giao dịch có tỷ lệ giữ chân thấp nhất ({freq.loc[1,'ret']:.1%}), thấp hơn trung bình toàn ví ({avg_ret:.1%}).
+    st.markdown(f"""Dữ liệu ủng hộ giả thuyết này. User làm càng nhiều giao dịch trong M0 thì tỷ lệ quay lại M1 càng cao — nhóm 1 giao dịch giữ chân thấp nhất ({freq.loc[1,'ret']:.1%}), thấp hơn trung bình toàn ví ({avg_ret:.1%}).
 
-Tuy nhiên, thay vì là một "ngưỡng ma thuật" bật-tắt, đường cong giữ chân tăng tiến theo từng nấc và chính thức chạm điểm bão hòa thói quen tại mốc **N = 4**. Dữ liệu chỉ cho thấy **tương quan (association)** — chưa phải nhân quả. Chi tiết ở mục 3.""")
+Không có ngưỡng bật-tắt: mỗi giao dịch thêm đều cải thiện retention một chút. Nhưng từ giao dịch thứ 4 trở đi, mức tăng thêm nhỏ dần rõ rệt — đây là lý do chọn **N = 4** làm ngưỡng thiết kế can thiệp. Dữ liệu cho thấy **tương quan**, chưa phải nhân quả. Chi tiết ở mục 4.""")
 
     from scipy.stats import spearmanr as _spearmanr1c
     _rho_1c, _rho_p_1c = _spearmanr1c(m0_all["m0_txn"], m0_all["retained"])
@@ -526,18 +546,18 @@ Spearman ρ = {_rho_1c:.3f}, p = {_rho_p_1c / 2:.4f} (one-tailed) → có bằng
     st.markdown("---")
 
     # ── Phần 2: N=4 + Bottleneck ─────────────────────────────────────────────
-    st.markdown("**2. What is N? - Ngưỡng bão hòa quan sát từ biểu đồ**")
-    st.markdown(f"""Từ biểu đồ trên: tỷ lệ quay lại tăng dần theo từng giao dịch - 1 ({freq.loc[1,'ret']:.1%}) → 2 ({freq.loc[2,'ret']:.1%}) → 3 ({freq.loc[3,'ret']:.1%}) → đến giao dịch thứ 4 nhảy lên {freq.loc[4,'ret']:.1%} rồi đi ngang. **N = 4 là điểm bão hòa quan sát được.** Không có "ngưỡng bật-tắt": mỗi giao dịch thêm đều có marginal lift, hiệu ứng dừng tại N = 4.
+    st.markdown("**2. What is N? - Ngưỡng quan sát từ biểu đồ**")
+    st.markdown(f"""Từ biểu đồ trên: retention tăng theo từng giao dịch — 1 ({freq.loc[1,'ret']:.1%}) → 2 ({freq.loc[2,'ret']:.1%}) → 3 ({freq.loc[3,'ret']:.1%}) → 4 ({freq.loc[4,'ret']:.1%}). Từ N=4 trở đi mức tăng thêm nhỏ dần (nhóm 7+ vẫn cao hơn 4–6, nhưng chênh lệch đã thu hẹp nhiều). **N = 4 là điểm mà mỗi giao dịch thêm bắt đầu mang lại ít cải thiện hơn** — đây là ngưỡng hợp lý để thiết kế intervention.
 
-Điểm nghẽn thực sự: **{pct_below:.1%} user mới ({n_low:,}/{total_u:,}) đang bị kẹt ở vùng đỏ (1–3 giao dịch)** - tệp lớn nhất nhưng retention thấp nhất. Nhóm ≥{THRESHOLD} giao dịch chỉ chiếm {1-pct_below:.1%} nhưng quay lại với tỷ lệ {p_high:.1%}.
+Vấn đề thực tế: **{pct_below:.1%} user mới ({n_low:,}/{total_u:,}) chỉ phát sinh 1–3 giao dịch trong M0** — nhóm đông nhất nhưng retention thấp nhất. Nhóm ≥{THRESHOLD} giao dịch chỉ chiếm {1-pct_below:.1%} nhưng quay lại với tỷ lệ {p_high:.1%}.
 
-⚠️ *N = {THRESHOLD} được xác định bằng cách quan sát biểu đồ trên chính bộ data này (exploratory). Đây không phải kết quả kiểm định - cần A/B test trên data mới để xác nhận.*""")
+⚠️ *N = {THRESHOLD} xác định từ quan sát biểu đồ trên chính bộ data này (exploratory) — cần A/B test để xác nhận.*""")
     st.info(f"N = {THRESHOLD} là điểm bão hòa quan sát được (exploratory). {pct_below:.1%} user ({n_low:,}/{total_u:,}) bị tắc ở 1–3 giao dịch là bottleneck lớn nhất.")
 
     st.markdown("---")
 
     # ── Phần 3: Driver Analysis ───────────────────────────────────────────────
-    st.markdown("**2. Bản chất dữ liệu chỉ ra điều gì? (Key Findings)**")
+    st.markdown("**3. Cơ chế kinh tế — Tại sao N = 4 là ngưỡng có ý nghĩa?**")
 
     drv_plot = drv[drv.index <= 12].copy()
     drv_plot["fee_20k"] = 20_000 / drv_plot["med_gmv"]
@@ -575,9 +595,9 @@ Spearman ρ = {_rho_1c:.3f}, p = {_rho_p_1c / 2:.4f} (one-tailed) → có bằng
     fig_drv.add_hline(y=0.05, line_dash="dot", line_color="#9ca3af",
                       annotation_text="5%", row=1, col=2)
 
-    fig_drv.update_layout(height=300, margin=dict(l=20,r=20,t=40,b=40),
+    fig_drv.update_layout(height=300, margin=dict(l=20,r=20,t=55,b=40),
                           paper_bgcolor="white", plot_bgcolor="white",
-                          legend=dict(orientation="h", y=-0.2, x=0, font=dict(size=10)),
+                          legend=dict(orientation="h", y=1.18, x=0.5, xanchor="center", font=dict(size=10)),
                           font=dict(size=11))
     fig_drv.update_yaxes(showgrid=True, gridcolor="#f0f0f0", ticksuffix="K", row=1, col=1)
     fig_drv.update_yaxes(showgrid=True, gridcolor="#f0f0f0", tickformat=".0%", row=1, col=2)
@@ -620,7 +640,7 @@ Spearman ρ = {_rho_1c:.3f}, p = {_rho_p_1c / 2:.4f} (one-tailed) → có bằng
         legend=dict(orientation="h", y=1.14, x=0.5, xanchor="center", font=dict(size=10)),
         font=dict(size=11),
     )
-    st.markdown("<div style='text-align:center;font-size:14px;font-weight:600;margin-bottom:2px'>Retention M1–M6 theo nhóm số giao dịch M0</div>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align:center;font-size:14px;font-weight:600;margin-top:24px;margin-bottom:2px'>Retention M1–M6 theo nhóm số giao dịch M0</div>", unsafe_allow_html=True)
     st.plotly_chart(_fig_grp, use_container_width=True, config={"displayModeBar": False})
 
     r1 = drv.loc[1] if 1 in drv.index else None
@@ -629,21 +649,22 @@ Spearman ρ = {_rho_1c:.3f}, p = {_rho_p_1c / 2:.4f} (one-tailed) → có bằng
     fee4 = f"{r4['med_fee_pct']:.0%}" if r4 is not None else "~2.7%"
     gmv1 = f"{r1['med_gmv']/1000:.0f}K" if r1 is not None else "133K"
     gmv4 = f"{r4['med_gmv']/1000:.0f}K" if r4 is not None else "747K"
-    st.markdown(f"""- **Chi tiêu vì Tần suất, không phải vì món đồ đắt tiền:** Giá trị trung bình mỗi đơn hàng (Median AOV) phẳng lặng ở tất cả các nhóm, đều neo quanh mức ~133K VND. Khách hàng ở lại lâu hơn hoàn toàn không phải vì họ mua sắm những món đồ xa xỉ hơn, mà là vì họ quẹt ví nhiều lần cho nhiều nhu cầu khác nhau — tổng GMV nhóm ≥4 giao dịch vọt lên gấp nhiều lần nhóm 1 giao dịch ({gmv1} → {gmv4}). Sản phẩm đã thành công bước vào chu kỳ chi tiêu lặp lại của họ.
+    st.markdown(f"""- **User ở lại vì dùng nhiều hơn, không phải vì mua đắt hơn:** AOV trung bình xấp xỉ nhau ở mọi nhóm (~133K). Tổng GMV tháng đầu tăng hoàn toàn do tần suất — nhóm ≥4 giao dịch có GMV {gmv4}, gấp nhiều lần nhóm 1 giao dịch ({gmv1}).
 
-- **Cơ chế kinh tế rõ ràng — Hóa giải bẫy phí ẩn:** Xu hướng này giải thích trực tiếp cho hiệu ứng Sốc phí (Fee Shock) đã đặt ra ở Phần 1b. Với khoản phí cố định 20K/tháng:
-  - Nhóm chỉ quẹt 1 giao dịch (GMV {gmv1}) phải gánh mức phí thực tế lên tới {fee1} trên tổng chi tiêu — họ thấy quá đắt đỏ và chủ động bỏ ví.
-  - Nhóm quẹt 4–6 giao dịch (GMV {gmv4}) kéo tỷ lệ phí thực tế giảm sâu xuống chỉ còn {fee4} — sản phẩm ngay lập tức trở nên kinh tế, "đáng tiền" và họ lựa chọn gắn bó.
+- **Phí 20K/tháng là lý do N = 4 có ý nghĩa:** AOV bằng nhau nhưng GMV thì khác nhau theo số giao dịch. Phí 20K cố định nên tỷ lệ phí/GMV thay đổi rõ rệt:
+  - Nhóm 1 giao dịch (GMV {gmv1}): phí chiếm {fee1} tổng chi tiêu — quá cao so với lợi ích, người dùng bỏ.
+  - Nhóm 4–6 giao dịch (GMV {gmv4}): phí chỉ còn {fee4} — chi phí hợp lý, user tiếp tục dùng.
+  - Đây là lý do tỷ lệ retention tăng mạnh ở nhóm đạt đủ 4 giao dịch trong M0.
 
-- **Lợi thế duy trì dài hạn, không mang tính nhất thời:** Khoảng cách giữ chân giữa các nhóm không bị thu hẹp mà duy trì bền vững theo thời gian. Đến mốc M6, nhóm 4–6 giao dịch vẫn giữ chân được {_m6_4to6_fmt} (gần gấp đôi nhóm 1–3 giao dịch là {_m6_1to3_fmt}), nhóm 7+ cán mốc {_m6_7p_fmt}. Lợi thế của tần suất tháng đầu tạo ra giá trị vòng đời (LTV) tích lũy lớn cho giai đoạn sau.""")
-    st.info(f"AOV bằng nhau ở mọi nhóm (~133K) - user ở lại không vì mua đồ đắt hơn, mà vì dùng nhiều hơn. GMV cao → fee/GMV thấp → sản phẩm worth it. Cơ chế kinh tế rõ ràng.")
+- **Khoảng cách này giữ nguyên đến M6:** Nhóm 4–6 giao dịch: M6 retention {_m6_4to6_fmt} (gần gấp đôi nhóm 1–3 là {_m6_1to3_fmt}). Nhóm 7+: {_m6_7p_fmt}. User đã qua ngưỡng 4 giao dịch trong M0 có xu hướng gắn bó lâu dài hơn hẳn.""")
+    st.info(f"AOV bằng nhau ở mọi nhóm (~133K) — user ở lại không vì mua đồ đắt hơn, mà vì dùng nhiều hơn. GMV cao hơn, tỷ lệ phí/GMV thấp hơn, sản phẩm trở nên hợp lý về chi phí hơn.")
 
     st.markdown("---")
 
     # ── Phần 4: Causation + A/B Test ─────────────────────────────────────────
-    st.markdown("**3. Khuyết điểm chiến lược & Đề xuất Thử nghiệm**")
-    st.markdown(f"""- **Bẫy Tương quan vs. Nhân quả:** Dữ liệu hiện tại đang phản ánh hành vi tự nhiên — user quẹt nhiều vì bản thân họ vốn đã có nhiều nhu cầu. Nếu doanh nghiệp cố tình "ép" hành vi bằng cách rải voucher vô định, chưa chắc đã tạo ra thói quen nhân tạo bền vững khi hết khuyến mãi.
-- **Khuyến nghị Hành động (A/B Test):** Tặng voucher/hoàn tiền tập trung chính xác vào giao dịch thứ 3 và thứ 4 của nhóm khách hàng mới. Mục tiêu là chủ động "đẩy" tệp user đang bị kẹt ở nút cổ chai vượt qua ngưỡng bão hòa N = 4 để hóa giải Fee Shock, thay vì lãng phí nguồn lực rải thảm cho giao dịch thứ 1 hoặc nhóm đã tự quẹt >7 lần. MDE = 5pp → ~1,300 user/nhóm; ở acquisition ~600 user/tháng hiện tại: ~4 tháng để đủ mẫu.""")
+    st.markdown("**4. Khuyết điểm chiến lược & Đề xuất Thử nghiệm**")
+    st.markdown(f"""- **Tương quan ≠ nhân quả:** User quẹt nhiều trong M0 có thể đơn giản là vì họ có nhiều nhu cầu hơn — không phải vì số giao dịch khiến họ gắn bó. Tặng voucher để ép đủ 4 lần chưa chắc tạo ra thói quen thực sự khi hết khuyến mãi.
+- **Đề xuất A/B Test:** Tặng voucher/hoàn tiền nhắm vào giao dịch thứ 3 và thứ 4 của user mới — đây là vùng mà mỗi giao dịch thêm cải thiện retention nhiều nhất, và cũng là ngưỡng phí/GMV bắt đầu hợp lý. Không nên dàn voucher từ giao dịch 1 (tốn nguồn lực, user có thể giữ lại ngay cả không cần) hoặc nhóm >7 lần (đã tự gắn bó). MDE = 5pp → ~1,300 user/nhóm; acquisition hiện tại ~600 user/tháng: cần ~4 tháng để đủ mẫu.""")
     st.info(f"Giả thuyết được ủng hộ - users hoàn thành ≥{THRESHOLD} giao dịch trong M0 có retention M1 cao hơn có ý nghĩa thống kê (Spearman ρ = {_rho_1c:.3f}, p < 0.05). N = {THRESHOLD} là điểm bão hòa exploratory, cần A/B test để xác nhận nhân quả.")
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -666,14 +687,14 @@ with tabs[3]:
         elif prev in months_by_user.get(uid, set()):
             utype = "Retained"
         else:
-            utype = "New"
+            utype = "Resurrected"
         rows_ga.append({"month": str(month), "user_type": utype})
     ga = pd.DataFrame(rows_ga).groupby(["month","user_type"]).size().unstack(fill_value=0)
     ga.index = pd.PeriodIndex(ga.index, freq="M")
     ga = ga.sort_index()
-    for col in ["New","Retained"]:
+    for col in ["New","Retained","Resurrected"]:
         if col not in ga.columns: ga[col] = 0
-    ga["MAU"] = ga[["New","Retained"]].sum(axis=1)
+    ga["MAU"] = ga[["New","Retained","Resurrected"]].sum(axis=1)
     ga_r = ga.reset_index()
     ga_r["churned"] = 0
     for i in range(1, len(ga_r)):
@@ -1138,10 +1159,13 @@ with tabs[4]:
         .format({"Số user":"{:,}", "Phí 20K / chi tiêu":"{:.1%}", "Retention tháng 2":"{:.1%}", "Churn rate":"{:.1%}"})
     )
     st.dataframe(_styled, hide_index=True, use_container_width=True)
+    _churn_low  = 1 - float(_ts3_grp.iloc[0]["ret"])  if len(_ts3_grp) else float("nan")
+    _fee_low    = float(_ts3_grp.iloc[0]["fee_pct"])   if len(_ts3_grp) else float("nan")
+    _churn_high = 1 - float(_ts3_grp.iloc[-1]["ret"])  if len(_ts3_grp) else float("nan")
     st.markdown(f"""
-- **Nhóm nhạy cảm phí (chi tiêu < 100K):** Phí 20K chiếm tới ~29% chi tiêu → churn {_ts3_grp.iloc[0]['fee_pct']*0+0.351:.1%} - cao nhất toàn hệ thống.
-- **Nhóm chi tiêu cao (> 500K):** Tỷ lệ phí/chi tiêu < 3.4% → churn ổn định ~25%. Phí không còn là rào cản với nhóm này.
-- **Baseline Churn ~25%:** Ngay cả nhóm chi tiêu cao nhất vẫn churn ~25% - đây là tỷ lệ rời bỏ tự nhiên do thói quen chưa hình thành, không giải thích được bằng fee. Cần qualitative research để đào sâu hơn.
+- Nhóm chi tiêu thấp nhất (dưới 100K): phí 20K chiếm {_fee_low:.0%} tổng chi tiêu, churn {_churn_low:.1%} — cao nhất trong tất cả các nhóm.
+- Nhóm chi tiêu cao (trên 500K): tỷ lệ phí/chi tiêu xuống dưới 4%, churn {_churn_high:.1%}. Phí không còn là yếu tố quyết định với nhóm này.
+- Ngay cả nhóm chi tiêu cao nhất vẫn churn {_churn_high:.1%} — cho thấy có một phần churn tự nhiên không liên quan đến phí, cần tìm hiểu thêm qua định tính.
 """)
 
     st.markdown("---")
