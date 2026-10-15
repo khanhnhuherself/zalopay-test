@@ -754,7 +754,7 @@ with tabs[3]:
         line=dict(color="rgba(59,130,246,0)", width=0),
         fillcolor="rgba(59,130,246,0.07)", yaxis="y",
         text=_lbl_new, textposition="top center",
-        textfont=dict(size=8, color="rgba(59,130,246,0.85)"),
+        textfont=dict(size=10, color="rgba(59,130,246,0.85)"),
         hovertemplate="%{x}<br>New: %{y:,}<extra></extra>",
     ))
     fig_qr.add_trace(go.Scatter(
@@ -764,7 +764,7 @@ with tabs[3]:
         line=dict(color="rgba(239,68,68,0)", width=0),
         fillcolor="rgba(239,68,68,0.07)", yaxis="y",
         text=_lbl_churn, textposition="bottom center",
-        textfont=dict(size=8, color="rgba(239,68,68,0.85)"),
+        textfont=dict(size=10, color="rgba(239,68,68,0.85)"),
         hovertemplate="%{x}<br>Churn User: %{y:,}<extra></extra>",
     ))
     # QR = 1 reference (trục phải)
@@ -790,11 +790,11 @@ with tabs[3]:
         paper_bgcolor="white", plot_bgcolor="white",
         barmode="overlay",
         legend=dict(orientation="h", y=1.12, x=0.5, xanchor="center", font=dict(size=11)),
-        font=dict(size=12),
-        xaxis=dict(showgrid=False, tickangle=0, tickfont=dict(size=10)),
-        yaxis=dict(title=dict(text="Số user", font=dict(size=11)), tickfont=dict(size=10),
+        font=dict(size=13),
+        xaxis=dict(showgrid=False, tickangle=0, tickfont=dict(size=11)),
+        yaxis=dict(title=dict(text="Số user", font=dict(size=12)), tickfont=dict(size=11),
                    showgrid=True, gridcolor="#f0f0f0", zeroline=False, tickformat=","),
-        yaxis2=dict(title=dict(text="Quick Ratio", font=dict(size=11)), tickfont=dict(size=10),
+        yaxis2=dict(title=dict(text="Quick Ratio", font=dict(size=12)), tickfont=dict(size=11),
                     overlaying="y", side="right", showgrid=False, zeroline=False,
                     range=[0, max(qr_vals) * 1.15]),
         shapes=[dict(type="line", x0="2025-01", x1="2025-01", y0=0, y1=1, yref="paper",
