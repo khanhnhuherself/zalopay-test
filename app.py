@@ -809,7 +809,7 @@ with tabs[3]:
     st.plotly_chart(fig_qr, use_container_width=True, config={"displayModeBar": False})
 
     st.markdown("""Điều này đặt ra hai bài toán:
-1. Tìm hiểu tại sao user bỏ sản phẩm
+1. Tìm hiểu tại sao user rời bỏ sản phẩm BNPL
 2. Phát triển đầu vào bằng cách thu hút khách hàng mới
 
 Trong tình huống này, đổ thêm ngân sách vào acquisition chỉ bù đắp tạm thời - nếu không hiểu được root cause, user mới vào rồi có thể sẽ rời theo đúng pattern cũ.
