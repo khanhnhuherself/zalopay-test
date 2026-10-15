@@ -811,9 +811,12 @@ with tabs[3]:
     st.markdown("""Điều này đặt ra hai bài toán:
 1. Tìm hiểu tại sao user rời bỏ sản phẩm BNPL
 2. Phát triển đầu vào bằng cách thu hút khách hàng mới
-
-Trong tình huống này, đổ thêm ngân sách vào acquisition chỉ bù đắp tạm thời - nếu không hiểu được root cause, user mới vào rồi có thể sẽ rời theo đúng pattern cũ.
 """)
+    st.markdown("""
+<div style="background:#fef2f2;border-left:4px solid #ef4444;padding:12px 16px;border-radius:6px">
+<span style="color:#374151">Tuy nhiên nếu không hiểu được lý do user rời đi, đổ thêm ngân sách vào acquisition chỉ bù đắp tạm thời — user mới vào rồi cũng sẽ rời theo đúng pattern cũ.</span>
+</div>
+""", unsafe_allow_html=True)
 
     st.markdown("#### Churn Threshold")
 
