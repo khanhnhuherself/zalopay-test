@@ -844,7 +844,9 @@ Trong tình huống này, đổ thêm ngân sách vào acquisition chỉ bù đ�
         xaxis=dict(title="Số ngày", showgrid=False, range=[0, 35]),
         yaxis=dict(title="Số lượt", showgrid=True, gridcolor="#f0f0f0", tickformat=","),
     )
-    st.plotly_chart(_fig_gap, use_container_width=True, config={"displayModeBar": False})
+    _gL, _gC, _gR = st.columns([1, 6, 1])
+    with _gC:
+        st.plotly_chart(_fig_gap, use_container_width=True, config={"displayModeBar": False})
     st.info("**Churn = không phát sinh giao dịch trong 30 ngày liên tiếp.**\n\n*Lưu ý: với production data có daily granularity, ngưỡng này cần được re-validate.*")
 
     st.markdown("---")
