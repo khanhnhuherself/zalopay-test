@@ -396,11 +396,11 @@ with tabs[1]:
     fig.update_yaxes(autorange="reversed")
     st.markdown("<div style='text-align:center;font-size:18px;font-weight:700;margin-bottom:4px'>Cohort Retention Matrix</div>", unsafe_allow_html=True)
     st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
-    st.caption(f"M1 retention dao động {_m1_rng_fmt} qua {_n_coh} cohorts — dải hẹp {_m1_pp_fmt} cho thấy churn không liên quan đến một cohort hay đợt acquisition cụ thể, mà là vấn đề structural.")
+    st.caption(f"M1 retention dao động {_m1_rng_fmt} qua {_n_coh} cohorts - dải hẹp {_m1_pp_fmt} cho thấy churn không liên quan đến một cohort hay đợt acquisition cụ thể, mà là vấn đề structural.")
 
     pct_piv = filt.groupby(["cohort","month_number"])["user_id"].nunique().unstack().div(cs_filt, axis=0)
 
-    st.markdown("**Average retention curve — drop tại từng tháng**")
+    st.markdown("**Average retention curve - drop tại từng tháng**")
     avg_all = pct_piv[[c for c in pct_piv.columns if 0 <= c <= 12]].mean(skipna=True)
     x_wf, y_wf, measure, text_wf, hover_wf = [], [], [], [], []
 
@@ -446,25 +446,25 @@ with tabs[1]:
     _m2_ret = float(avg_all.get(2, float("nan")))
     _m3_ret = float(avg_all.get(3, float("nan")))
 
-    st.caption(f"Drop lớn nhất ở M1 (−26%) — đây là điểm can thiệp quan trọng nhất. M2 giảm thêm {_m2_ret - float(avg_all.get(1,0)):.0%}, sau đó chậm dần nhưng tiếp tục giảm đến M12 (~5%) — không hình thành nhóm user gắn bó ổn định.")
+    st.caption(f"Drop lớn nhất ở M1 (−26%) - đây là điểm can thiệp quan trọng nhất. M2 giảm thêm {_m2_ret - float(avg_all.get(1,0)):.0%}, sau đó chậm dần nhưng tiếp tục giảm đến M12 (~5%) - không hình thành nhóm user gắn bó ổn định.")
 
     st.markdown("**Patterns & Anomalies**")
     st.markdown(f"""
 **Retention % ổn định nhưng số lượng tuyệt đối đang giảm.**
-M1 retention dao động {_m1_rng_fmt} qua {_n_coh} cohorts — product không xấu đi. Tuy nhiên, cùng lúc đó:
-- Số user mới giảm từ ~{_new_peak_val:,} xuống ~{_new_last_val:,}/tháng ({_new_drop_pct:.0%} từ {_new_peak_lbl}) — số user retained tuyệt đối giảm tương ứng
+M1 retention dao động {_m1_rng_fmt} qua {_n_coh} cohorts - product không xấu đi. Tuy nhiên, cùng lúc đó:
+- Số user mới giảm từ ~{_new_peak_val:,} xuống ~{_new_last_val:,}/tháng ({_new_drop_pct:.0%} từ {_new_peak_lbl}) - số user retained tuyệt đối giảm tương ứng
 - Tổng GMV co lại theo base user, dù chi tiêu/user tháng đầu ổn định
-- Quick Ratio < 1 kể từ khi acquisition đạt đỉnh — base user đang giảm mỗi tháng
+- Quick Ratio < 1 kể từ khi acquisition đạt đỉnh - base user đang giảm mỗi tháng
 
 Chỉ nhìn vào % retention sẽ bỏ sót bức tranh thực: số user và GMV đang co lại từng tháng.
 
-**Churn tập trung ở M1** (−26%). Từ M2 trở đi tốc độ giảm chậm dần nhưng không ổn định — không hình thành nhóm user gắn bó lâu dài. Ai rời thì rời hẳn: tỷ lệ quay lại chỉ {_return_rate:.1%} ({len(_returning_m2):,}/{len(_churned_m1):,} user).
+**Churn tập trung ở M1** (−26%). Từ M2 trở đi tốc độ giảm chậm dần nhưng không ổn định - không hình thành nhóm user gắn bó lâu dài. Ai rời thì rời hẳn: tỷ lệ quay lại chỉ {_return_rate:.1%} ({len(_returning_m2):,}/{len(_churned_m1):,} user).
 
-**Không có cohort nào nổi bật.** Dải {_m1_pp_fmt} qua {_n_coh} cohorts — churn không gắn với đợt acquisition hay sự kiện cụ thể nào, mà nhất quán trên toàn bộ dữ liệu.
+**Không có cohort nào nổi bật.** Dải {_m1_pp_fmt} qua {_n_coh} cohorts - churn không gắn với đợt acquisition hay sự kiện cụ thể nào, mà nhất quán trên toàn bộ dữ liệu.
 """)
 
     st.markdown("**Giả thuyết nguyên nhân:**")
-    st.write("Phí 20K/tháng cố định tạo gánh nặng không đồng đều — user giao dịch ít chịu tỷ lệ phí/GMV cao, khiến sản phẩm không còn đáng dùng. Kiểm định định lượng ở tab **Churn Analysis**.")
+    st.write("Phí 20K/tháng cố định tạo gánh nặng không đồng đều - user giao dịch ít chịu tỷ lệ phí/GMV cao, khiến sản phẩm không còn đáng dùng. Kiểm định định lượng ở tab **Churn Analysis**.")
 
     st.info(f"Retention % ổn định ({_m1_avg_fmt}) nhưng tổng user và GMV vẫn giảm vì lượng user mới giảm {abs(_new_drop_pct):.0%} so với đỉnh. User đã rời hầu như không quay lại ({_return_rate:.1%}), nên điểm can thiệp thực tế duy nhất là cải thiện activation ngay trong tháng đầu (M0).")
 
@@ -612,7 +612,7 @@ with tabs[2]:
 - H₁: Số giao dịch M0 càng cao, tỷ lệ retention M1 càng cao (ρ > 0)
 
 **Kết quả:** Spearman ρ = {_rho_1c:.3f}, p = {_rho_p_1c/2:.4f} (one-tailed) → Chấp nhận H₁.""")
-    st.info(f"Giả thuyết được ủng hộ bởi dữ liệu xu hướng lịch sử và kiểm định thống kê — Spearman ρ = {_rho_1c:.3f} (p < 0.05). Đây là tương quan, chưa phải nhân quả.")
+    st.info(f"Giả thuyết được ủng hộ bởi dữ liệu xu hướng lịch sử và kiểm định thống kê - Spearman ρ = {_rho_1c:.3f} (p < 0.05). Đây là tương quan, chưa phải nhân quả.")
 
     st.markdown("---")
 
@@ -672,13 +672,13 @@ with tabs[2]:
         plt.tight_layout(pad=0.4)
         return fig
 
-    # Chart tổng thể — to, ở giữa
+    # Chart tổng thể - to, ở giữa
     _dca, _dcb, _dcc = st.columns([1, 4, 1])
     with _dcb:
         if _dt_all:
             st.pyplot(_dt_fig(*_dt_all, "Tổng thể", figsize=(5.5, 3.4), fs=10), use_container_width=True)
 
-    # 2 chart nhỏ — 2024 và 2025
+    # 2 chart nhỏ - 2024 và 2025
     _dd1, _dd2 = st.columns(2)
     with _dd1:
         if _dt_2024:
@@ -738,14 +738,14 @@ with tabs[2]:
     fee4 = f"{r4['med_fee_pct']:.0%}" if r4 is not None else "~2.7%"
     gmv1 = f"{r1['med_gmv']/1000:.0f}K" if r1 is not None else "133K"
     gmv4 = f"{r4['med_gmv']/1000:.0f}K" if r4 is not None else "747K"
-    st.markdown(f"Phí 20K/tháng là **cố định** — nhóm 1 giao dịch (tổng chi tiêu {gmv1}) chịu tỷ lệ phí {fee1}, nhóm 4–6 giao dịch (tổng chi tiêu {gmv4}) chỉ còn {fee4}. **N=4 là điểm mà sản phẩm bắt đầu hợp lý về chi phí với người dùng.**")
+    st.markdown(f"Phí 20K/tháng là **cố định** - nhóm 1 giao dịch (tổng chi tiêu {gmv1}) chịu tỷ lệ phí {fee1}, nhóm 4–6 giao dịch (tổng chi tiêu {gmv4}) chỉ còn {fee4}. **N=4 là điểm mà sản phẩm bắt đầu hợp lý về chi phí với người dùng.**")
 
     st.markdown("---")
 
     # ── Phần 4: Causation + A/B Test ─────────────────────────────────────────
     st.markdown("**4. Khuyết điểm chiến lược & Đề xuất Thử nghiệm**")
-    st.markdown(f"""- **Tương quan ≠ nhân quả:** User quẹt nhiều trong M0 có thể đơn giản là vì họ có nhiều nhu cầu hơn — không phải vì số giao dịch khiến họ gắn bó. Tặng voucher để ép đủ 4 lần chưa chắc tạo ra thói quen thực sự khi hết khuyến mãi.
-- **Đề xuất A/B Test:** Tặng voucher/hoàn tiền nhắm vào giao dịch thứ 3 và thứ 4 của user mới — đây là vùng mà mỗi giao dịch thêm cải thiện retention nhiều nhất, và cũng là ngưỡng phí/GMV bắt đầu hợp lý. Không nên dàn voucher từ giao dịch 1 (tốn nguồn lực, user có thể giữ lại ngay cả không cần) hoặc nhóm >7 lần (đã tự gắn bó). MDE = 5% → ~1,300 user/nhóm; acquisition hiện tại ~600 user/tháng: cần ~4 tháng để đủ mẫu.""")
+    st.markdown(f"""- **Tương quan ≠ nhân quả:** User quẹt nhiều trong M0 có thể đơn giản là vì họ có nhiều nhu cầu hơn - không phải vì số giao dịch khiến họ gắn bó. Tặng voucher để ép đủ 4 lần chưa chắc tạo ra thói quen thực sự khi hết khuyến mãi.
+- **Đề xuất A/B Test:** Tặng voucher/hoàn tiền nhắm vào giao dịch thứ 3 và thứ 4 của user mới - đây là vùng mà mỗi giao dịch thêm cải thiện retention nhiều nhất, và cũng là ngưỡng phí/GMV bắt đầu hợp lý. Không nên dàn voucher từ giao dịch 1 (tốn nguồn lực, user có thể giữ lại ngay cả không cần) hoặc nhóm >7 lần (đã tự gắn bó). MDE = 5% → ~1,300 user/nhóm; acquisition hiện tại ~600 user/tháng: cần ~4 tháng để đủ mẫu.""")
     st.info(f"Giả thuyết được ủng hộ - users hoàn thành ≥{THRESHOLD} giao dịch trong M0 có retention M1 cao hơn có ý nghĩa thống kê (Spearman ρ = {_rho_1c:.3f}, p < 0.05). N = {THRESHOLD} là điểm bão hòa exploratory, cần A/B test để xác nhận nhân quả.")
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -911,34 +911,63 @@ with tabs[3]:
     st.markdown("Nhìn vào M0 - tháng user phát sinh giao dịch mua đầu tiên - hai nhóm có profile gần giống nhau. Sự khác biệt nằm ở **tần suất**, **độ rộng sử dụng** và **gánh nặng phí tương đối**.")
     grp_c = m0s_filt[~m0s_filt["retained"]]
     grp_a = m0s_filt[ m0s_filt["retained"]]
-    _c_txn = grp_c['n_txn'].median()
-    _a_txn = grp_a['n_txn'].median()
-    _c_gmv = grp_c['gmv'].median()
-    _a_gmv = grp_a['gmv'].median()
-    _c_aov = grp_c['med_aov'].median()
-    _a_aov = grp_a['med_aov'].median()
-    _c_fee = grp_c['fee_pct'].median()
-    _a_fee = grp_a['fee_pct'].median()
+    _m5uid = set(active[active["month_number"] == 5]["user_id"]) & set(filt_users)
+    grp_m5 = m0s_filt[m0s_filt.index.isin(_m5uid)]
 
-    _col_lbl, _col_c, _col_a, _col_d = st.columns([2, 1, 1, 1.2])
-    _col_lbl.markdown("**Chỉ số M0 (Median)**")
-    _col_c.markdown("**🔴 Churned**")
-    _col_a.markdown("**🔵 Active M1**")
-    _col_d.markdown("**Chênh lệch**")
+    def _med(g, col): return g[col].median()
+    def _avg(g, col): return g[col].mean()
 
-    _metrics = [
-        ("Số giao dịch", f"{_c_txn:.0f}", f"{_a_txn:.0f}", f"−{_a_txn-_c_txn:.0f} txn", "#fecaca", "#b91c1c"),
-        ("Tổng chi tiêu", f"{_c_gmv/1000:.0f}K", f"{_a_gmv/1000:.0f}K", f"−{(_a_gmv-_c_gmv)/1000:.0f}K", "#fecaca", "#b91c1c"),
-        ("Giá trị mỗi GD", f"{_c_aov/1000:.0f}K", f"{_a_aov/1000:.0f}K", "= bằng nhau", "#f3f4f6", "#6b7280"),
-        ("Phí / Tổng chi tiêu", f"{_c_fee:.1%}", f"{_a_fee:.1%}", f"+{_c_fee-_a_fee:.1%}", "#fecaca", "#b91c1c"),
+    def _cell(med_str, avg_str):
+        return f"<div style='font-size:17px;font-weight:700'>{med_str}</div><div style='font-size:11px;color:#9ca3af;margin-top:2px'>avg {avg_str}</div>"
+
+    def _delta_badge(val_c, val_m5, unit="", k=False):
+        diff = val_m5 - val_c
+        if k: return f"+{diff/1000:.0f}K"
+        if "%" in unit: return f"+{diff:.1%}"
+        return f"+{diff:.0f}{unit}"
+
+    _rows_data = [
+        ("Số user", f"<b>{len(grp_c):,}</b>", f"<b>{len(grp_a):,}</b>", f"<b>{len(grp_m5):,}</b>"),
+        ("Số giao dịch",
+         _cell(f"{_med(grp_c,'n_txn'):.0f}", f"{_avg(grp_c,'n_txn'):.1f}"),
+         _cell(f"{_med(grp_a,'n_txn'):.0f}", f"{_avg(grp_a,'n_txn'):.1f}"),
+         _cell(f"{_med(grp_m5,'n_txn'):.0f}", f"{_avg(grp_m5,'n_txn'):.1f}")),
+        ("Số loại dịch vụ",
+         _cell(f"{_med(grp_c,'n_carriers'):.0f}", f"{_avg(grp_c,'n_carriers'):.1f}"),
+         _cell(f"{_med(grp_a,'n_carriers'):.0f}", f"{_avg(grp_a,'n_carriers'):.1f}"),
+         _cell(f"{_med(grp_m5,'n_carriers'):.0f}", f"{_avg(grp_m5,'n_carriers'):.1f}")),
+        ("Tổng chi tiêu",
+         _cell(f"{_med(grp_c,'gmv')/1000:.0f}K", f"{_avg(grp_c,'gmv')/1000:.0f}K"),
+         _cell(f"{_med(grp_a,'gmv')/1000:.0f}K", f"{_avg(grp_a,'gmv')/1000:.0f}K"),
+         _cell(f"{_med(grp_m5,'gmv')/1000:.0f}K", f"{_avg(grp_m5,'gmv')/1000:.0f}K")),
+        ("Giá trị mỗi GD",
+         _cell(f"{_med(grp_c,'med_aov')/1000:.0f}K", f"{_avg(grp_c,'med_aov')/1000:.0f}K"),
+         _cell(f"{_med(grp_a,'med_aov')/1000:.0f}K", f"{_avg(grp_a,'med_aov')/1000:.0f}K"),
+         _cell(f"{_med(grp_m5,'med_aov')/1000:.0f}K", f"{_avg(grp_m5,'med_aov')/1000:.0f}K")),
+        ("Phí / Tổng chi tiêu",
+         _cell(f"{_med(grp_c,'fee_pct'):.1%}", f"{_avg(grp_c,'fee_pct'):.1%}"),
+         _cell(f"{_med(grp_a,'fee_pct'):.1%}", f"{_avg(grp_a,'fee_pct'):.1%}"),
+         _cell(f"{_med(grp_m5,'fee_pct'):.1%}", f"{_avg(grp_m5,'fee_pct'):.1%}")),
     ]
-    for _lbl, _vc, _va, _delta, _bg, _fg in _metrics:
-        _col_lbl.markdown(f"<div style='padding:8px 0;border-top:1px solid #f0f0f0;font-size:14px'>{_lbl}</div>", unsafe_allow_html=True)
-        _col_c.markdown(f"<div style='padding:8px 0;border-top:1px solid #f0f0f0;font-size:18px;font-weight:700;color:#ef4444'>{_vc}</div>", unsafe_allow_html=True)
-        _col_a.markdown(f"<div style='padding:8px 0;border-top:1px solid #f0f0f0;font-size:18px;font-weight:700;color:#1d4ed8'>{_va}</div>", unsafe_allow_html=True)
-        _col_d.markdown(f"<div style='padding:8px 0;border-top:1px solid #f0f0f0'><span style='background:{_bg};color:{_fg};padding:3px 10px;border-radius:6px;font-size:13px;font-weight:600'>{_delta}</span></div>", unsafe_allow_html=True)
+    _tbl_html = """<table style='width:100%;border-collapse:collapse;font-size:14px'>
+<tr style='border-bottom:2px solid #d1d5db'>
+  <th style='text-align:left;padding:8px 12px;font-weight:600;width:28%;color:#374151'>Chỉ số M0</th>
+  <th style='text-align:center;padding:8px 12px;color:#ef4444'>🔴 Churn @ M1</th>
+  <th style='text-align:center;padding:8px 12px;color:#1d4ed8'>🔵 Active M1</th>
+  <th style='text-align:center;padding:8px 12px;color:#059669'>🟢 Active M5</th>
+</tr>"""
+    for row in _rows_data:
+        _lbl = row[0]; _vc = row[1]; _va = row[2]; _vm5 = row[3]
+        _tbl_html += f"""<tr style='border-bottom:1px solid #f3f4f6'>
+  <td style='padding:12px;color:#374151;vertical-align:middle'>{_lbl}</td>
+  <td style='text-align:center;padding:12px;color:#ef4444;vertical-align:middle'>{_vc}</td>
+  <td style='text-align:center;padding:12px;color:#1d4ed8;vertical-align:middle'>{_va}</td>
+  <td style='text-align:center;padding:12px;color:#059669;vertical-align:middle'>{_vm5}</td>
+</tr>"""
+    _tbl_html += "</table>"
+    st.markdown(_tbl_html, unsafe_allow_html=True)
 
-    st.caption("Giá trị mỗi giao dịch bằng nhau → ticket size không phải vấn đề. Nhóm churn giao dịch ít hơn → tổng chi tiêu thấp hơn → chịu gánh nặng phí cao hơn tương đối.")
+    st.caption(f"So sánh profile M0 của 3 nhóm: Churn @ M1 ({len(grp_c):,} users) / Active M1 ({len(grp_a):,}) / Active M5 ({len(grp_m5):,}). Nhóm active càng lâu có xu hướng giao dịch nhiều hơn và phí tương đối thấp hơn ngay từ M0.")
 
     st.markdown("---")
     st.markdown("##### Hành vi sử dụng trong Tháng đầu tiên (M0)")
@@ -957,7 +986,7 @@ with tabs[3]:
         hovertemplate="Churn: %{text}<br>n=%{customdata[0]:,}<br>Med GMV: %{customdata[1]:.0f}K<extra></extra>",
     ))
     fig2.add_hline(y=avg_ch, line_dash="dot", line_color="#9ca3af",
-                   annotation_text=f"Avg {avg_ch:.1%}", annotation_position="top right")
+                   annotation_text=f"Avg {avg_ch:.1%}", annotation_position="top left")
     fig2 = clean_fig(fig2, height=260)
     fig2.update_layout(
         title=dict(text="Churn theo số loại dịch vụ M0", font=dict(size=12), x=0.5, xanchor="center"),
@@ -1003,10 +1032,10 @@ with tabs[3]:
     _div_col, _txn_col = st.columns(2)
     with _div_col:
         st.plotly_chart(fig2, use_container_width=True, config={"displayModeBar": False})
-        st.caption(f"48% user dùng 1 loại dịch vụ — churn {_churn1}, trên TB {avg_ch:.1%}. Dùng ≥2 loại, GMV tăng từ {_gmv1} → {_gmv2}, churn giảm dưới mức TB. (chi-square p={_p_div:.4f})")
+        st.caption(f"48% user dùng 1 loại dịch vụ - churn {_churn1}, trên TB {avg_ch:.1%}. Dùng ≥2 loại, GMV tăng từ {_gmv1} → {_gmv2}, churn giảm dưới mức TB. (chi-square p={_p_div:.4f})")
     with _txn_col:
         st.plotly_chart(fig_txn, use_container_width=True, config={"displayModeBar": False})
-        st.caption(f"Churn giảm rõ rệt khi đạt ≥4 giao dịch trong M0 — ngưỡng bắt đầu hình thành thói quen. (chi-square p={_p_txn:.4f})")
+        st.caption(f"Churn giảm rõ rệt khi đạt ≥4 giao dịch trong M0 - ngưỡng bắt đầu hình thành thói quen. (chi-square p={_p_txn:.4f})")
 
     st.markdown("**Churn Rate: Số giao dịch × Số loại dịch vụ** (đỏ = trên mức TB, xanh = dưới mức TB)")
 
@@ -1050,7 +1079,7 @@ with tabs[3]:
     st.plotly_chart(fig_hm, use_container_width=True, config={"displayModeBar": False})
     st.caption(f"Ô trống = dưới 30 user.")
     _mat_avg = float(_zflat.mean()) if len(_zflat) else float("nan")
-    st.markdown(f"Nhóm nguy cơ cao nhất: **1 giao dịch × 1 loại dịch vụ** — churn {_hm_pivot.iloc[0, 0]:.0%}, n={int(_hm_n.iloc[0,0]):,} user. Tăng cả tần suất lẫn độ rộng sử dụng mới thực sự cải thiện retention — một trong hai không đủ.")
+    st.markdown(f"Nhóm nguy cơ cao nhất: **1 giao dịch × 1 loại dịch vụ** - churn {_hm_pivot.iloc[0, 0]:.0%}, n={int(_hm_n.iloc[0,0]):,} user. Tăng cả tần suất lẫn độ rộng sử dụng mới thực sự cải thiện retention - một trong hai không đủ.")
 
     st.markdown("---")
     st.markdown("##### Tác động của phí lên hành vi người dùng")
@@ -1164,13 +1193,13 @@ H₁: Nhóm churn có fee/GMV cao hơn nhóm còn lại
     st.markdown("---")
     st.markdown("#### 3. What to recommend?")
 
-    st.markdown("**R1 — Kích hoạt khám phá dịch vụ trong tháng đầu** *(ngắn hạn)*")
-    st.write("48% user chỉ dùng 1 loại dịch vụ trong M0, trung vị GMV 197K — phí 20K chiếm 10% chi tiêu. Nhóm dùng từ 2 loại trở lên có trung vị GMV 478K, cùng mức phí nhưng chỉ còn 4%. Đề xuất: trong 2 tuần đầu, gợi ý thử thêm 1 dịch vụ mới kèm cashback lần đầu ở category đó.")
-    st.markdown("**R2 — Xem lại cấu trúc phí cho nhóm chi tiêu thấp** *(cần finance xác nhận)*")
-    st.write("Cùng mức phí 20K cố định: nhóm GMV <200K chịu effective fee 17%, nhóm >700K chỉ 2% — chênh lệch gần 9 lần. Đề xuất: giữ 20K nhưng hoàn một phần phí cho user có GMV tháng dưới 500K.")
-    st.markdown("**R3 — Theo dõi sát nhóm rủi ro cao**")
-    st.write("Khoảng 1,084 user (6%) chỉ dùng Game/VNG và giao dịch ≤ 2 lần trong M0, churn rate 35.4% — cao hơn mức trung bình. Đây là nhóm cụ thể, dễ xác định, nên ưu tiên tiếp cận trước khi R1 được triển khai rộng.")
-    st.info("R1 nhắm vào 48% user mới — dễ triển khai, không cần thay sản phẩm. R2 cần finance xác nhận trước. R3 có danh sách user cụ thể, có thể bắt đầu ngay.")
+    st.markdown("**R1 - Kích hoạt khám phá dịch vụ trong tháng đầu** *(ngắn hạn)*")
+    st.write("48% user chỉ dùng 1 loại dịch vụ trong M0, trung vị GMV 197K - phí 20K chiếm 10% chi tiêu. Nhóm dùng từ 2 loại trở lên có trung vị GMV 478K, cùng mức phí nhưng chỉ còn 4%. Đề xuất: trong 2 tuần đầu, gợi ý thử thêm 1 dịch vụ mới kèm cashback lần đầu ở category đó.")
+    st.markdown("**R2 - Xem lại cấu trúc phí cho nhóm chi tiêu thấp** *(cần finance xác nhận)*")
+    st.write("Cùng mức phí 20K cố định: nhóm GMV <200K chịu effective fee 17%, nhóm >700K chỉ 2% - chênh lệch gần 9 lần. Đề xuất: giữ 20K nhưng hoàn một phần phí cho user có GMV tháng dưới 500K.")
+    st.markdown("**R3 - Theo dõi sát nhóm rủi ro cao**")
+    st.write("Khoảng 1,084 user (6%) chỉ dùng Game/VNG và giao dịch ≤ 2 lần trong M0, churn rate 35.4% - cao hơn mức trung bình. Đây là nhóm cụ thể, dễ xác định, nên ưu tiên tiếp cận trước khi R1 được triển khai rộng.")
+    st.info("R1 nhắm vào 48% user mới - dễ triển khai, không cần thay sản phẩm. R2 cần finance xác nhận trước. R3 có danh sách user cụ thể, có thể bắt đầu ngay.")
 
 # ═══════════════════════════════════════════════════════════════════════════════
 with tabs[4]:
@@ -1208,7 +1237,7 @@ with tabs[4]:
     st.markdown(f"""
 <div style="background:#fef2f2;border-left:4px solid #ef4444;padding:14px 18px;border-radius:6px">
 <b style="color:#b91c1c">Trong 6 tháng đầu năm 2025, sản phẩm đang mất user nhanh hơn tốc độ có thể bù đắp, giảm {_p3_yoy_str} active user so với cùng kỳ 2024.</b><br>
-<span style="color:#374151">Quick Ratio &lt; 1 liên tục từ đầu 2025 — mỗi tháng có nhiều user rời hơn user mới vào.</span>
+<span style="color:#374151">Quick Ratio &lt; 1 liên tục từ đầu 2025 - mỗi tháng có nhiều user rời hơn user mới vào.</span>
 </div>
 """, unsafe_allow_html=True)
     st.markdown("")
@@ -1299,9 +1328,9 @@ with tabs[4]:
     _fee_low    = float(_ts3_grp.iloc[0]["fee_pct"])   if len(_ts3_grp) else float("nan")
     _churn_high = 1 - float(_ts3_grp.iloc[-1]["ret"])  if len(_ts3_grp) else float("nan")
     st.markdown(f"""
-- Nhóm chi tiêu thấp nhất (dưới 100K): phí 20K chiếm {_fee_low:.0%} tổng chi tiêu, churn {_churn_low:.1%} — cao nhất trong tất cả các nhóm.
+- Nhóm chi tiêu thấp nhất (dưới 100K): phí 20K chiếm {_fee_low:.0%} tổng chi tiêu, churn {_churn_low:.1%} - cao nhất trong tất cả các nhóm.
 - Nhóm chi tiêu cao (trên 500K): tỷ lệ phí/chi tiêu xuống dưới 4%, churn {_churn_high:.1%}. Phí không còn là yếu tố quyết định với nhóm này.
-- Ngay cả nhóm chi tiêu cao nhất vẫn churn {_churn_high:.1%} — cho thấy có một phần churn tự nhiên không liên quan đến phí, cần tìm hiểu thêm qua định tính.
+- Ngay cả nhóm chi tiêu cao nhất vẫn churn {_churn_high:.1%} - cho thấy có một phần churn tự nhiên không liên quan đến phí, cần tìm hiểu thêm qua định tính.
 """)
 
     st.markdown("---")
