@@ -744,21 +744,27 @@ with tabs[3]:
     marker_colors = ["#1d4ed8" if v >= 1 else "#ef4444" for v in qr_vals]
 
     fig_qr = go.Figure()
-    # Area traces (trục trái) - fill sữa, dot + label nhỏ
+    # Area traces - label mỗi 2 tháng để tránh chen
+    _lbl_new  = [f"{v:,}" if i % 2 == 0 else "" for i, v in enumerate(ga_r["New"])]
+    _lbl_churn = [f"{v:,}" if i % 2 == 0 else "" for i, v in enumerate(ga_r["churned"])]
     fig_qr.add_trace(go.Scatter(
         x=x_ga, y=ga_r["New"], name="New users",
-        mode="markers", fill="tozeroy",
-        marker=dict(size=4, color="rgba(59,130,246,0.45)", line=dict(width=0)),
+        mode="markers+text", fill="tozeroy",
+        marker=dict(size=5, color="rgba(59,130,246,0.5)", line=dict(width=0)),
         line=dict(color="rgba(59,130,246,0)", width=0),
         fillcolor="rgba(59,130,246,0.07)", yaxis="y",
+        text=_lbl_new, textposition="top center",
+        textfont=dict(size=8, color="rgba(59,130,246,0.85)"),
         hovertemplate="%{x}<br>New: %{y:,}<extra></extra>",
     ))
     fig_qr.add_trace(go.Scatter(
         x=x_ga, y=ga_r["churned"], name="Churn User",
-        mode="markers", fill="tozeroy",
-        marker=dict(size=4, color="rgba(239,68,68,0.45)", line=dict(width=0)),
+        mode="markers+text", fill="tozeroy",
+        marker=dict(size=5, color="rgba(239,68,68,0.5)", line=dict(width=0)),
         line=dict(color="rgba(239,68,68,0)", width=0),
         fillcolor="rgba(239,68,68,0.07)", yaxis="y",
+        text=_lbl_churn, textposition="bottom center",
+        textfont=dict(size=8, color="rgba(239,68,68,0.85)"),
         hovertemplate="%{x}<br>Churn User: %{y:,}<extra></extra>",
     ))
     # QR = 1 reference (trục phải)
@@ -780,15 +786,15 @@ with tabs[3]:
     fig_qr.update_layout(
         title=dict(text="Net Growth BNPL User",
                    font=dict(size=19, weight="bold"), x=0.5, xanchor="center"),
-        height=420, margin=dict(l=20, r=40, t=60, b=60),
+        height=420, margin=dict(l=20, r=40, t=90, b=30),
         paper_bgcolor="white", plot_bgcolor="white",
         barmode="overlay",
-        legend=dict(orientation="h", y=-0.15, x=0.5, xanchor="center", font=dict(size=10)),
-        font=dict(size=11),
-        xaxis=dict(showgrid=False, tickangle=0, tickfont=dict(size=8)),
-        yaxis=dict(title=dict(text="Số user", font=dict(size=10)), tickfont=dict(size=8),
+        legend=dict(orientation="h", y=1.12, x=0.5, xanchor="center", font=dict(size=11)),
+        font=dict(size=12),
+        xaxis=dict(showgrid=False, tickangle=0, tickfont=dict(size=10)),
+        yaxis=dict(title=dict(text="Số user", font=dict(size=11)), tickfont=dict(size=10),
                    showgrid=True, gridcolor="#f0f0f0", zeroline=False, tickformat=","),
-        yaxis2=dict(title=dict(text="Quick Ratio", font=dict(size=10)), tickfont=dict(size=8),
+        yaxis2=dict(title=dict(text="Quick Ratio", font=dict(size=11)), tickfont=dict(size=10),
                     overlaying="y", side="right", showgrid=False, zeroline=False,
                     range=[0, max(qr_vals) * 1.15]),
         shapes=[dict(type="line", x0="2025-01", x1="2025-01", y0=0, y1=1, yref="paper",
