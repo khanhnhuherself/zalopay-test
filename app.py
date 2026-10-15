@@ -6,6 +6,34 @@ from scipy.stats import chi2_contingency, mannwhitneyu, norm as _norm
 
 st.set_page_config(page_title="ZaloPay Test", layout="centered")
 
+# ── Visitor logging ────────────────────────────────────────────────────────────
+@st.cache_resource
+def _get_log_sheet():
+    import gspread
+    from google.oauth2.service_account import Credentials
+    creds = Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"],
+        scopes=["https://www.googleapis.com/auth/spreadsheets"],
+    )
+    gc = gspread.authorize(creds)
+    return gc.open_by_key(st.secrets["sheet"]["id"]).sheet1
+
+def _log_visit():
+    if st.session_state.get("_visit_logged"):
+        return
+    try:
+        sheet = _get_log_sheet()
+        h   = st.context.headers
+        ip  = h.get("X-Forwarded-For", h.get("X-Real-Ip", "unknown")).split(",")[0].strip()
+        ua  = h.get("User-Agent", "unknown")
+        now = pd.Timestamp.now(tz="Asia/Ho_Chi_Minh").strftime("%Y-%m-%d %H:%M:%S")
+        sheet.append_row([now, ip, ua], value_input_option="RAW")
+        st.session_state["_visit_logged"] = True
+    except Exception:
+        pass
+
+_log_visit()
+
 st.markdown("""
 <style>
     .block-container { max-width: 800px; padding-top: 2rem; }
@@ -128,7 +156,7 @@ Do vậy để xác định metric thật sự có ý nghĩa đối với Zalo P
 <tbody>
 <tr style="background:#f0fdf4">
   <td style="padding:10px 14px;border-bottom:1px solid #e5e7eb">Merchant fee (mỗi giao dịch)</td>
-  <td style="padding:10px 14px;border-bottom:1px solid #e5e7eb;color:#15803d;font-weight:600">ZaloPay ✓</td>
+  <td style="padding:10px 14px;border-bottom:1px solid #e5e7eb;color:#15803d;font-weight:600">ZaloPay</td>
 </tr>
 <tr style="background:#fefce8">
   <td style="padding:10px 14px;border-bottom:1px solid #e5e7eb">Phí dịch vụ 20.000đ/kỳ</td>
@@ -168,7 +196,7 @@ Như vậy, Nguồn doanh thu thu trực tiếp của ZaloPay gắn với giao d
 <tr style="background:#f0fdf4">
   <td style="padding:10px 14px;border-bottom:1px solid #e5e7eb">User có ít nhất 1 giao dịch mua trong tháng</td>
   <td style="padding:10px 14px;border-bottom:1px solid #e5e7eb"><strong>User tạo doanh thu trực tiếp cho ZaloPay</strong></td>
-  <td style="padding:10px 14px;border-bottom:1px solid #e5e7eb;color:#15803d;font-weight:600">Cao ✓</td>
+  <td style="padding:10px 14px;border-bottom:1px solid #e5e7eb;color:#15803d;font-weight:600">Cao</td>
 </tr>
 <tr style="background:#fefce8">
   <td style="padding:10px 14px;border-bottom:1px solid #e5e7eb">User có Outstanding > 0</td>
@@ -203,7 +231,7 @@ Như vậy, Nguồn doanh thu thu trực tiếp của ZaloPay gắn với giao d
   <td style="padding:10px 14px;border-bottom:1px solid #e5e7eb;color:#6b7280">Khá ngắn - đối với chi trả hoá đơn, chi tiêu có thể user chỉ sử dụng 1 tháng/lần</td>
 </tr>
 <tr style="background:#f0fdf4">
-  <td style="padding:10px 14px;border-bottom:1px solid #e5e7eb;color:#15803d;font-weight:600">Tháng ✓</td>
+  <td style="padding:10px 14px;border-bottom:1px solid #e5e7eb;color:#15803d;font-weight:600">Tháng</td>
   <td style="padding:10px 14px;border-bottom:1px solid #e5e7eb;color:#15803d">Xấp xỉ billing cycle, đủ granularity để phát hiện dropout sớm</td>
 </tr>
 <tr style="background:#f9fafb">
