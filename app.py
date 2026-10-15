@@ -1085,10 +1085,16 @@ with tabs[4]:
 </div>
 """, unsafe_allow_html=True)
     st.markdown("")
+    _p3_new_mon  = filt[filt["month_number"]==0].groupby("trxn_month")["user_id"].nunique()
+    _p3_new_peak = int(_p3_new_mon.max()) if len(_p3_new_mon) else 0
+    _p3_new_last = int(_p3_new_mon.iloc[-1]) if len(_p3_new_mon) else 0
+    _p3_new_drop = (_p3_new_last - _p3_new_peak) / _p3_new_peak if _p3_new_peak else float("nan")
+
     _c1, _c2, _c3 = st.columns(3)
     _c1.metric("M1 churn rate", f"{_p3_churn_r:.1%}", "Cứ 4 user mới, mất 1")
     _c2.metric("Retention nhóm chi tiêu thấp", f"{_p3_ret_lo:.1%}", f"{(_p3_ret_lo-_p3_ret_hi):.1%} vs nhóm cao")
-    _c3.metric("User rời rồi quay lại", "0%", "Không ai quay lại")
+    _c3.metric("New user/tháng (gần nhất)", f"{_p3_new_last:,}",
+               f"{_p3_new_drop:+.0%} từ đỉnh {_p3_new_peak:,}" if not np.isnan(_p3_new_drop) else "–")
 
     st.markdown("---")
 
