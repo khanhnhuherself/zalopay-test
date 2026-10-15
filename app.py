@@ -866,7 +866,7 @@ Trong tình huống này, đổ thêm ngân sách vào acquisition chỉ bù đ�
     st.caption("AOV bằng nhau - ticket size không phải vấn đề. Utilization rate của nhóm churn cao hơn cho thấy họ không thiếu hạn mức; điểm khác biệt là số giao dịch, GMV và gánh nặng phí tương đối.")
 
     st.markdown("---")
-    st.markdown("**Churn Rate by Carrier Diversity**")
+    st.markdown("#### Churn Rate by Carrier Diversity")
 
     ct_div = m0s_filt.groupby("n_carriers").agg(
         n=("retained","count"), churn=("retained", lambda x: 1-x.mean()), med_gmv=("gmv","median")
@@ -902,7 +902,9 @@ Trong tình huống này, đổ thêm ngân sách vào acquisition chỉ bù đ�
 
 Khi mở rộng sang ≥2 loại, GMV tăng từ {_gmv1} lên {_gmv2} (gấp 2.4×), churn giảm xuống dưới mức trung bình.
 """)
-    st.plotly_chart(fig2, use_container_width=True, config={"displayModeBar": False})
+    _f2l, _f2c, _f2r = st.columns([1, 6, 1])
+    with _f2c:
+        st.plotly_chart(fig2, use_container_width=True, config={"displayModeBar": False})
 
     st.markdown(f"""**Kiểm định (chi-square):**
 
@@ -917,7 +919,7 @@ p = {_p_div:.4f} → bác bỏ H₀. Chiều hướng: dùng ít loại dịch v
 *Lưu ý: đây là xu hướng quan sát được từ data, không thể kết luận dùng nhiều loại dịch vụ là nguyên nhân khiến user ở lại.*""")
 
     st.markdown("---")
-    st.markdown("**Churn Rate: Số giao dịch × Số loại dịch vụ**")
+    st.markdown("#### Churn Rate: Số giao dịch × Số loại dịch vụ")
     st.markdown("Hai biến - số loại dịch vụ và số giao dịch - không hoạt động độc lập. Matrix dưới đây cho thấy churn rate tại từng điểm giao nhau: **ô đỏ = nguy cơ cao, ô xanh = dưới mức trung bình.**")
 
     _hm = m0s_filt.copy()
@@ -977,7 +979,7 @@ p = {_p_div:.4f} → bác bỏ H₀. Chiều hướng: dùng ít loại dịch v
     st.markdown(f"""Kết hợp hai biến, nhóm nguy cơ cao nhất là **1 giao dịch × 1 loại dịch vụ** — churn {_hm_pivot.iloc[0, 0]:.0%} với số lượng user lớn nhất (n={int(_hm_n.iloc[0,0]):,}). Ngược lại, nhóm ≥4 giao dịch × ≥2 loại dịch vụ hầu hết có churn dưới mức trung bình ({_mat_avg:.0%}). Hai biến này có tác động cộng hưởng: tăng cả tần suất lẫn độ rộng sử dụng mới thực sự cải thiện retention.""")
 
     st.markdown("---")
-    st.markdown("**Churn Rate by GMV (Gross Merchandise Value)**")
+    st.markdown("#### Churn Rate by GMV (Gross Merchandise Value)")
 
     _m = m0s_filt.copy()
     _m["gmv_tier"] = pd.cut(_m["gmv"],
@@ -1004,7 +1006,9 @@ p = {_p_div:.4f} → bác bỏ H₀. Chiều hướng: dùng ít loại dịch v
 
 Phí 20K cố định tạo gánh nặng không đồng đều - nhóm chi tiêu thấp chịu tỷ lệ phí/GMV cao hơn gấp nhiều lần.
 """)
-    st.plotly_chart(fig3, use_container_width=True, config={"displayModeBar": False})
+    _f3l, _f3c, _f3r = st.columns([1, 6, 1])
+    with _f3c:
+        st.plotly_chart(fig3, use_container_width=True, config={"displayModeBar": False})
 
     st.markdown(f"""**Kiểm định (chi-square):**
 
@@ -1017,7 +1021,7 @@ H₁: Tỷ lệ churn khác nhau giữa các GMV tier
 p = {p_chi:.4f} → bác bỏ H₀. Chiều hướng: churn giảm theo GMV.""")
 
     st.markdown("---")
-    st.markdown("**Fee burden by GMV (Gross Merchandise Value)**")
+    st.markdown("#### Fee burden by GMV (Gross Merchandise Value)")
     st.markdown("Phí 20K cố định mỗi kỳ tạo gánh nặng không đồng đều theo mức chi tiêu. Câu hỏi: nhóm churn có chịu fee/GMV cao hơn nhóm còn lại không?")
 
     # Mann-Whitney U: fee_pct của churned vs retained
