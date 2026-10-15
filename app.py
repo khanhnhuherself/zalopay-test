@@ -791,6 +791,10 @@ with tabs[3]:
         yaxis2=dict(title=dict(text="Quick Ratio", font=dict(size=10)), tickfont=dict(size=8),
                     overlaying="y", side="right", showgrid=False, zeroline=False,
                     range=[0, max(qr_vals) * 1.15]),
+        shapes=[dict(type="line", x0="2025-01", x1="2025-01", y0=0, y1=1, yref="paper",
+                     line=dict(color="#6b7280", width=1, dash="dot"))],
+        annotations=[dict(x="2025-01", y=1.04, yref="paper", text="<b>2025</b>",
+                          showarrow=False, font=dict(size=9, color="#374151"), xanchor="center")],
     )
     st.plotly_chart(fig_qr, use_container_width=True, config={"displayModeBar": False})
 
