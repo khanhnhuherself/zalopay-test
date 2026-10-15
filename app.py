@@ -980,7 +980,7 @@ Trong tình huống này, đổ thêm ngân sách vào acquisition chỉ bù đ�
     st.markdown(f"Nhóm nguy cơ cao nhất: **1 giao dịch × 1 loại dịch vụ** — churn {_hm_pivot.iloc[0, 0]:.0%}, n={int(_hm_n.iloc[0,0]):,} user. Tăng cả tần suất lẫn độ rộng sử dụng mới thực sự cải thiện retention — một trong hai không đủ.")
 
     st.markdown("---")
-    st.markdown("##### Gánh nặng tài chính (phí 20K cố định)")
+    st.markdown("##### Tác động của phí lên hành vi người dùng")
     st.markdown("#### Churn Rate by GMV (Gross Merchandise Value)")
 
     _m = m0s_filt.copy()
