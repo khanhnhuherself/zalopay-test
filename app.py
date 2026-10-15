@@ -382,7 +382,7 @@ with tabs[1]:
         colorscale=cscale, zmin=zmin, zmax=zmax, showscale=False,
         hovertemplate="Cohort: %{y}<br>%{x}: %{text}<extra></extra>",
     ), row=1, col=2)
-    fig.update_layout(height=680, margin=dict(l=10,r=20,t=30,b=30),
+    fig.update_layout(height=560, margin=dict(l=10,r=20,t=30,b=30),
                       paper_bgcolor="white", font=dict(size=10))
     fig.update_xaxes(side="top")
     fig.update_yaxes(autorange="reversed")
