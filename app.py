@@ -39,6 +39,8 @@ st.markdown("""
     .block-container { max-width: 800px; padding-top: 2rem; }
     .question-label { font-size: 0.78rem; font-weight: 600; color: #888;
                       text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+    #MainMenu {visibility: hidden;}
+    header {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
