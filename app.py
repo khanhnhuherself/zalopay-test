@@ -462,7 +462,7 @@ Chỉ nhìn vào % retention sẽ bỏ sót bức tranh thực: số user và GM
     st.markdown("**Giả thuyết nguyên nhân:**")
     st.write("Phí 20K/tháng cố định tạo gánh nặng không đồng đều — user giao dịch ít chịu tỷ lệ phí/GMV cao, khiến sản phẩm không còn đáng dùng. Kiểm định định lượng ở tab **Churn Analysis**.")
 
-    st.info(f"Retention % ổn định ({_m1_avg_fmt}) nhưng số user và GMV đang giảm do acquisition giảm {_new_drop_pct:.0%} từ đỉnh. Điểm can thiệp là M0 — returning rate {_return_rate:.1%} nên re-activation không khả thi.")
+    st.info(f"Retention % ổn định ({_m1_avg_fmt}) nhưng tổng user và GMV vẫn giảm vì lượng user mới giảm {abs(_new_drop_pct):.0%} so với đỉnh. User đã rời hầu như không quay lại ({_return_rate:.1%}), nên điểm can thiệp thực tế duy nhất là cải thiện activation ngay trong tháng đầu (M0).")
 
 # ═══════════════════════════════════════════════════════════════════════════════
 with tabs[2]:
