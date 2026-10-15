@@ -41,7 +41,8 @@ st.markdown("""
                       text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
     #MainMenu {visibility: hidden;}
     header {visibility: hidden;}
-    [data-testid="collapsedControl"] {visibility: visible;}
+    [data-testid="collapsedControl"] {visibility: visible !important; display: flex !important;}
+    [data-testid="stSidebar"] {visibility: visible !important;}
     [data-testid="stMetric"] { text-align: center; }
     [data-testid="stMetricLabel"] { justify-content: center; }
     [data-testid="stMetricValue"] { justify-content: center; }
