@@ -935,7 +935,7 @@ Trong tình huống này, đổ thêm ngân sách vào acquisition chỉ bù đ�
         st.plotly_chart(fig_txn, use_container_width=True, config={"displayModeBar": False})
         st.caption(f"Churn giảm rõ rệt khi đạt ≥4 giao dịch trong M0 — ngưỡng bắt đầu hình thành thói quen. (chi-square p={_p_txn:.4f})")
 
-    st.markdown("**Hai biến không hoạt động độc lập — kết hợp lại để xác định nhóm nguy cơ cụ thể (đỏ = trên mức TB, xanh = dưới mức TB):**")
+    st.markdown("**Churn Rate: Số giao dịch × Số loại dịch vụ** (đỏ = trên mức TB, xanh = dưới mức TB)")
 
     _hm = m0s_filt.copy()
     _txn_labels = ["1","2","3","4","5-6","7-9","10+"]
