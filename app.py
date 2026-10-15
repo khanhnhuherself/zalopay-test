@@ -813,13 +813,12 @@ with tabs[3]:
 2. Phát triển đầu vào bằng cách thu hút khách hàng mới
 """)
     st.markdown("""
-<div style="background:#fef2f2;border-left:4px solid #ef4444;padding:12px 16px;border-radius:6px">
+<div style="background:#fef2f2;border-left:4px solid #ef4444;padding:12px 16px;border-radius:6px;margin-bottom:24px">
 <span style="color:#374151">Trong tình huống này, đổ thêm ngân sách vào acquisition chỉ bù đắp tạm thời.</span><br>
 <b style="color:#b91c1c">Tuy nhiên nếu không hiểu được lý do user rời đi, user mới vào rồi cũng sẽ rời theo đúng pattern cũ.</b>
 </div>
+<h4 style="margin-top:0">Churn Threshold</h4>
 """, unsafe_allow_html=True)
-
-    st.markdown("#### Churn Threshold")
 
     # Chart: phân phối khoảng cách giao dịch (tính trước để dùng trong text)
     _tmp = df[df["user_id"].isin(filt_users)][["user_id","trxn_date"]].sort_values(["user_id","trxn_date"])
