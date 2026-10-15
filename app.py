@@ -709,19 +709,21 @@ with tabs[3]:
     marker_colors = ["#1d4ed8" if v >= 1 else "#ef4444" for v in qr_vals]
 
     fig_qr = go.Figure()
-    # Area traces (trục trái) - fill trong suốt để cắt nhau
+    # Area traces (trục trái) - fill pastel, chỉ hiện dot tại từng tháng, bỏ line
     fig_qr.add_trace(go.Scatter(
         x=x_ga, y=ga_r["New"], name="New users",
-        mode="lines", fill="tozeroy",
-        line=dict(color="#3b82f6", width=1.5),
-        fillcolor="rgba(59,130,246,0.18)", yaxis="y",
+        mode="markers", fill="tozeroy",
+        marker=dict(size=5, color="rgba(59,130,246,0.5)", line=dict(width=0)),
+        line=dict(color="rgba(59,130,246,0)", width=0),
+        fillcolor="rgba(59,130,246,0.12)", yaxis="y",
         hovertemplate="%{x}<br>New: %{y:,}<extra></extra>",
     ))
     fig_qr.add_trace(go.Scatter(
         x=x_ga, y=ga_r["churned"], name="Churned",
-        mode="lines", fill="tozeroy",
-        line=dict(color="#ef4444", width=1.5),
-        fillcolor="rgba(239,68,68,0.18)", yaxis="y",
+        mode="markers", fill="tozeroy",
+        marker=dict(size=5, color="rgba(239,68,68,0.5)", line=dict(width=0)),
+        line=dict(color="rgba(239,68,68,0)", width=0),
+        fillcolor="rgba(239,68,68,0.12)", yaxis="y",
         hovertemplate="%{x}<br>Churned: %{y:,}<extra></extra>",
     ))
     # QR = 1 reference (trục phải)
