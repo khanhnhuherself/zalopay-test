@@ -1091,17 +1091,13 @@ Spearman ρ = {_rho:.3f}, p = {_rho_p:.4f} - có ý nghĩa thống kê, effect s
     st.markdown("---")
     st.markdown("#### 3. What to recommend?")
 
-    st.markdown("**R1 - Kích hoạt product discovery trong tháng đầu** *(có thể triển khai trong 30 ngày)*")
-    st.write("48% user BNPL ở tháng đầu tiên chỉ sử dụng thanh toán cho 1 loại dịch vụ duy nhất với trung vị tần suất chi tiêu chỉ đạt 1 lần duy nhất. Đối với nhóm này, trung vị tổng chi tiêu tháng đầu chỉ đạt 197K - phí 20K tương đương 10.2% tổng chi tiêu. So với nhóm dùng 2 loại dịch vụ trở lên (trung vị 478K), con số này chỉ còn 4.2%.")
-    st.write("**Đề xuất:** Trong 2 tuần đầu M0, gợi ý user thử thêm 1 loại dịch vụ khác kèm cashback lần đầu ở category mới. Mục tiêu: user thử ≥2 loại dịch vụ trong M0.")
-
-    st.markdown("**R2 - Xem xét lại cấu trúc phí** *(cần finance validate trước)*")
-    st.write("Nhóm GMV <200K chịu effective fee 17.2%, nhóm >700K chỉ 2.0% - cùng một mức phí, gánh nặng cách nhau gần 9 lần. **Đề xuất:** Hybrid model - giữ 20K baseline, hoàn phí cho user GMV tháng <500K.")
-
-    st.markdown("**R3 - Monitor compound segment at-risk**")
-    st.write("Nhóm ưu tiên can thiệp: user chỉ dùng dịch vụ Game/VNG và thực hiện ≤ 2 giao dịch trong tháng đầu — khoảng 1,084 user (6% tổng), churn rate 35.4%, cao hơn mức trung bình. Đây là nhóm nên được tiếp cận sớm bằng các hoạt động kích hoạt như gợi ý khám phá thêm dịch vụ hoặc ưu đãi cho giao dịch tiếp theo.")
-
-    st.info("R1 (product discovery trong M0) là đòn bẩy nhanh và rẻ nhất - target 48% user đang dùng 1 loại dịch vụ. R2 (cấu trúc phí) cần finance validate. R3 là early warning system cho segment nguy cơ cao nhất.")
+    st.markdown("**R1 — Kích hoạt khám phá dịch vụ trong tháng đầu** *(ngắn hạn)*")
+    st.write("48% user chỉ dùng 1 loại dịch vụ trong M0, trung vị GMV 197K — phí 20K chiếm 10% chi tiêu. Nhóm dùng từ 2 loại trở lên có trung vị GMV 478K, cùng mức phí nhưng chỉ còn 4%. Đề xuất: trong 2 tuần đầu, gợi ý thử thêm 1 dịch vụ mới kèm cashback lần đầu ở category đó.")
+    st.markdown("**R2 — Xem lại cấu trúc phí cho nhóm chi tiêu thấp** *(cần finance xác nhận)*")
+    st.write("Cùng mức phí 20K cố định: nhóm GMV <200K chịu effective fee 17%, nhóm >700K chỉ 2% — chênh lệch gần 9 lần. Đề xuất: giữ 20K nhưng hoàn một phần phí cho user có GMV tháng dưới 500K.")
+    st.markdown("**R3 — Theo dõi sát nhóm rủi ro cao**")
+    st.write("Khoảng 1,084 user (6%) chỉ dùng Game/VNG và giao dịch ≤ 2 lần trong M0, churn rate 35.4% — cao hơn mức trung bình. Đây là nhóm cụ thể, dễ xác định, nên ưu tiên tiếp cận trước khi R1 được triển khai rộng.")
+    st.info("R1 tác động đến gần một nửa base user mới và không cần thay đổi sản phẩm. R2 cần xác nhận từ finance trước khi triển khai. R3 là danh sách cụ thể để bắt đầu ngay.")
 
 # ═══════════════════════════════════════════════════════════════════════════════
 with tabs[4]:
@@ -1124,10 +1120,11 @@ with tabs[4]:
 
     # ── 1. What is happening ──────────────────────────────────────────────────
     st.markdown("#### 1. What is happening?")
-    st.markdown("""
+    _p3_yoy_str = f"{_p3_mau_yoy:.0%}" if not np.isnan(_p3_mau_yoy) else "–"
+    st.markdown(f"""
 <div style="background:#fef2f2;border-left:4px solid #ef4444;padding:14px 18px;border-radius:6px">
-<b style="color:#b91c1c">Sản phẩm đang mất user nhanh hơn tốc độ có thể bù đắp.</b><br>
-<span style="color:#374151">Quick Ratio < 1 liên tục từ đầu 2025 - mỗi tháng có nhiều user rời hơn user mới vào.</span>
+<b style="color:#b91c1c">Trong 6 tháng đầu năm 2025, sản phẩm đang mất user nhanh hơn tốc độ có thể bù đắp, giảm {_p3_yoy_str} active user so với cùng kỳ 2024.</b><br>
+<span style="color:#374151">Quick Ratio &lt; 1 liên tục từ đầu 2025 — mỗi tháng có nhiều user rời hơn user mới vào.</span>
 </div>
 """, unsafe_allow_html=True)
     st.markdown("")
@@ -1135,6 +1132,12 @@ with tabs[4]:
     _p3_new_peak = int(_p3_new_mon.max()) if len(_p3_new_mon) else 0
     _p3_new_last = int(_p3_new_mon.iloc[-1]) if len(_p3_new_mon) else 0
     _p3_new_drop = (_p3_new_last - _p3_new_peak) / _p3_new_peak if _p3_new_peak else float("nan")
+    _p3_mau_mon  = filt.groupby("trxn_month")["user_id"].nunique()
+    _p3_h24 = [p for p in _p3_mau_mon.index if str(p)[:4] == "2024" and 1 <= int(str(p)[5:7]) <= 6]
+    _p3_h25 = [p for p in _p3_mau_mon.index if str(p)[:4] == "2025" and 1 <= int(str(p)[5:7]) <= 6]
+    _p3_mau_24 = float(_p3_mau_mon[_p3_h24].mean()) if _p3_h24 else float("nan")
+    _p3_mau_25 = float(_p3_mau_mon[_p3_h25].mean()) if _p3_h25 else float("nan")
+    _p3_mau_yoy = (_p3_mau_25 - _p3_mau_24) / _p3_mau_24 if _p3_mau_24 else float("nan")
 
     _c1, _c2, _c3 = st.columns(3)
     _c1.metric("M1 churn rate", f"{_p3_churn_r:.1%}", "Cứ 4 user mới, mất 1")
