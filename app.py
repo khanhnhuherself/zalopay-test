@@ -312,11 +312,11 @@ with tabs[1]:
     _ml, _mc, _mr = st.columns([1, 2, 1])
     with _mc:
         metric = st.selectbox("Chọn loại Metric cho Cohort Matrix",
-                              ["%", "Số user", "Chi tiêu/user (mean)", "Chi tiêu/user (median)", "GMV (Gross Merchandise Volume)"],
+                              ["Retention Rate (%)", "Số user", "Chi tiêu/user (mean)", "Chi tiêu/user (median)", "GMV (Gross Merchandise Volume)"],
                               index=0, key="q1b_metric", label_visibility="collapsed")
 
     # ── Compute metric pivot ──────────────────────────────────────────────────
-    if metric == "%":
+    if metric == "Retention Rate (%)":
         piv = filt.groupby(["cohort","month_number"])["user_id"].nunique().unstack().div(cs_filt, axis=0)
         fmt_fn = lambda v: f"{v:.0%}" if not np.isnan(v) else ""
         cscale = [[0,"#f9f9f9"],[0.5,"#bfdbfe"],[1,"#1d4ed8"]]
