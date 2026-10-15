@@ -746,7 +746,7 @@ with tabs[3]:
     fig_qr = go.Figure()
     # Area traces - label mỗi 2 tháng để tránh chen
     _lbl_new  = [f"{v:,}" if i % 2 == 0 else "" for i, v in enumerate(ga_r["New"])]
-    _lbl_churn = [f"{v:,}" if i % 2 == 0 else "" for i, v in enumerate(ga_r["churned"])]
+    _lbl_churn = [f"{v:,}" if i % 2 == 1 else "" for i, v in enumerate(ga_r["churned"])]
     fig_qr.add_trace(go.Scatter(
         x=x_ga, y=ga_r["New"], name="New users",
         mode="markers+text", fill="tozeroy",
@@ -786,7 +786,7 @@ with tabs[3]:
     fig_qr.update_layout(
         title=dict(text="Net Growth BNPL User",
                    font=dict(size=19, weight="bold"), x=0.5, xanchor="center"),
-        height=420, margin=dict(l=20, r=40, t=90, b=30),
+        height=420, margin=dict(l=20, r=50, t=75, b=20),
         paper_bgcolor="white", plot_bgcolor="white",
         barmode="overlay",
         legend=dict(orientation="h", y=1.12, x=0.5, xanchor="center", font=dict(size=11)),
@@ -800,7 +800,7 @@ with tabs[3]:
         shapes=[dict(type="line", x0="2025-01", x1="2025-01", y0=0, y1=1, yref="paper",
                      line=dict(color="#6b7280", width=1, dash="dot"))],
         annotations=[dict(
-            x=x_ga[-1], y=0.65, xref="x", yref="y2",
+            x=x_ga[-1], y=0.72, xref="x", yref="y2",
             text="QR < 1 | Tăng trưởng user âm",
             showarrow=False, font=dict(size=10, color="#111827"),
             xanchor="right", yanchor="top",
