@@ -720,8 +720,8 @@ with tabs[3]:
         hovertemplate="%{x}<br>New: %{y:,}<extra></extra>",
     ))
     fig_qr.add_trace(go.Scatter(
-        x=x_ga, y=ga_r["churned"], name="Churned",
-        mode="markers", fill="tozeroy", name="Churn User",
+        x=x_ga, y=ga_r["churned"], name="Churn User",
+        mode="markers", fill="tozeroy",
         marker=dict(size=5, color="rgba(239,68,68,0.5)", line=dict(width=0)),
         line=dict(color="rgba(239,68,68,0)", width=0),
         fillcolor="rgba(239,68,68,0.12)", yaxis="y",
