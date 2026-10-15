@@ -567,8 +567,8 @@ Vấn đề thực tế: **{pct_below:.1%} user mới ({n_low:,}/{total_u:,}) ch
 
     from plotly.subplots import make_subplots as _msp2
     fig_drv = _msp2(rows=1, cols=2,
-                    subplot_titles=["Median GMV vs AOV theo số giao dịch M0",
-                                    "Phí 20K / Median GMV (gánh nặng phí thực tế)"],
+                    subplot_titles=["GMV và AOV theo số giao dịch M0",
+                                    "Tỷ lệ phí/GMV theo số giao dịch M0"],
                     horizontal_spacing=0.14)
 
     # Left: GMV (bar) + AOV (line)
