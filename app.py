@@ -278,11 +278,12 @@ with tabs[1]:
     _yc4.metric("GMV / user (avg H1)", f"{_gmv_per_user_25/1000:.0f}K" if not np.isnan(_gmv_per_user_25) else "–",
                 f"{_gpu_yoy:+.0%} YoY" if not np.isnan(_gpu_yoy) else "–")
 
+    st.markdown("<div style='text-align:center;font-size:14px;margin-bottom:4px'>Chọn loại Metric cho Cohort Matrix</div>", unsafe_allow_html=True)
     _ml, _mc, _mr = st.columns([1, 2, 1])
     with _mc:
         metric = st.selectbox("Chọn loại Metric cho Cohort Matrix",
                               ["%", "Số user", "Chi tiêu/user (mean)", "Chi tiêu/user (median)", "GMV (Gross Merchandise Volume)"],
-                              index=0, key="q1b_metric")
+                              index=0, key="q1b_metric", label_visibility="collapsed")
 
     # ── Compute metric pivot ──────────────────────────────────────────────────
     if metric == "%":
