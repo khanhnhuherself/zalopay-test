@@ -689,66 +689,36 @@ with tabs[2]:
     drv_plot["x"] = drv_plot.index.astype(str)
     colors_drv = ["#ef4444" if i < THRESHOLD else "#1d4ed8" for i in drv_plot.index]
 
-    # Fee/GMV chart only
+    # Fee/GMV chart + retention line overlay
+    _ret_drv = [float(freq.loc[i, "ret"]) if i in freq.index else float("nan") for i in drv_plot.index]
     fig_drv = go.Figure()
     fig_drv.add_trace(go.Bar(
         x=drv_plot["x"], y=drv_plot["fee_20k"],
+        name="Tỷ lệ phí", yaxis="y",
         marker_color=colors_drv, opacity=0.85,
         text=[f"{v:.0%}" for v in drv_plot["fee_20k"]], textposition="outside",
-        hovertemplate="Txn=%{x}<br>Phí/tổng chi tiêu=%{text}<extra></extra>",
-        showlegend=False,
+        textfont=dict(size=9),
+        hovertemplate="Txn=%{x}<br>Phí/tổng chi tiêu=%{y:.0%}<extra></extra>",
+    ))
+    fig_drv.add_trace(go.Scatter(
+        x=drv_plot["x"], y=_ret_drv,
+        name="Retention M1", yaxis="y2",
+        mode="lines+markers",
+        line=dict(color="#f97316", width=2),
+        marker=dict(size=6, color="#f97316"),
+        hovertemplate="Txn=%{x}<br>Retention M1=%{y:.1%}<extra></extra>",
     ))
     fig_drv = clean_fig(fig_drv, height=350)
     fig_drv.update_layout(
-        title=dict(text="Tỷ lệ phí/tổng chi tiêu theo số giao dịch M0", font=dict(size=14, weight="bold"), x=0.5, xanchor="center"),
+        title=dict(text="Tỷ lệ phí và Retention M1 theo số giao dịch M0", font=dict(size=14, weight="bold"), x=0.5, xanchor="center"),
         xaxis=dict(title="Số giao dịch M0", showgrid=False),
         yaxis=dict(tickformat=".0%", title="Phí / Tổng chi tiêu", range=[0, drv_plot["fee_20k"].max()*1.35]),
+        yaxis2=dict(tickformat=".0%", title="Retention M1", overlaying="y", side="right", range=[0, 1.0], showgrid=False),
+        legend=dict(orientation="h", x=0.5, xanchor="center", y=1.12, font=dict(size=10)),
     )
     _drv_l, _drv_c, _drv_r = st.columns([1, 8, 1])
     with _drv_c:
         st.plotly_chart(fig_drv, use_container_width=True, config={"displayModeBar": False})
-
-    # Retention M1–M6 by M0 txn group
-    _m0_txn_u = df[df["trxn_month"]==df["cohort"]].groupby("user_id").size().rename("m0_txn")
-    _grp_map  = pd.cut(_m0_txn_u, bins=[0,3,6,float("inf")], labels=["1–3","4–6","7+"]).rename("txn_group")
-    _ret_grp  = active.merge(_grp_map.reset_index(), on="user_id")
-    _ret_grp_f = _ret_grp[_ret_grp["user_id"].isin(filt_users)]
-    _cs_grp   = _ret_grp_f[_ret_grp_f["month_number"]==0].groupby("txn_group")["user_id"].nunique()
-    _ret_grp_piv = _ret_grp_f.groupby(["txn_group","month_number"])["user_id"].nunique().unstack().div(_cs_grp, axis=0)
-    _grp_mons = [c for c in _ret_grp_piv.columns if 1 <= c <= 6]
-    _m6_1to3 = float(_ret_grp_piv.loc["1–3", 6]) if "1–3" in _ret_grp_piv.index and 6 in _ret_grp_piv.columns else float("nan")
-    _m6_4to6 = float(_ret_grp_piv.loc["4–6", 6]) if "4–6" in _ret_grp_piv.index and 6 in _ret_grp_piv.columns else float("nan")
-    _m6_7p   = float(_ret_grp_piv.loc["7+",  6]) if "7+"  in _ret_grp_piv.index and 6 in _ret_grp_piv.columns else float("nan")
-    _m6_1to3_fmt = f"{_m6_1to3:.1%}" if not np.isnan(_m6_1to3) else "~10%"
-    _m6_4to6_fmt = f"{_m6_4to6:.1%}" if not np.isnan(_m6_4to6) else "~18%"
-    _m6_7p_fmt   = f"{_m6_7p:.1%}"   if not np.isnan(_m6_7p)   else "~20%"
-
-    st.markdown("Song song với đó, dữ liệu retention theo thời gian cũng cho thấy khoảng cách rõ rệt giữa nhóm đạt và chưa đạt N=4:")
-
-    _colors_grp = {"1–3": "#ef4444", "4–6": "#1d4ed8", "7+": "#0d9488"}
-    _fig_grp = go.Figure()
-    for _grp in ["1–3","4–6","7+"]:
-        if _grp in _ret_grp_piv.index:
-            _vals = [float(_ret_grp_piv.loc[_grp, c]) if c in _ret_grp_piv.columns else float("nan") for c in _grp_mons]
-            _fig_grp.add_trace(go.Bar(
-                x=[f"M{c}" for c in _grp_mons], y=_vals,
-                name=f"{_grp} giao dịch",
-                marker_color=_colors_grp[_grp], opacity=0.85,
-                text=[f"{v:.0%}" if i in [0, len(_grp_mons)-1] else "" for i, v in enumerate(_vals)], textposition="outside",
-                textfont=dict(size=9),
-                hovertemplate=f"Nhóm {_grp}<br>%{{x}}: %{{y:.1%}}<extra></extra>",
-            ))
-    _fig_grp.update_layout(
-        title=dict(text="Retention M1–M6 theo nhóm số giao dịch M0", font=dict(size=14, weight="bold"), x=0.5, xanchor="center"),
-        barmode="group",
-        height=320, margin=dict(l=40,r=20,t=60,b=30),
-        paper_bgcolor="white", plot_bgcolor="white",
-        yaxis=dict(tickformat=".0%", showgrid=True, gridcolor="#f0f0f0", range=[0, 0.9]),
-        xaxis=dict(showgrid=False),
-        legend=dict(orientation="h", y=1.14, x=0.5, xanchor="center", font=dict(size=10)),
-        font=dict(size=11),
-    )
-    st.plotly_chart(_fig_grp, use_container_width=True, config={"displayModeBar": False})
 
     r1 = drv.loc[1] if 1 in drv.index else None
     r4 = drv.loc[4] if 4 in drv.index else None
@@ -756,7 +726,7 @@ with tabs[2]:
     fee4 = f"{r4['med_fee_pct']:.0%}" if r4 is not None else "~2.7%"
     gmv1 = f"{r1['med_gmv']/1000:.0f}K" if r1 is not None else "133K"
     gmv4 = f"{r4['med_gmv']/1000:.0f}K" if r4 is not None else "747K"
-    st.markdown(f"Phí 20K/tháng là **cố định** — nhóm 1 giao dịch (tổng chi tiêu {gmv1}) chịu tỷ lệ phí {fee1}, nhóm 4–6 giao dịch (tổng chi tiêu {gmv4}) chỉ còn {fee4}. **N=4 là điểm mà sản phẩm bắt đầu hợp lý về chi phí với người dùng.** Khoảng cách này không thu hẹp theo thời gian — đến M6, nhóm 4–6 giao dịch vẫn giữ được {_m6_4to6_fmt}, cao hơn hẳn nhóm 1–3 giao dịch ({_m6_1to3_fmt}).")
+    st.markdown(f"Phí 20K/tháng là **cố định** — nhóm 1 giao dịch (tổng chi tiêu {gmv1}) chịu tỷ lệ phí {fee1}, nhóm 4–6 giao dịch (tổng chi tiêu {gmv4}) chỉ còn {fee4}. **N=4 là điểm mà sản phẩm bắt đầu hợp lý về chi phí với người dùng.**")
 
     st.markdown("---")
 
