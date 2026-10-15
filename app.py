@@ -849,7 +849,7 @@ Trong tình huống này, đổ thêm ngân sách vào acquisition chỉ bù đ�
     _gmv1  = f"{_cd1['med_gmv'].values[0]/1000:.0f}K" if len(_cd1) else "197K"
     _gmv2  = f"{_cd2['med_gmv'].values[0]/1000:.0f}K" if len(_cd2) else "478K"
     _, _p_div, *_ = chi2_contingency(pd.crosstab(m0s_filt["n_carriers"], m0s_filt["retained"]))
-    _cd_col1, _cd_col2 = st.columns([2, 3])
+    _cd_col1, _cd_col2 = st.columns([3, 2])
     with _cd_col1:
         st.markdown(f"""
 **48% user chỉ dùng 1 loại dịch vụ trong M0** - churn cao nhất ({_churn1}, trên mức trung bình {avg_ch:.1%}).
@@ -925,6 +925,12 @@ p = {_p_div:.4f} → bác bỏ H₀. Chiều hướng: dùng ít loại dịch v
     st.plotly_chart(fig_hm, use_container_width=True, config={"displayModeBar": False})
     st.caption(f"Đỏ = churn trên mức trung bình ({_zflat.mean():.0%}). Xanh = dưới trung bình. Ô trống = dưới 30 user.")
 
+    # Compute matrix highlights dynamically
+    _mat_min_val = float(_hm_pivot.values[~np.isnan(_hm_pivot.values)].min()) if len(_zflat) else float("nan")
+    _mat_max_val = float(_hm_pivot.values[~np.isnan(_hm_pivot.values)].max()) if len(_zflat) else float("nan")
+    _mat_avg     = float(_zflat.mean()) if len(_zflat) else float("nan")
+    st.markdown(f"""Kết hợp hai biến, nhóm nguy cơ cao nhất là **1 giao dịch × 1 loại dịch vụ** — churn {_hm_pivot.iloc[0, 0]:.0%} với số lượng user lớn nhất (n={int(_hm_n.iloc[0,0]):,}). Ngược lại, nhóm ≥4 giao dịch × ≥2 loại dịch vụ hầu hết có churn dưới mức trung bình ({_mat_avg:.0%}). Hai biến này có tác động cộng hưởng: tăng cả tần suất lẫn độ rộng sử dụng mới thực sự cải thiện retention.""")
+
     st.markdown("---")
     st.markdown("**Churn Rate by GMV (Gross Merchandise Value)**")
 
@@ -948,7 +954,7 @@ p = {_p_div:.4f} → bác bỏ H₀. Chiều hướng: dùng ít loại dịch v
     fig3.update_layout(yaxis=dict(tickformat=".0%", range=[0, ts["churn"].max()*1.3]),
                        xaxis_title="GMV M0 tier")
 
-    _gv_col1, _gv_col2 = st.columns([2, 3])
+    _gv_col1, _gv_col2 = st.columns([3, 2])
     with _gv_col1:
         st.markdown(f"""
 **Churn giảm đều theo mức chi tiêu:** nhóm GMV <200K churn {ts['churn'].iloc[0]:.1%}, nhóm >700K chỉ churn {ts['churn'].iloc[-1]:.1%}.
