@@ -632,13 +632,18 @@ with tabs[2]:
     cohort_year_map["year"] = cohort_year_map["cohort"].apply(lambda x: int(str(x)[:4]))
 
     def _dt_result(data):
-        dt = _DTC(max_depth=1, random_state=42)
-        dt.fit(data[["m0_txn"]], data["retained"])
-        thr = dt.tree_.threshold[0]
-        n_split = int(thr) + 1
-        hi = data[data["m0_txn"] >= n_split]["retained"].mean()
-        lo = data[data["m0_txn"] < n_split]["retained"].mean()
-        return thr, n_split, lo, hi, len(data)
+        if len(data) < 30 or data["retained"].nunique() < 2:
+            return None
+        try:
+            dt = _DTC(max_depth=1, random_state=42)
+            dt.fit(data[["m0_txn"]], data["retained"])
+            thr = dt.tree_.threshold[0]
+            n_split = int(thr) + 1
+            hi = data[data["m0_txn"] >= n_split]["retained"].mean()
+            lo = data[data["m0_txn"] < n_split]["retained"].mean()
+            return thr, n_split, lo, hi, len(data)
+        except Exception:
+            return None
 
     _dt_all  = _dt_result(m0_all)
     _dt_2024 = _dt_result(cohort_year_map[cohort_year_map["year"]==2024])
@@ -670,14 +675,21 @@ with tabs[2]:
     # Chart tổng thể — to, ở giữa
     _dca, _dcb, _dcc = st.columns([1, 4, 1])
     with _dcb:
-        st.pyplot(_dt_fig(*_dt_all, "Tổng thể", figsize=(5.5, 3.4), fs=10), use_container_width=True)
+        if _dt_all:
+            st.pyplot(_dt_fig(*_dt_all, "Tổng thể", figsize=(5.5, 3.4), fs=10), use_container_width=True)
 
     # 2 chart nhỏ — 2024 và 2025
     _dd1, _dd2 = st.columns(2)
     with _dd1:
-        st.pyplot(_dt_fig(*_dt_2024, "Cohort 2024", figsize=(3.2, 2.6), fs=8), use_container_width=True)
+        if _dt_2024:
+            st.pyplot(_dt_fig(*_dt_2024, "Cohort 2024", figsize=(3.2, 2.6), fs=8), use_container_width=True)
+        else:
+            st.caption("Không đủ dữ liệu cho Cohort 2024")
     with _dd2:
-        st.pyplot(_dt_fig(*_dt_2025, "Cohort 2025", figsize=(3.2, 2.6), fs=8), use_container_width=True)
+        if _dt_2025:
+            st.pyplot(_dt_fig(*_dt_2025, "Cohort 2025", figsize=(3.2, 2.6), fs=8), use_container_width=True)
+        else:
+            st.caption("Không đủ dữ liệu cho Cohort 2025")
 
     st.info(f"Cả quan sát và Decision Tree đều chỉ về N=3–4. Cohort 2024 (chiếm 76% data) xác nhận rõ N=4, cohort 2025 ra N=3 nhưng chênh lệch không đáng kể.\n\nCân nhắc chọn **N=4** là ngưỡng. Tuy nhiên khi **triển khai thực tế**, cần thực hiện **A/B Testing** để xác nhận.")
 
@@ -897,23 +909,39 @@ with tabs[3]:
     st.markdown("---")
     st.markdown("#### 2. How do they differ?")
     st.markdown("Nhìn vào M0 - tháng user phát sinh giao dịch mua đầu tiên - hai nhóm có profile gần giống nhau. Sự khác biệt nằm ở **tần suất**, **độ rộng sử dụng** và **gánh nặng phí tương đối**.")
-    st.markdown("**Chân dung hai nhóm**")
     grp_c = m0s_filt[~m0s_filt["retained"]]
     grp_a = m0s_filt[ m0s_filt["retained"]]
-    rows = [
-        ("Số user", f"{len(grp_c):,}", f"{len(grp_a):,}", ""),
-        ("Số giao dịch - Median", f"{grp_c['n_txn'].median():.0f}", f"{grp_a['n_txn'].median():.0f}", "−1 txn"),
-        ("GMV - Median", f"{grp_c['gmv'].median()/1000:.0f}K", f"{grp_a['gmv'].median()/1000:.0f}K", "−66K"),
-        ("AOV - Median", f"{grp_c['med_aov'].median()/1000:.0f}K", f"{grp_a['med_aov'].median()/1000:.0f}K", "= bằng nhau"),
-        ("Utilization rate - Median", f"{grp_c['util'].median():.1%}", f"{grp_a['util'].median():.1%}", "nhóm churn cao hơn - không phải yếu tố phân biệt"),
-        ("Phí/GMV - Median", f"{grp_c['fee_pct'].median():.1%}", f"{grp_a['fee_pct'].median():.1%}", "+1.0%"),
+    _c_txn = grp_c['n_txn'].median()
+    _a_txn = grp_a['n_txn'].median()
+    _c_gmv = grp_c['gmv'].median()
+    _a_gmv = grp_a['gmv'].median()
+    _c_aov = grp_c['med_aov'].median()
+    _a_aov = grp_a['med_aov'].median()
+    _c_fee = grp_c['fee_pct'].median()
+    _a_fee = grp_a['fee_pct'].median()
+
+    _col_lbl, _col_c, _col_a, _col_d = st.columns([2, 1, 1, 1.2])
+    _col_lbl.markdown("**Chỉ số M0 (Median)**")
+    _col_c.markdown("**🔴 Churned**")
+    _col_a.markdown("**🔵 Active M1**")
+    _col_d.markdown("**Chênh lệch**")
+
+    _metrics = [
+        ("Số giao dịch", f"{_c_txn:.0f}", f"{_a_txn:.0f}", f"−{_a_txn-_c_txn:.0f} txn", "#fecaca", "#b91c1c"),
+        ("Tổng chi tiêu", f"{_c_gmv/1000:.0f}K", f"{_a_gmv/1000:.0f}K", f"−{(_a_gmv-_c_gmv)/1000:.0f}K", "#fecaca", "#b91c1c"),
+        ("Giá trị mỗi GD", f"{_c_aov/1000:.0f}K", f"{_a_aov/1000:.0f}K", "= bằng nhau", "#f3f4f6", "#6b7280"),
+        ("Phí / Tổng chi tiêu", f"{_c_fee:.1%}", f"{_a_fee:.1%}", f"+{_c_fee-_a_fee:.1%}", "#fecaca", "#b91c1c"),
     ]
-    st.dataframe(pd.DataFrame(rows, columns=["Chỉ số (M0)", "Churned", "Active M1", "Chênh lệch"]),
-                 use_container_width=True, hide_index=True)
-    st.caption("AOV bằng nhau - ticket size không phải vấn đề. Utilization rate của nhóm churn cao hơn cho thấy họ không thiếu hạn mức; điểm khác biệt là số giao dịch, GMV và gánh nặng phí tương đối.")
+    for _lbl, _vc, _va, _delta, _bg, _fg in _metrics:
+        _col_lbl.markdown(f"<div style='padding:8px 0;border-top:1px solid #f0f0f0;font-size:14px'>{_lbl}</div>", unsafe_allow_html=True)
+        _col_c.markdown(f"<div style='padding:8px 0;border-top:1px solid #f0f0f0;font-size:18px;font-weight:700;color:#ef4444'>{_vc}</div>", unsafe_allow_html=True)
+        _col_a.markdown(f"<div style='padding:8px 0;border-top:1px solid #f0f0f0;font-size:18px;font-weight:700;color:#1d4ed8'>{_va}</div>", unsafe_allow_html=True)
+        _col_d.markdown(f"<div style='padding:8px 0;border-top:1px solid #f0f0f0'><span style='background:{_bg};color:{_fg};padding:3px 10px;border-radius:6px;font-size:13px;font-weight:600'>{_delta}</span></div>", unsafe_allow_html=True)
+
+    st.caption("Giá trị mỗi giao dịch bằng nhau → ticket size không phải vấn đề. Nhóm churn giao dịch ít hơn → tổng chi tiêu thấp hơn → chịu gánh nặng phí cao hơn tương đối.")
 
     st.markdown("---")
-    st.markdown("##### Hành vi sử dụng trong M0")
+    st.markdown("##### Hành vi sử dụng trong Tháng đầu tiên (M0)")
 
     # Carrier Diversity
     ct_div = m0s_filt.groupby("n_carriers").agg(
