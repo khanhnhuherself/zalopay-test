@@ -744,21 +744,27 @@ with tabs[3]:
     marker_colors = ["#1d4ed8" if v >= 1 else "#ef4444" for v in qr_vals]
 
     fig_qr = go.Figure()
-    # Area traces (trục trái) - fill pastel, chỉ hiện dot tại từng tháng, bỏ line
+    # Area traces (trục trái) - fill sữa, dot + label nhỏ
     fig_qr.add_trace(go.Scatter(
         x=x_ga, y=ga_r["New"], name="New users",
-        mode="markers", fill="tozeroy",
-        marker=dict(size=5, color="rgba(59,130,246,0.5)", line=dict(width=0)),
+        mode="markers+text", fill="tozeroy",
+        marker=dict(size=4, color="rgba(59,130,246,0.45)", line=dict(width=0)),
         line=dict(color="rgba(59,130,246,0)", width=0),
-        fillcolor="rgba(59,130,246,0.12)", yaxis="y",
+        fillcolor="rgba(59,130,246,0.07)", yaxis="y",
+        text=[f"{v:,}" for v in ga_r["New"]],
+        textposition="top center",
+        textfont=dict(size=8, color="rgba(59,130,246,0.85)"),
         hovertemplate="%{x}<br>New: %{y:,}<extra></extra>",
     ))
     fig_qr.add_trace(go.Scatter(
         x=x_ga, y=ga_r["churned"], name="Churn User",
-        mode="markers", fill="tozeroy",
-        marker=dict(size=5, color="rgba(239,68,68,0.5)", line=dict(width=0)),
+        mode="markers+text", fill="tozeroy",
+        marker=dict(size=4, color="rgba(239,68,68,0.45)", line=dict(width=0)),
         line=dict(color="rgba(239,68,68,0)", width=0),
-        fillcolor="rgba(239,68,68,0.12)", yaxis="y",
+        fillcolor="rgba(239,68,68,0.07)", yaxis="y",
+        text=[f"{v:,}" for v in ga_r["churned"]],
+        textposition="bottom center",
+        textfont=dict(size=8, color="rgba(239,68,68,0.85)"),
         hovertemplate="%{x}<br>Churn User: %{y:,}<extra></extra>",
     ))
     # QR = 1 reference (trục phải)
