@@ -380,16 +380,12 @@ with tabs[1]:
         colorscale=cscale, zmin=zmin, zmax=zmax, showscale=False,
         hovertemplate="Cohort: %{y}<br>%{x}: %{text}<extra></extra>",
     ), row=1, col=2)
-    fig.update_layout(height=560, margin=dict(l=10,r=20,t=30,b=30),
+    fig.update_layout(height=680, margin=dict(l=10,r=20,t=30,b=30),
                       paper_bgcolor="white", font=dict(size=10))
     fig.update_xaxes(side="top")
     fig.update_yaxes(autorange="reversed")
     st.markdown("<div style='text-align:center;font-size:18px;font-weight:700;margin-bottom:4px'>Cohort Retention Matrix</div>", unsafe_allow_html=True)
-    import plotly.io as _pio
-    _fig_html = _pio.to_html(fig, include_plotlyjs="cdn", full_html=False,
-                             config={"displayModeBar": False})
-    st.markdown(f'<div style="margin-left:-120px;margin-right:-120px">{_fig_html}</div>',
-                unsafe_allow_html=True)
+    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
     st.caption(f"M1 retention dao động {_m1_rng_fmt} qua {_n_coh} cohorts — dải hẹp {_m1_pp_fmt} cho thấy churn không liên quan đến một cohort hay đợt acquisition cụ thể, mà là vấn đề structural.")
 
     pct_piv = filt.groupby(["cohort","month_number"])["user_id"].nunique().unstack().div(cs_filt, axis=0)
