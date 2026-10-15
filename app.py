@@ -720,11 +720,11 @@ with tabs[3]:
     ))
     fig_qr.add_trace(go.Scatter(
         x=x_ga, y=ga_r["churned"], name="Churned",
-        mode="markers", fill="tozeroy",
+        mode="markers", fill="tozeroy", name="Churn User",
         marker=dict(size=5, color="rgba(239,68,68,0.5)", line=dict(width=0)),
         line=dict(color="rgba(239,68,68,0)", width=0),
         fillcolor="rgba(239,68,68,0.12)", yaxis="y",
-        hovertemplate="%{x}<br>Churned: %{y:,}<extra></extra>",
+        hovertemplate="%{x}<br>Churn User: %{y:,}<extra></extra>",
     ))
     # QR = 1 reference (trục phải)
     fig_qr.add_trace(go.Scatter(
@@ -744,7 +744,7 @@ with tabs[3]:
 
     fig_qr.update_layout(
         title=dict(text="Net Growth BNPL User",
-                   font=dict(size=15), x=0.5, xanchor="center"),
+                   font=dict(size=19, weight="bold"), x=0.5, xanchor="center"),
         height=340, margin=dict(l=40, r=60, t=75, b=40),
         paper_bgcolor="white", plot_bgcolor="white",
         barmode="overlay",
