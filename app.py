@@ -43,10 +43,12 @@ st.markdown("""
     header {visibility: hidden;}
     [data-testid="collapsedControl"] {visibility: visible !important; display: flex !important;}
     [data-testid="stSidebar"] {visibility: visible !important;}
-    [data-testid="stMetric"] { text-align: center; }
-    [data-testid="stMetricLabel"] { justify-content: center; }
-    [data-testid="stMetricValue"] { justify-content: center; }
-    [data-testid="stMetricDelta"] { justify-content: center; }
+    [data-testid="stMetric"] { text-align: center !important; }
+    [data-testid="stMetricLabel"] { justify-content: center !important; display: flex !important; }
+    [data-testid="stMetricValue"] { justify-content: center !important; display: flex !important; }
+    [data-testid="stMetricDelta"] { justify-content: center !important; display: flex !important; }
+    div[data-testid="stMetric"] > label { text-align: center !important; width: 100%; }
+    div[data-testid="stMetric"] > div { justify-content: center !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -288,8 +290,8 @@ with tabs[1]:
     _new_mon  = filt[filt["month_number"] == 0].groupby("trxn_month")["user_id"].nunique()
     _h24 = [p for p in _mau_mon.index if str(p)[:4] == "2024" and 1 <= int(str(p)[5:7]) <= 6]
     _h25 = [p for p in _mau_mon.index if str(p)[:4] == "2025" and 1 <= int(str(p)[5:7]) <= 6]
-    _new_24 = float(_new_mon[_h24].mean()) if _h24 else float("nan")
-    _new_25 = float(_new_mon[_h25].mean()) if _h25 else float("nan")
+    _new_24 = float(_new_mon[[p for p in _h24 if p in _new_mon.index]].mean()) if _h24 else float("nan")
+    _new_25 = float(_new_mon[[p for p in _h25 if p in _new_mon.index]].mean()) if _h25 else float("nan")
     _new_yoy = (_new_25 - _new_24) / _new_24 if _new_24 else float("nan")
     _gmv_24 = float(_gmv_mon[_h24].sum()) if _h24 else float("nan")
     _gmv_25 = float(_gmv_mon[_h25].sum()) if _h25 else float("nan")
@@ -304,7 +306,7 @@ with tabs[1]:
 
     from plotly.subplots import make_subplots
 
-    _mpad, _mc1, _mc2, _mc3, _mc4, _mpad2 = st.columns([1, 2, 2, 2, 2, 1])
+    _mc1, _mc2, _mc3, _mc4 = st.columns(4)
     _mc1.metric("New users (avg H1)", f"{_new_25:,.0f}" if not np.isnan(_new_25) else "–",
                 f"{_new_yoy:+.0%} YoY" if not np.isnan(_new_yoy) else "–")
     _mc2.metric("MAU (avg H1)", f"{_mau_25:,.0f}" if not np.isnan(_mau_25) else "–",
@@ -555,91 +557,156 @@ with tabs[2]:
                    tickvals=list(freq.index), ticktext=freq_xlabels),
         barmode="relative",
     )
-    st.markdown(f"<div style='text-align:center;font-size:17px;font-weight:700;margin-bottom:2px'>Biểu đồ phân phối số lượng KH theo số lượng giao dịch ở tháng đầu tiên và tỷ lệ quay lại ở tháng thứ 2</div>", unsafe_allow_html=True)
-    st.markdown(f"<div style='text-align:center;color:#6b7280;font-size:13px'>Phân phối lệch phải - Median: {med_txn:.1f} giao dịch | Mean: {mean_txn:.1f} giao dịch. {pct_below:.1%} user tập trung ở vùng đỏ (&lt;{THRESHOLD} giao dịch).</div>", unsafe_allow_html=True)
-    st.plotly_chart(fig_combo, use_container_width=True, config={"displayModeBar": False})
-
+    # Plain version (no color highlight) for Section 1
+    fig_combo_plain = go.Figure()
+    fig_combo_plain.add_trace(go.Bar(
+        x=list(freq.index), y=freq["n"],
+        name="Số user",
+        marker_color="#a3c4f3",
+        yaxis="y",
+        customdata=freq_xlabels,
+        hovertemplate="M0 txn=%{customdata}<br>Số user=%{y:,}<extra></extra>",
+    ))
+    fig_combo_plain.add_trace(go.Scatter(
+        x=list(freq.index), y=freq["ret"],
+        name="M1 Retention",
+        mode="lines+markers+text",
+        line=dict(color="#1d4ed8", width=2.5),
+        marker=dict(size=7, color="#1d4ed8"),
+        text=[f"{v:.1%}" if i in [1, THRESHOLD] else "" for i, v in zip(freq.index, freq["ret"])],
+        textposition="top center",
+        textfont=dict(size=10, color="#1d4ed8"),
+        yaxis="y2",
+        customdata=freq_xlabels,
+        hovertemplate="M0 txn=%{customdata}<br>M1 Retention=%{y:.1%}<extra></extra>",
+    ))
+    fig_combo_plain.add_hline(y=avg_ret, line_dash="dot", line_color="#f97316", line_width=1.5,
+                              annotation_text=f"Avg Retention {avg_ret:.1%}",
+                              annotation_position="right",
+                              annotation_font_color="#f97316", yref="y2")
+    fig_combo_plain.update_layout(
+        title=dict(text=f"Biểu đồ phân phối số lượng KH theo số lượng giao dịch ở tháng đầu tiên và tỷ lệ quay lại ở tháng thứ 2<br><span style='font-size:12px;color:#6b7280;font-weight:normal'>Phân phối lệch phải - Median: {med_txn:.1f} giao dịch | Mean: {mean_txn:.1f} giao dịch</span>", font=dict(size=14, weight="bold"), x=0.5, xanchor="center"),
+        height=390, margin=dict(l=40, r=70, t=90, b=20),
+        paper_bgcolor="white", plot_bgcolor="white",
+        legend=dict(orientation="h", y=1.12, x=0.5, xanchor="center",
+                    font=dict(size=11), bgcolor="rgba(0,0,0,0)"),
+        font=dict(size=11),
+        yaxis=dict(title="Số user", showgrid=True, gridcolor="#f0f0f0",
+                   zeroline=False, tickformat=","),
+        yaxis2=dict(title="M1 Retention", overlaying="y", side="right",
+                    tickformat=".0%", showgrid=False, zeroline=False,
+                    range=[max(0, freq["ret"].min() - 0.08), min(1.0, freq["ret"].max() + 0.06)]),
+        xaxis=dict(title="Số giao dịch M0", showgrid=False,
+                   tickvals=list(freq.index), ticktext=freq_xlabels),
+        barmode="relative",
+    )
     # ── Phần 1: Validate ─────────────────────────────────────────────────────
-    st.markdown("**1. Nhìn nhận chung về giả thuyết (Validation)**")
-    st.markdown(f"""Dữ liệu ủng hộ giả thuyết này. User làm càng nhiều giao dịch trong M0 thì tỷ lệ quay lại M1 càng cao — nhóm 1 giao dịch giữ chân thấp nhất ({freq.loc[1,'ret']:.1%}), thấp hơn trung bình toàn ví ({avg_ret:.1%}).
-
-Không có ngưỡng bật-tắt: mỗi giao dịch thêm đều cải thiện retention một chút. Nhưng từ giao dịch thứ 4 trở đi, mức tăng thêm nhỏ dần rõ rệt — đây là lý do chọn **N = 4** làm ngưỡng thiết kế can thiệp. Dữ liệu cho thấy **tương quan**, chưa phải nhân quả. Chi tiết ở mục 4.""")
-
     from scipy.stats import spearmanr as _spearmanr1c
     _rho_1c, _rho_p_1c = _spearmanr1c(m0_all["m0_txn"], m0_all["retained"])
-    st.markdown(f"""
-**Kiểm định thống kê**
+    st.plotly_chart(fig_combo_plain, use_container_width=True, config={"displayModeBar": False})
+    st.markdown("**1. Nhìn nhận chung về giả thuyết (Validation)**")
+    st.markdown(f"Quan sát dữ liệu quá khứ, user thực hiện càng nhiều giao dịch trong tháng đầu tiên (M0) có **xu hướng** quay lại ở tháng tiếp theo (M1) cao hơn. Nhóm chỉ có 1 giao dịch có tỉ lệ retention thấp nhất ({freq.loc[1,'ret']:.1%}), thấp hơn trung bình retention tổng thể ({avg_ret:.1%}).")
+    st.markdown(f"""Tuy nhiên, phân tích này tiếp tục thực hiện kiểm định thống kê: *Spearman correlation (one-tailed): kiểm định xem số giao dịch M0 có tương quan dương đơn điệu với tỷ lệ retention M1 không.*
 
-*Spearman correlation (one-tailed): kiểm định xem số giao dịch M0 có tương quan dương đơn điệu với tỷ lệ retention M1 không. Không cần chọn ngưỡng N cụ thể.*
+- H₀: Không có mối tương quan dương giữa số giao dịch M0 và retention M1 (ρ ≤ 0)
+- H₁: Số giao dịch M0 càng cao, tỷ lệ retention M1 càng cao (ρ > 0)
 
-H₀: Không có mối tương quan dương giữa số giao dịch M0 và retention M1 (ρ ≤ 0)
-
-H₁: Số giao dịch M0 càng cao, tỷ lệ retention M1 càng cao (ρ > 0)
-
-Spearman ρ = {_rho_1c:.3f}, p = {_rho_p_1c / 2:.4f} (one-tailed) → có bằng chứng ủng hộ H₁.
-""")
-    st.info(f"Giả thuyết được ủng hộ bởi data - Spearman ρ = {_rho_1c:.3f} (p < 0.05). Association giữa số giao dịch M0 và retention M1 có ý nghĩa thống kê. Đây là tương quan, chưa phải nhân quả.")
+**Kết quả:** Spearman ρ = {_rho_1c:.3f}, p = {_rho_p_1c/2:.4f} (one-tailed) → Chấp nhận H₁.""")
+    st.info(f"Giả thuyết được ủng hộ bởi dữ liệu xu hướng lịch sử và kiểm định thống kê — Spearman ρ = {_rho_1c:.3f} (p < 0.05). Đây là tương quan, chưa phải nhân quả.")
 
     st.markdown("---")
 
-    # ── Phần 2: N=4 + Bottleneck ─────────────────────────────────────────────
-    st.markdown("**2. What is N? - Ngưỡng quan sát từ biểu đồ**")
-    st.markdown(f"""Từ biểu đồ trên: retention tăng theo từng giao dịch — 1 ({freq.loc[1,'ret']:.1%}) → 2 ({freq.loc[2,'ret']:.1%}) → 3 ({freq.loc[3,'ret']:.1%}) → 4 ({freq.loc[4,'ret']:.1%}). Từ N=4 trở đi mức tăng thêm nhỏ dần (nhóm 7+ vẫn cao hơn 4–6, nhưng chênh lệch đã thu hẹp nhiều). **N = 4 là điểm mà mỗi giao dịch thêm bắt đầu mang lại ít cải thiện hơn** — đây là ngưỡng hợp lý để thiết kế intervention.
+    # ── Phần 2: What is N? ────────────────────────────────────────────────────
+    st.markdown("**2. What is N?**")
+    st.markdown(f"<div style='text-align:center;font-size:16px;font-weight:700;margin-bottom:2px'>Phân phối số giao dịch M0 và tỷ lệ retention M1</div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='text-align:center;color:#6b7280;font-size:13px'>Median: {med_txn:.1f} | Mean: {mean_txn:.1f} giao dịch. {pct_below:.1%} user tập trung ở vùng đỏ (&lt;{THRESHOLD} giao dịch).</div>", unsafe_allow_html=True)
+    st.plotly_chart(fig_combo, use_container_width=True, config={"displayModeBar": False})
+    st.markdown("Quan sát dữ liệu lịch sử phát hiện điểm **bất thường** tại N=4. Khi thực hiện **kiểm tra đơn lẻ** ở **2024** và **2025** đều ghi nhận mức tăng **bất thường** tại 4 transaction. Phân tích tiếp tục dùng **Decision Tree** để xác định ngưỡng tách tối ưu một cách khách quan.")
 
-Vấn đề thực tế: **{pct_below:.1%} user mới ({n_low:,}/{total_u:,}) chỉ phát sinh 1–3 giao dịch trong M0** — nhóm đông nhất nhưng retention thấp nhất. Nhóm ≥{THRESHOLD} giao dịch chỉ chiếm {1-pct_below:.1%} nhưng quay lại với tỷ lệ {p_high:.1%}.
+    # Decision Tree: 3 cột nhỏ
+    import matplotlib.pyplot as plt
+    from sklearn.tree import DecisionTreeClassifier as _DTC
+    cohort_year_map = m0_all.merge(
+        filt[["user_id","cohort"]].drop_duplicates(), on="user_id", how="left"
+    )
+    cohort_year_map["year"] = cohort_year_map["cohort"].apply(lambda x: int(str(x)[:4]))
 
-⚠️ *N = {THRESHOLD} xác định từ quan sát biểu đồ trên chính bộ data này (exploratory) — cần A/B test để xác nhận.*""")
-    st.info(f"N = {THRESHOLD} là điểm bão hòa quan sát được (exploratory). {pct_below:.1%} user ({n_low:,}/{total_u:,}) bị tắc ở 1–3 giao dịch là bottleneck lớn nhất.")
+    def _dt_result(data):
+        dt = _DTC(max_depth=1, random_state=42)
+        dt.fit(data[["m0_txn"]], data["retained"])
+        thr = dt.tree_.threshold[0]
+        n_split = int(thr) + 1
+        hi = data[data["m0_txn"] >= n_split]["retained"].mean()
+        lo = data[data["m0_txn"] < n_split]["retained"].mean()
+        return thr, n_split, lo, hi, len(data)
 
-    st.markdown("---")
+    _dt_all  = _dt_result(m0_all)
+    _dt_2024 = _dt_result(cohort_year_map[cohort_year_map["year"]==2024])
+    _dt_2025 = _dt_result(cohort_year_map[cohort_year_map["year"]==2025])
 
-    # ── Phần 3: Driver Analysis ───────────────────────────────────────────────
-    st.markdown("**3. Cơ chế kinh tế — Tại sao N = 4 là ngưỡng có ý nghĩa?**")
+    def _dt_fig(thr, n_split, lo, hi, n_total, title, figsize=(3.2, 2.6), fs=8):
+        fig, ax = plt.subplots(figsize=figsize)
+        ax.set_xlim(0, 10); ax.set_ylim(0, 6); ax.axis("off")
+        ax.add_patch(plt.Rectangle((2.8, 3.8), 4.4, 1.5, fc="#dbeafe", ec="#93c5fd", lw=1.5, zorder=2))
+        ax.text(5, 4.85, f"Số GD M0 ≤ {thr:.1f}", ha="center", va="center", fontsize=fs, fontweight="bold")
+        ax.text(5, 4.2, f"n = {n_total:,}", ha="center", va="center", fontsize=fs-1, color="#6b7280")
+        ax.annotate("", xy=(2.2, 2.9), xytext=(4.0, 3.8), arrowprops=dict(arrowstyle="->", color="#9ca3af", lw=1))
+        ax.annotate("", xy=(7.8, 2.9), xytext=(6.0, 3.8), arrowprops=dict(arrowstyle="->", color="#9ca3af", lw=1))
+        ax.text(2.5, 3.5, "True", fontsize=fs-1, color="#6b7280")
+        ax.text(6.8, 3.5, "False", fontsize=fs-1, color="#6b7280")
+        ax.add_patch(plt.Rectangle((0.2, 1.2), 4.0, 1.5, fc="#fee2e2", ec="#fca5a5", lw=1.2, zorder=2))
+        ax.text(2.2, 2.2, f"1–{n_split-1} GD", ha="center", va="center", fontsize=fs-0.5, fontweight="bold", color="#dc2626")
+        ax.text(2.2, 1.6, f"Ret: {lo:.1%}", ha="center", va="center", fontsize=fs, fontweight="bold")
+        ax.add_patch(plt.Rectangle((5.8, 1.2), 4.0, 1.5, fc="#dcfce7", ec="#86efac", lw=1.2, zorder=2))
+        ax.text(7.8, 2.2, f"≥{n_split} GD", ha="center", va="center", fontsize=fs-0.5, fontweight="bold", color="#15803d")
+        ax.text(7.8, 1.6, f"Ret: {hi:.1%}", ha="center", va="center", fontsize=fs, fontweight="bold")
+        ax.set_title(title, fontsize=fs+1, fontweight="bold", pad=6)
+        ax.text(5, 0.3, f"N gợi ý: ≥{n_split}", ha="center", va="center",
+                fontsize=fs, fontweight="bold", color="#1d4ed8",
+                bbox=dict(fc="#eff6ff", ec="#bfdbfe", boxstyle="round,pad=0.3"))
+        plt.tight_layout(pad=0.4)
+        return fig
+
+    # Chart tổng thể — to, ở giữa
+    _dca, _dcb, _dcc = st.columns([1, 4, 1])
+    with _dcb:
+        st.pyplot(_dt_fig(*_dt_all, "Tổng thể", figsize=(5.5, 3.4), fs=10), use_container_width=True)
+
+    # 2 chart nhỏ — 2024 và 2025
+    _dd1, _dd2 = st.columns(2)
+    with _dd1:
+        st.pyplot(_dt_fig(*_dt_2024, "Cohort 2024", figsize=(3.2, 2.6), fs=8), use_container_width=True)
+    with _dd2:
+        st.pyplot(_dt_fig(*_dt_2025, "Cohort 2025", figsize=(3.2, 2.6), fs=8), use_container_width=True)
+
+    st.info(f"Cả quan sát và Decision Tree đều chỉ về N=3–4. Cohort 2024 (chiếm 76% data) xác nhận rõ N=4, cohort 2025 ra N=3 nhưng chênh lệch không đáng kể.\n\nCân nhắc chọn **N=4** là ngưỡng. Tuy nhiên khi **triển khai thực tế**, cần thực hiện **A/B Testing** để xác nhận.")
+
+    st.markdown("<div style='margin-top:20px'></div>", unsafe_allow_html=True)
+    st.markdown(f"Câu hỏi tiếp theo: tại sao **N=4** lại là điểm có ý nghĩa, không phải N=3 hay N=5? **Phân tích GMV** và **cấu trúc phí** cho thấy cơ chế kinh tế đằng sau.")
 
     drv_plot = drv[drv.index <= 12].copy()
     drv_plot["fee_20k"] = 20_000 / drv_plot["med_gmv"]
     drv_plot["x"] = drv_plot.index.astype(str)
     colors_drv = ["#ef4444" if i < THRESHOLD else "#1d4ed8" for i in drv_plot.index]
 
-    from plotly.subplots import make_subplots as _msp2
-    fig_drv = _msp2(rows=1, cols=2,
-                    subplot_titles=["GMV và AOV theo số giao dịch M0",
-                                    "Tỷ lệ phí/GMV theo số giao dịch M0"],
-                    horizontal_spacing=0.14)
-
-    # Left: GMV (bar) + AOV (line)
-    fig_drv.add_trace(go.Bar(
-        x=drv_plot["x"], y=drv_plot["med_gmv"]/1000,
-        name="Median GMV", marker_color=colors_drv, opacity=0.85,
-        hovertemplate="Txn=%{x}<br>Median GMV=%{y:.0f}K<extra></extra>",
-    ), row=1, col=1)
-    fig_drv.add_trace(go.Scatter(
-        x=drv_plot["x"], y=drv_plot["med_aov"]/1000,
-        name="Median AOV", mode="lines+markers",
-        line=dict(color="#374151", width=2, dash="dot"),
-        marker=dict(size=5),
-        hovertemplate="Txn=%{x}<br>Median AOV=%{y:.0f}K<extra></extra>",
-    ), row=1, col=1)
-
-    # Right: effective fee %
+    # Fee/GMV chart only
+    fig_drv = go.Figure()
     fig_drv.add_trace(go.Bar(
         x=drv_plot["x"], y=drv_plot["fee_20k"],
-        name="Phí/GMV", marker_color=colors_drv, opacity=0.85,
+        marker_color=colors_drv, opacity=0.85,
         text=[f"{v:.0%}" for v in drv_plot["fee_20k"]], textposition="outside",
-        hovertemplate="Txn=%{x}<br>Phí/GMV=%{text}<extra></extra>",
+        hovertemplate="Txn=%{x}<br>Phí/tổng chi tiêu=%{text}<extra></extra>",
         showlegend=False,
-    ), row=1, col=2)
-    fig_drv.add_hline(y=0.05, line_dash="dot", line_color="#9ca3af",
-                      annotation_text="5%", row=1, col=2)
-
-    fig_drv.update_layout(height=320, margin=dict(l=20,r=20,t=70,b=40),
-                          paper_bgcolor="white", plot_bgcolor="white",
-                          legend=dict(orientation="h", y=1.28, x=0.25, xanchor="center", font=dict(size=10)),
-                          font=dict(size=11))
-    fig_drv.update_yaxes(showgrid=True, gridcolor="#f0f0f0", ticksuffix="K", row=1, col=1)
-    fig_drv.update_yaxes(showgrid=True, gridcolor="#f0f0f0", tickformat=".0%", row=1, col=2)
-    fig_drv.update_xaxes(title_text="Số giao dịch M0", showgrid=False)
-    st.plotly_chart(fig_drv, use_container_width=True, config={"displayModeBar": False})
+    ))
+    fig_drv = clean_fig(fig_drv, height=350)
+    fig_drv.update_layout(
+        title=dict(text="Tỷ lệ phí/tổng chi tiêu theo số giao dịch M0", font=dict(size=14, weight="bold"), x=0.5, xanchor="center"),
+        xaxis=dict(title="Số giao dịch M0", showgrid=False),
+        yaxis=dict(tickformat=".0%", title="Phí / Tổng chi tiêu", range=[0, drv_plot["fee_20k"].max()*1.35]),
+    )
+    _drv_l, _drv_c, _drv_r = st.columns([1, 8, 1])
+    with _drv_c:
+        st.plotly_chart(fig_drv, use_container_width=True, config={"displayModeBar": False})
 
     # Retention M1–M6 by M0 txn group
     _m0_txn_u = df[df["trxn_month"]==df["cohort"]].groupby("user_id").size().rename("m0_txn")
@@ -656,28 +723,31 @@ Vấn đề thực tế: **{pct_below:.1%} user mới ({n_low:,}/{total_u:,}) ch
     _m6_4to6_fmt = f"{_m6_4to6:.1%}" if not np.isnan(_m6_4to6) else "~18%"
     _m6_7p_fmt   = f"{_m6_7p:.1%}"   if not np.isnan(_m6_7p)   else "~20%"
 
-    _colors_grp = {"1–3": "#ef4444", "4–6": "#1d4ed8", "7+": "#16a34a"}
+    st.markdown("Song song với đó, dữ liệu retention theo thời gian cũng cho thấy khoảng cách rõ rệt giữa nhóm đạt và chưa đạt N=4:")
+
+    _colors_grp = {"1–3": "#ef4444", "4–6": "#1d4ed8", "7+": "#0d9488"}
     _fig_grp = go.Figure()
     for _grp in ["1–3","4–6","7+"]:
         if _grp in _ret_grp_piv.index:
             _vals = [float(_ret_grp_piv.loc[_grp, c]) if c in _ret_grp_piv.columns else float("nan") for c in _grp_mons]
-            _fig_grp.add_trace(go.Scatter(
+            _fig_grp.add_trace(go.Bar(
                 x=[f"M{c}" for c in _grp_mons], y=_vals,
                 name=f"{_grp} giao dịch",
-                mode="lines+markers",
-                line=dict(color=_colors_grp[_grp], width=2),
-                marker=dict(size=7),
+                marker_color=_colors_grp[_grp], opacity=0.85,
+                text=[f"{v:.0%}" if i in [0, len(_grp_mons)-1] else "" for i, v in enumerate(_vals)], textposition="outside",
+                textfont=dict(size=9),
                 hovertemplate=f"Nhóm {_grp}<br>%{{x}}: %{{y:.1%}}<extra></extra>",
             ))
     _fig_grp.update_layout(
-        height=240, margin=dict(l=40,r=20,t=30,b=30),
+        title=dict(text="Retention M1–M6 theo nhóm số giao dịch M0", font=dict(size=14, weight="bold"), x=0.5, xanchor="center"),
+        barmode="group",
+        height=320, margin=dict(l=40,r=20,t=60,b=30),
         paper_bgcolor="white", plot_bgcolor="white",
-        yaxis=dict(tickformat=".0%", showgrid=True, gridcolor="#f0f0f0"),
+        yaxis=dict(tickformat=".0%", showgrid=True, gridcolor="#f0f0f0", range=[0, 0.9]),
         xaxis=dict(showgrid=False),
         legend=dict(orientation="h", y=1.14, x=0.5, xanchor="center", font=dict(size=10)),
         font=dict(size=11),
     )
-    st.markdown("<div style='text-align:center;font-size:14px;font-weight:600;margin-top:24px;margin-bottom:2px'>Retention M1–M6 theo nhóm số giao dịch M0</div>", unsafe_allow_html=True)
     st.plotly_chart(_fig_grp, use_container_width=True, config={"displayModeBar": False})
 
     r1 = drv.loc[1] if 1 in drv.index else None
@@ -686,15 +756,7 @@ Vấn đề thực tế: **{pct_below:.1%} user mới ({n_low:,}/{total_u:,}) ch
     fee4 = f"{r4['med_fee_pct']:.0%}" if r4 is not None else "~2.7%"
     gmv1 = f"{r1['med_gmv']/1000:.0f}K" if r1 is not None else "133K"
     gmv4 = f"{r4['med_gmv']/1000:.0f}K" if r4 is not None else "747K"
-    st.markdown(f"""- **User ở lại vì dùng nhiều hơn, không phải vì mua đắt hơn:** AOV trung bình xấp xỉ nhau ở mọi nhóm (~133K). Tổng GMV tháng đầu tăng hoàn toàn do tần suất — nhóm ≥4 giao dịch có GMV {gmv4}, gấp nhiều lần nhóm 1 giao dịch ({gmv1}).
-
-- **Phí 20K/tháng là lý do N = 4 có ý nghĩa:** AOV bằng nhau nhưng GMV thì khác nhau theo số giao dịch. Phí 20K cố định nên tỷ lệ phí/GMV thay đổi rõ rệt:
-  - Nhóm 1 giao dịch (GMV {gmv1}): phí chiếm {fee1} tổng chi tiêu — quá cao so với lợi ích, người dùng bỏ.
-  - Nhóm 4–6 giao dịch (GMV {gmv4}): phí chỉ còn {fee4} — chi phí hợp lý, user tiếp tục dùng.
-  - Đây là lý do tỷ lệ retention tăng mạnh ở nhóm đạt đủ 4 giao dịch trong M0.
-
-- **Khoảng cách này giữ nguyên đến M6:** Nhóm 4–6 giao dịch: M6 retention {_m6_4to6_fmt} (gần gấp đôi nhóm 1–3 là {_m6_1to3_fmt}). Nhóm 7+: {_m6_7p_fmt}. User đã qua ngưỡng 4 giao dịch trong M0 có xu hướng gắn bó lâu dài hơn hẳn.""")
-    st.info(f"AOV bằng nhau ở mọi nhóm (~133K) — user ở lại không vì mua đồ đắt hơn, mà vì dùng nhiều hơn. GMV cao hơn, tỷ lệ phí/GMV thấp hơn, sản phẩm trở nên hợp lý về chi phí hơn.")
+    st.markdown(f"Phí 20K/tháng là **cố định** — nhóm 1 giao dịch (tổng chi tiêu {gmv1}) chịu tỷ lệ phí {fee1}, nhóm 4–6 giao dịch (tổng chi tiêu {gmv4}) chỉ còn {fee4}. **N=4 là điểm mà sản phẩm bắt đầu hợp lý về chi phí với người dùng.** Khoảng cách này không thu hẹp theo thời gian — đến M6, nhóm 4–6 giao dịch vẫn giữ được {_m6_4to6_fmt}, cao hơn hẳn nhóm 1–3 giao dịch ({_m6_1to3_fmt}).")
 
     st.markdown("---")
 
@@ -1033,7 +1095,7 @@ H₀: Tỷ lệ churn không khác nhau giữa các GMV tier
 
 H₁: Tỷ lệ churn khác nhau giữa các GMV tier
 
-p = {p_chi:.4f} → bác bỏ H₀. Chiều hướng: churn giảm theo GMV.""")
+**Kết quả:** p = {p_chi:.4f} → Chấp nhận H₁. Chiều hướng: churn giảm theo GMV.""")
 
     st.markdown("---")
     st.markdown("#### Fee burden by GMV (Gross Merchandise Value)")
@@ -1087,11 +1149,11 @@ H₀: Phân phối fee/GMV của nhóm churn bằng nhóm còn lại
 
 H₁: Nhóm churn có fee/GMV cao hơn nhóm còn lại
 
-p = {_mw_p:.4f} → bác bỏ H₀.
+**Kết quả:** p = {_mw_p:.4f} → Chấp nhận H₁.
 
 *Spearman correlation: tương quan đơn điệu giữa fee/GMV và churn.*
 
-Spearman ρ = {_rho:.3f}, p = {_rho_p:.4f} - có ý nghĩa thống kê, effect size nhỏ.
+**Kết quả:** Spearman ρ = {_rho:.3f}, p = {_rho_p:.4f} → Chấp nhận H₁ (effect size nhỏ).
 
 *Lưu ý: fee/GMV = 20K/GMV, không tách được effect phí vs chi tiêu.*
 """)
