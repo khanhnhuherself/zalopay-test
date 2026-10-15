@@ -868,14 +868,14 @@ Trong tình huống này, đổ thêm ngân sách vào acquisition chỉ bù đ�
     st.caption("AOV bằng nhau - ticket size không phải vấn đề. Utilization rate của nhóm churn cao hơn cho thấy họ không thiếu hạn mức; điểm khác biệt là số giao dịch, GMV và gánh nặng phí tương đối.")
 
     st.markdown("---")
-    st.markdown("#### Churn Rate by Carrier Diversity")
+    st.markdown("##### Hành vi sử dụng trong M0")
 
+    # Carrier Diversity
     ct_div = m0s_filt.groupby("n_carriers").agg(
         n=("retained","count"), churn=("retained", lambda x: 1-x.mean()), med_gmv=("gmv","median")
     ).query("n>=100").reset_index()
     avg_ch = 1 - m0s_filt["retained"].mean()
     colors_div = ["#ef4444" if c > avg_ch else "#6b7280" for c in ct_div["churn"]]
-
     fig2 = go.Figure(go.Bar(
         x=ct_div["n_carriers"], y=ct_div["churn"],
         marker_color=colors_div, width=0.5,
@@ -885,44 +885,57 @@ Trong tình huống này, đổ thêm ngân sách vào acquisition chỉ bù đ�
     ))
     fig2.add_hline(y=avg_ch, line_dash="dot", line_color="#9ca3af",
                    annotation_text=f"Avg {avg_ch:.1%}", annotation_position="top right")
-    fig2 = clean_fig(fig2, height=300)
+    fig2 = clean_fig(fig2, height=260)
     fig2.update_layout(
-        xaxis=dict(title="Số loại dịch vụ trong M0",
+        title=dict(text="Churn theo số loại dịch vụ M0", font=dict(size=12), x=0.5, xanchor="center"),
+        xaxis=dict(title="Số loại dịch vụ",
                    tickvals=ct_div["n_carriers"],
                    ticktext=[f"{int(n)} loại" for n in ct_div["n_carriers"]]),
         yaxis=dict(tickformat=".0%"),
     )
-
     _cd1 = ct_div[ct_div["n_carriers"]==1]
     _cd2 = ct_div[ct_div["n_carriers"]==2]
     _churn1 = f"{_cd1['churn'].values[0]:.1%}" if len(_cd1) else "31.8%"
-    _gmv1  = f"{_cd1['med_gmv'].values[0]/1000:.0f}K" if len(_cd1) else "197K"
-    _gmv2  = f"{_cd2['med_gmv'].values[0]/1000:.0f}K" if len(_cd2) else "478K"
+    _gmv1   = f"{_cd1['med_gmv'].values[0]/1000:.0f}K" if len(_cd1) else "197K"
+    _gmv2   = f"{_cd2['med_gmv'].values[0]/1000:.0f}K" if len(_cd2) else "478K"
     _, _p_div, *_ = chi2_contingency(pd.crosstab(m0s_filt["n_carriers"], m0s_filt["retained"]))
-    st.markdown(f"""
-**48% user chỉ dùng 1 loại dịch vụ trong M0** - churn cao nhất ({_churn1}, trên mức trung bình {avg_ch:.1%}).
 
-Khi mở rộng sang ≥2 loại, GMV tăng từ {_gmv1} lên {_gmv2} (gấp 2.4×), churn giảm xuống dưới mức trung bình.
-""")
-    _f2l, _f2c, _f2r = st.columns([1, 6, 1])
-    with _f2c:
+    # n_txn chart
+    _txn_tmp = m0s_filt.copy()
+    _txn_tmp["txn_grp"] = pd.cut(_txn_tmp["n_txn"], bins=[0,1,3,9999],
+                                  labels=["1 lần","2–3 lần","4+ lần"])
+    _ct_txn_grp = _txn_tmp.groupby("txn_grp", observed=True).agg(
+        n=("retained","count"), churn=("retained", lambda x: 1-x.mean())
+    ).reset_index()
+    _txn_colors = ["#ef4444" if c > avg_ch else "#6b7280" for c in _ct_txn_grp["churn"]]
+    fig_txn = go.Figure(go.Bar(
+        x=_ct_txn_grp["txn_grp"].astype(str), y=_ct_txn_grp["churn"],
+        marker_color=_txn_colors, width=0.5,
+        text=[f"{c:.1%}" for c in _ct_txn_grp["churn"]], textposition="outside",
+        hovertemplate="%{x}<br>Churn: %{y:.1%}<extra></extra>", showlegend=False,
+    ))
+    fig_txn.add_hline(y=avg_ch, line_dash="dot", line_color="#9ca3af",
+                      annotation_text=f"Avg {avg_ch:.1%}", annotation_position="top right")
+    fig_txn = clean_fig(fig_txn, height=260)
+    fig_txn.update_layout(
+        title=dict(text="Churn theo số giao dịch M0", font=dict(size=12), x=0.5, xanchor="center"),
+        xaxis_title="Số giao dịch",
+        yaxis=dict(tickformat=".0%"),
+    )
+    _, _p_txn, *_ = chi2_contingency(pd.crosstab(
+        pd.cut(m0s_filt["n_txn"], bins=[0,1,3,9999], labels=["1","2-3","4+"]),
+        m0s_filt["retained"]
+    ))
+
+    _div_col, _txn_col = st.columns(2)
+    with _div_col:
         st.plotly_chart(fig2, use_container_width=True, config={"displayModeBar": False})
+        st.caption(f"48% user dùng 1 loại dịch vụ — churn {_churn1}, trên TB {avg_ch:.1%}. Dùng ≥2 loại, GMV tăng từ {_gmv1} → {_gmv2}, churn giảm dưới mức TB. (chi-square p={_p_div:.4f})")
+    with _txn_col:
+        st.plotly_chart(fig_txn, use_container_width=True, config={"displayModeBar": False})
+        st.caption(f"Churn giảm rõ rệt khi đạt ≥4 giao dịch trong M0 — ngưỡng bắt đầu hình thành thói quen. (chi-square p={_p_txn:.4f})")
 
-    st.markdown(f"""**Kiểm định (chi-square):**
-
-*Chi-square test of independence (two-tailed): kiểm định xem số loại dịch vụ sử dụng trong M0 và tình trạng churn có liên hệ với nhau không.*
-
-H₀: Tỷ lệ churn không khác nhau giữa các nhóm số loại dịch vụ
-
-H₁: Tỷ lệ churn khác nhau giữa các nhóm
-
-p = {_p_div:.4f} → bác bỏ H₀. Chiều hướng: dùng ít loại dịch vụ hơn có churn cao hơn.
-
-*Lưu ý: đây là xu hướng quan sát được từ data, không thể kết luận dùng nhiều loại dịch vụ là nguyên nhân khiến user ở lại.*""")
-
-    st.markdown("---")
-    st.markdown("#### Churn Rate: Số giao dịch × Số loại dịch vụ")
-    st.markdown("Hai biến - số loại dịch vụ và số giao dịch - không hoạt động độc lập. Matrix dưới đây cho thấy churn rate tại từng điểm giao nhau: **ô đỏ = nguy cơ cao, ô xanh = dưới mức trung bình.**")
+    st.markdown("**Hai biến không hoạt động độc lập — kết hợp lại để xác định nhóm nguy cơ cụ thể (đỏ = trên mức TB, xanh = dưới mức TB):**")
 
     _hm = m0s_filt.copy()
     _txn_labels = ["1","2","3","4","5-6","7-9","10+"]
@@ -933,10 +946,8 @@ p = {_p_div:.4f} → bác bỏ H₀. Chiều hướng: dùng ít loại dịch v
         n=("retained","count"), churn=("retained", lambda x: 1-x.mean())
     ).reset_index()
     _hm_grp = _hm_grp[_hm_grp["n"] >= 30]
-
     _hm_pivot = _hm_grp.pivot(index="n_carriers", columns="txn_bin", values="churn")
     _hm_n     = _hm_grp.pivot(index="n_carriers", columns="txn_bin", values="n")
-
     _xs = [str(c) for c in _hm_pivot.columns]
     _ys = [f"{int(r)} loại" for r in _hm_pivot.index]
     _zs = _hm_pivot.values.tolist()
@@ -946,19 +957,11 @@ p = {_p_div:.4f} → bác bỏ H₀. Chiều hướng: dùng ít loại dịch v
         for c in _hm_pivot.columns:
             v = _hm_pivot.loc[r, c]
             n_val = _hm_n.loc[r, c] if (r in _hm_n.index and c in _hm_n.columns) else float("nan")
-            if pd.isna(v):
-                _row.append("")
-            else:
-                _row.append(f"{v:.0%}  n={int(n_val):,}")
+            _row.append("" if pd.isna(v) else f"{v:.0%}  n={int(n_val):,}")
         _texts.append(_row)
-
     _zflat = _hm_pivot.values[~np.isnan(_hm_pivot.values)]
     fig_hm = go.Figure(go.Heatmap(
-        z=_zs,
-        x=_xs,
-        y=_ys,
-        text=_texts,
-        texttemplate="%{text}",
+        z=_zs, x=_xs, y=_ys, text=_texts, texttemplate="%{text}",
         colorscale=[[0,"#1d4ed8"],[0.5,"#f9fafb"],[1,"#c53030"]],
         zmid=float(_zflat.mean()) if len(_zflat) else 0.26,
         zmin=float(_zflat.min()) if len(_zflat) else 0.1,
@@ -972,15 +975,12 @@ p = {_p_div:.4f} → bác bỏ H₀. Chiều hướng: dùng ít loại dịch v
         yaxis=dict(title="Số loại dịch vụ", autorange="reversed"),
     )
     st.plotly_chart(fig_hm, use_container_width=True, config={"displayModeBar": False})
-    st.caption(f"Đỏ = churn trên mức trung bình ({_zflat.mean():.0%}). Xanh = dưới trung bình. Ô trống = dưới 30 user.")
-
-    # Compute matrix highlights dynamically
-    _mat_min_val = float(_hm_pivot.values[~np.isnan(_hm_pivot.values)].min()) if len(_zflat) else float("nan")
-    _mat_max_val = float(_hm_pivot.values[~np.isnan(_hm_pivot.values)].max()) if len(_zflat) else float("nan")
-    _mat_avg     = float(_zflat.mean()) if len(_zflat) else float("nan")
-    st.markdown(f"""Kết hợp hai biến, nhóm nguy cơ cao nhất là **1 giao dịch × 1 loại dịch vụ** — churn {_hm_pivot.iloc[0, 0]:.0%} với số lượng user lớn nhất (n={int(_hm_n.iloc[0,0]):,}). Ngược lại, nhóm ≥4 giao dịch × ≥2 loại dịch vụ hầu hết có churn dưới mức trung bình ({_mat_avg:.0%}). Hai biến này có tác động cộng hưởng: tăng cả tần suất lẫn độ rộng sử dụng mới thực sự cải thiện retention.""")
+    st.caption(f"Ô trống = dưới 30 user.")
+    _mat_avg = float(_zflat.mean()) if len(_zflat) else float("nan")
+    st.markdown(f"Nhóm nguy cơ cao nhất: **1 giao dịch × 1 loại dịch vụ** — churn {_hm_pivot.iloc[0, 0]:.0%}, n={int(_hm_n.iloc[0,0]):,} user. Tăng cả tần suất lẫn độ rộng sử dụng mới thực sự cải thiện retention — một trong hai không đủ.")
 
     st.markdown("---")
+    st.markdown("##### Gánh nặng tài chính (phí 20K cố định)")
     st.markdown("#### Churn Rate by GMV (Gross Merchandise Value)")
 
     _m = m0s_filt.copy()
