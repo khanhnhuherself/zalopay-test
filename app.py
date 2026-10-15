@@ -1059,11 +1059,11 @@ p = {p_chi:.4f} → bác bỏ H₀. Chiều hướng: churn giảm theo GMV.""")
         xaxis=dict(title="Fee / GMV (M0)"),
         yaxis=dict(tickformat=".0%", title="Churn rate", range=[0, _fee_grp["churn"].max()*1.3]),
     )
-    st.plotly_chart(fig_fee, use_container_width=True, config={"displayModeBar": False})
+    _ffL, _ffC, _ffR = st.columns([1, 6, 1])
+    with _ffC:
+        st.plotly_chart(fig_fee, use_container_width=True, config={"displayModeBar": False})
 
-    _fb_col1, _fb_col2 = st.columns(2)
-    with _fb_col1:
-        st.markdown(f"""
+    st.markdown(f"""
 **Kiểm định:**
 
 *Mann-Whitney U (one-tailed): so sánh phân phối fee/GMV giữa 2 nhóm.*
@@ -1073,9 +1073,7 @@ H₀: Phân phối fee/GMV của nhóm churn bằng nhóm còn lại
 H₁: Nhóm churn có fee/GMV cao hơn nhóm còn lại
 
 p = {_mw_p:.4f} → bác bỏ H₀.
-""")
-    with _fb_col2:
-        st.markdown(f"""
+
 *Spearman correlation: tương quan đơn điệu giữa fee/GMV và churn.*
 
 Spearman ρ = {_rho:.3f}, p = {_rho_p:.4f} - có ý nghĩa thống kê, effect size nhỏ.
