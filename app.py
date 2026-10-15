@@ -351,7 +351,7 @@ with tabs[1]:
         colorscale=cscale, zmin=zmin, zmax=zmax, showscale=False,
         hovertemplate="Cohort: %{y}<br>%{x}: %{text}<extra></extra>",
     ), row=1, col=2)
-    fig.update_layout(height=560, margin=dict(l=80,r=20,t=30,b=30),
+    fig.update_layout(height=560, margin=dict(l=10,r=20,t=30,b=30),
                       paper_bgcolor="white", font=dict(size=10))
     fig.update_xaxes(side="top")
     fig.update_yaxes(autorange="reversed")
@@ -709,15 +709,19 @@ with tabs[3]:
     marker_colors = ["#1d4ed8" if v >= 1 else "#ef4444" for v in qr_vals]
 
     fig_qr = go.Figure()
-    # Bars (trục trái) - nhạt để line nổi bật
-    fig_qr.add_trace(go.Bar(
+    # Area traces (trục trái) - fill trong suốt để cắt nhau
+    fig_qr.add_trace(go.Scatter(
         x=x_ga, y=ga_r["New"], name="New users",
-        marker_color="#dbeafe", opacity=0.85, yaxis="y",
+        mode="lines", fill="tozeroy",
+        line=dict(color="#3b82f6", width=1.5),
+        fillcolor="rgba(59,130,246,0.18)", yaxis="y",
         hovertemplate="%{x}<br>New: %{y:,}<extra></extra>",
     ))
-    fig_qr.add_trace(go.Bar(
+    fig_qr.add_trace(go.Scatter(
         x=x_ga, y=ga_r["churned"], name="Churned",
-        marker_color="#fecaca", opacity=0.85, yaxis="y",
+        mode="lines", fill="tozeroy",
+        line=dict(color="#ef4444", width=1.5),
+        fillcolor="rgba(239,68,68,0.18)", yaxis="y",
         hovertemplate="%{x}<br>Churned: %{y:,}<extra></extra>",
     ))
     # QR = 1 reference (trục phải)
@@ -741,7 +745,7 @@ with tabs[3]:
                    font=dict(size=15), x=0.5, xanchor="center"),
         height=340, margin=dict(l=40, r=60, t=75, b=40),
         paper_bgcolor="white", plot_bgcolor="white",
-        barmode="group", bargap=0.25, bargroupgap=0.05,
+        barmode="overlay",
         legend=dict(orientation="h", y=1.18, x=0.5, xanchor="center", font=dict(size=10)),
         font=dict(size=11),
         xaxis=dict(showgrid=False, tickangle=0, tickfont=dict(size=8)),
@@ -849,15 +853,12 @@ Trong tình huống này, đổ thêm ngân sách vào acquisition chỉ bù đ�
     _gmv1  = f"{_cd1['med_gmv'].values[0]/1000:.0f}K" if len(_cd1) else "197K"
     _gmv2  = f"{_cd2['med_gmv'].values[0]/1000:.0f}K" if len(_cd2) else "478K"
     _, _p_div, *_ = chi2_contingency(pd.crosstab(m0s_filt["n_carriers"], m0s_filt["retained"]))
-    _cd_col1, _cd_col2 = st.columns([3, 2])
-    with _cd_col1:
-        st.markdown(f"""
+    st.markdown(f"""
 **48% user chỉ dùng 1 loại dịch vụ trong M0** - churn cao nhất ({_churn1}, trên mức trung bình {avg_ch:.1%}).
 
 Khi mở rộng sang ≥2 loại, GMV tăng từ {_gmv1} lên {_gmv2} (gấp 2.4×), churn giảm xuống dưới mức trung bình.
 """)
-    with _cd_col2:
-        st.plotly_chart(fig2, use_container_width=True, config={"displayModeBar": False})
+    st.plotly_chart(fig2, use_container_width=True, config={"displayModeBar": False})
 
     st.markdown(f"""**Kiểm định (chi-square):**
 
@@ -954,15 +955,12 @@ p = {_p_div:.4f} → bác bỏ H₀. Chiều hướng: dùng ít loại dịch v
     fig3.update_layout(yaxis=dict(tickformat=".0%", range=[0, ts["churn"].max()*1.3]),
                        xaxis_title="GMV M0 tier")
 
-    _gv_col1, _gv_col2 = st.columns([3, 2])
-    with _gv_col1:
-        st.markdown(f"""
+    st.markdown(f"""
 **Churn giảm đều theo mức chi tiêu:** nhóm GMV <200K churn {ts['churn'].iloc[0]:.1%}, nhóm >700K chỉ churn {ts['churn'].iloc[-1]:.1%}.
 
 Phí 20K cố định tạo gánh nặng không đồng đều - nhóm chi tiêu thấp chịu tỷ lệ phí/GMV cao hơn gấp nhiều lần.
 """)
-    with _gv_col2:
-        st.plotly_chart(fig3, use_container_width=True, config={"displayModeBar": False})
+    st.plotly_chart(fig3, use_container_width=True, config={"displayModeBar": False})
 
     st.markdown(f"""**Kiểm định (chi-square):**
 
