@@ -1118,16 +1118,6 @@ with tabs[4]:
     ).reset_index()
     _ts3_grp["fee_pct"] = 20_000 / _ts3_grp["med_gmv"]
 
-    # ── 1. What is happening ──────────────────────────────────────────────────
-    st.markdown("#### 1. What is happening?")
-    _p3_yoy_str = f"{_p3_mau_yoy:.0%}" if not np.isnan(_p3_mau_yoy) else "–"
-    st.markdown(f"""
-<div style="background:#fef2f2;border-left:4px solid #ef4444;padding:14px 18px;border-radius:6px">
-<b style="color:#b91c1c">Trong 6 tháng đầu năm 2025, sản phẩm đang mất user nhanh hơn tốc độ có thể bù đắp, giảm {_p3_yoy_str} active user so với cùng kỳ 2024.</b><br>
-<span style="color:#374151">Quick Ratio &lt; 1 liên tục từ đầu 2025 — mỗi tháng có nhiều user rời hơn user mới vào.</span>
-</div>
-""", unsafe_allow_html=True)
-    st.markdown("")
     _p3_new_mon  = filt[filt["month_number"]==0].groupby("trxn_month")["user_id"].nunique()
     _p3_new_peak = int(_p3_new_mon.max()) if len(_p3_new_mon) else 0
     _p3_new_last = int(_p3_new_mon.iloc[-1]) if len(_p3_new_mon) else 0
@@ -1138,6 +1128,17 @@ with tabs[4]:
     _p3_mau_24 = float(_p3_mau_mon[_p3_h24].mean()) if _p3_h24 else float("nan")
     _p3_mau_25 = float(_p3_mau_mon[_p3_h25].mean()) if _p3_h25 else float("nan")
     _p3_mau_yoy = (_p3_mau_25 - _p3_mau_24) / _p3_mau_24 if _p3_mau_24 else float("nan")
+
+    # ── 1. What is happening ──────────────────────────────────────────────────
+    st.markdown("#### 1. What is happening?")
+    _p3_yoy_str = f"{_p3_mau_yoy:.0%}" if not np.isnan(_p3_mau_yoy) else "–"
+    st.markdown(f"""
+<div style="background:#fef2f2;border-left:4px solid #ef4444;padding:14px 18px;border-radius:6px">
+<b style="color:#b91c1c">Trong 6 tháng đầu năm 2025, sản phẩm đang mất user nhanh hơn tốc độ có thể bù đắp, giảm {_p3_yoy_str} active user so với cùng kỳ 2024.</b><br>
+<span style="color:#374151">Quick Ratio &lt; 1 liên tục từ đầu 2025 — mỗi tháng có nhiều user rời hơn user mới vào.</span>
+</div>
+""", unsafe_allow_html=True)
+    st.markdown("")
 
     _mp, _c1, _c2, _c3, _mp2 = st.columns([0.5, 3, 3, 3, 0.5])
     _c1.metric("M1 churn rate", f"{_p3_churn_r:.1%}", "Cứ 4 user mới, mất 1")
