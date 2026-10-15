@@ -986,7 +986,7 @@ with tabs[3]:
         hovertemplate="Churn: %{text}<br>n=%{customdata[0]:,}<br>Med GMV: %{customdata[1]:.0f}K<extra></extra>",
     ))
     fig2.add_hline(y=avg_ch, line_dash="dot", line_color="#9ca3af",
-                   annotation_text=f"Avg {avg_ch:.1%}", annotation_position="top left")
+                   annotation_text=f"Avg {avg_ch:.1%}", annotation_position="bottom left")
     fig2 = clean_fig(fig2, height=260)
     fig2.update_layout(
         title=dict(text="Churn theo số loại dịch vụ M0", font=dict(size=12), x=0.5, xanchor="center"),
