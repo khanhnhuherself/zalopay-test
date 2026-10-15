@@ -1139,7 +1139,7 @@ with tabs[4]:
     _p3_mau_25 = float(_p3_mau_mon[_p3_h25].mean()) if _p3_h25 else float("nan")
     _p3_mau_yoy = (_p3_mau_25 - _p3_mau_24) / _p3_mau_24 if _p3_mau_24 else float("nan")
 
-    _c1, _c2, _c3 = st.columns(3)
+    _mp, _c1, _c2, _c3, _mp2 = st.columns([0.5, 3, 3, 3, 0.5])
     _c1.metric("M1 churn rate", f"{_p3_churn_r:.1%}", "Cứ 4 user mới, mất 1")
     _c2.metric("Retention nhóm chi tiêu thấp", f"{_p3_ret_lo:.1%}", f"{(_p3_ret_lo-_p3_ret_hi):.1%} vs nhóm cao")
     _c3.metric("New user/tháng (gần nhất)", f"{_p3_new_last:,}",
