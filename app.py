@@ -298,14 +298,14 @@ with tabs[1]:
 
     from plotly.subplots import make_subplots
 
-    _yc1, _yc2, _yc3, _yc4 = st.columns(4)
-    _yc1.metric("New users (avg H1)", f"{_new_25:,.0f}" if not np.isnan(_new_25) else "–",
+    _mpad, _mc1, _mc2, _mc3, _mc4, _mpad2 = st.columns([1, 2, 2, 2, 2, 1])
+    _mc1.metric("New users (avg H1)", f"{_new_25:,.0f}" if not np.isnan(_new_25) else "–",
                 f"{_new_yoy:+.0%} YoY" if not np.isnan(_new_yoy) else "–")
-    _yc2.metric("MAU (avg H1)", f"{_mau_25:,.0f}" if not np.isnan(_mau_25) else "–",
+    _mc2.metric("MAU (avg H1)", f"{_mau_25:,.0f}" if not np.isnan(_mau_25) else "–",
                 f"{_mau_yoy:+.0%} YoY" if not np.isnan(_mau_yoy) else "–")
-    _yc3.metric("GMV (H1 2025)", f"{_gmv_25/1e9:.1f}B" if not np.isnan(_gmv_25) else "–",
+    _mc3.metric("GMV (H1 2025)", f"{_gmv_25/1e9:.1f}B" if not np.isnan(_gmv_25) else "–",
                 f"{_gmv_yoy:+.0%} YoY" if not np.isnan(_gmv_yoy) else "–")
-    _yc4.metric("GMV / user (avg H1)", f"{_gmv_per_user_25/1000:.0f}K" if not np.isnan(_gmv_per_user_25) else "–",
+    _mc4.metric("GMV / user (avg H1)", f"{_gmv_per_user_25/1000:.0f}K" if not np.isnan(_gmv_per_user_25) else "–",
                 f"{_gpu_yoy:+.0%} YoY" if not np.isnan(_gpu_yoy) else "–")
 
     st.markdown("<div style='text-align:center;font-size:14px;margin-bottom:4px'>Chọn loại Metric cho Cohort Matrix</div>", unsafe_allow_html=True)
