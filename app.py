@@ -747,24 +747,18 @@ with tabs[3]:
     # Area traces (trục trái) - fill sữa, dot + label nhỏ
     fig_qr.add_trace(go.Scatter(
         x=x_ga, y=ga_r["New"], name="New users",
-        mode="markers+text", fill="tozeroy",
+        mode="markers", fill="tozeroy",
         marker=dict(size=4, color="rgba(59,130,246,0.45)", line=dict(width=0)),
         line=dict(color="rgba(59,130,246,0)", width=0),
         fillcolor="rgba(59,130,246,0.07)", yaxis="y",
-        text=[f"{v:,}" for v in ga_r["New"]],
-        textposition="top center",
-        textfont=dict(size=8, color="rgba(59,130,246,0.85)"),
         hovertemplate="%{x}<br>New: %{y:,}<extra></extra>",
     ))
     fig_qr.add_trace(go.Scatter(
         x=x_ga, y=ga_r["churned"], name="Churn User",
-        mode="markers+text", fill="tozeroy",
+        mode="markers", fill="tozeroy",
         marker=dict(size=4, color="rgba(239,68,68,0.45)", line=dict(width=0)),
         line=dict(color="rgba(239,68,68,0)", width=0),
         fillcolor="rgba(239,68,68,0.07)", yaxis="y",
-        text=[f"{v:,}" for v in ga_r["churned"]],
-        textposition="bottom center",
-        textfont=dict(size=8, color="rgba(239,68,68,0.85)"),
         hovertemplate="%{x}<br>Churn User: %{y:,}<extra></extra>",
     ))
     # QR = 1 reference (trục phải)
@@ -1097,7 +1091,7 @@ Spearman ρ = {_rho:.3f}, p = {_rho_p:.4f} - có ý nghĩa thống kê, effect s
     st.write("Cùng mức phí 20K cố định: nhóm GMV <200K chịu effective fee 17%, nhóm >700K chỉ 2% — chênh lệch gần 9 lần. Đề xuất: giữ 20K nhưng hoàn một phần phí cho user có GMV tháng dưới 500K.")
     st.markdown("**R3 — Theo dõi sát nhóm rủi ro cao**")
     st.write("Khoảng 1,084 user (6%) chỉ dùng Game/VNG và giao dịch ≤ 2 lần trong M0, churn rate 35.4% — cao hơn mức trung bình. Đây là nhóm cụ thể, dễ xác định, nên ưu tiên tiếp cận trước khi R1 được triển khai rộng.")
-    st.info("R1 tác động đến gần một nửa base user mới và không cần thay đổi sản phẩm. R2 cần xác nhận từ finance trước khi triển khai. R3 là danh sách cụ thể để bắt đầu ngay.")
+    st.info("R1 nhắm vào 48% user mới — dễ triển khai, không cần thay sản phẩm. R2 cần finance xác nhận trước. R3 có danh sách user cụ thể, có thể bắt đầu ngay.")
 
 # ═══════════════════════════════════════════════════════════════════════════════
 with tabs[4]:
