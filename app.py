@@ -596,9 +596,9 @@ Vấn đề thực tế: **{pct_below:.1%} user mới ({n_low:,}/{total_u:,}) ch
     fig_drv.add_hline(y=0.05, line_dash="dot", line_color="#9ca3af",
                       annotation_text="5%", row=1, col=2)
 
-    fig_drv.update_layout(height=300, margin=dict(l=20,r=20,t=55,b=40),
+    fig_drv.update_layout(height=320, margin=dict(l=20,r=20,t=70,b=40),
                           paper_bgcolor="white", plot_bgcolor="white",
-                          legend=dict(orientation="h", y=1.18, x=0.5, xanchor="center", font=dict(size=10)),
+                          legend=dict(orientation="h", y=1.28, x=0.25, xanchor="center", font=dict(size=10)),
                           font=dict(size=11))
     fig_drv.update_yaxes(showgrid=True, gridcolor="#f0f0f0", ticksuffix="K", row=1, col=1)
     fig_drv.update_yaxes(showgrid=True, gridcolor="#f0f0f0", tickformat=".0%", row=1, col=2)
