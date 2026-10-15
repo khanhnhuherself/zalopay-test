@@ -234,7 +234,7 @@ Như vậy, Nguồn doanh thu thu trực tiếp của ZaloPay gắn với giao d
 </tr>
 <tr style="background:#f0fdf4">
   <td style="padding:10px 14px;border-bottom:1px solid #e5e7eb;color:#15803d;font-weight:600">Tháng</td>
-  <td style="padding:10px 14px;border-bottom:1px solid #e5e7eb;color:#15803d">Xấp xỉ billing cycle, đủ granularity để phát hiện dropout sớm</td>
+  <td style="padding:10px 14px;border-bottom:1px solid #e5e7eb;color:#15803d">Tương đương một chu kỳ thanh toán, đủ để phát hiện user ngừng hoạt động sớm</td>
 </tr>
 <tr style="background:#f9fafb">
   <td style="padding:10px 14px;color:#6b7280;font-weight:600">Quý</td>
