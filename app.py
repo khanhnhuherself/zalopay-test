@@ -1099,7 +1099,7 @@ Spearman ρ = {_rho:.3f}, p = {_rho_p:.4f} - có ý nghĩa thống kê, effect s
     st.write("Nhóm GMV <200K chịu effective fee 17.2%, nhóm >700K chỉ 2.0% - cùng một mức phí, gánh nặng cách nhau gần 9 lần. **Đề xuất:** Hybrid model - giữ 20K baseline, hoàn phí cho user GMV tháng <500K.")
 
     st.markdown("**R3 - Monitor compound segment at-risk**")
-    st.write("Segment dùng Game/VNG + n_txn ≤ 2 trong M0: n=1,084 user (6%), churn rate 35.4%. Tag trong CRM, ưu tiên nudge R1 cho nhóm này trước.")
+    st.write("Nhóm ưu tiên can thiệp: user chỉ dùng dịch vụ Game/VNG và thực hiện ≤ 2 giao dịch trong tháng đầu — khoảng 1,084 user (6% tổng), churn rate 35.4%, cao hơn mức trung bình. Đây là nhóm nên được tiếp cận sớm bằng các hoạt động kích hoạt như gợi ý khám phá thêm dịch vụ hoặc ưu đãi cho giao dịch tiếp theo.")
 
     st.info("R1 (product discovery trong M0) là đòn bẩy nhanh và rẻ nhất - target 48% user đang dùng 1 loại dịch vụ. R2 (cấu trúc phí) cần finance validate. R3 là early warning system cho segment nguy cơ cao nhất.")
 
