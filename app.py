@@ -800,10 +800,10 @@ with tabs[3]:
         shapes=[dict(type="line", x0="2025-01", x1="2025-01", y0=0, y1=1, yref="paper",
                      line=dict(color="#6b7280", width=1, dash="dot"))],
         annotations=[dict(
-            x=x_ga[-1], y=0, xref="x", yref="y",
+            x=x_ga[-1], y=0.65, xref="x", yref="y2",
             text="QR < 1 | Tăng trưởng user âm",
             showarrow=False, font=dict(size=10, color="#111827"),
-            xanchor="right", yanchor="bottom",
+            xanchor="right", yanchor="top",
         )],
     )
     st.plotly_chart(fig_qr, use_container_width=True, config={"displayModeBar": False})
