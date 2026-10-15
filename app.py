@@ -1220,4 +1220,4 @@ with tabs[4]:
 - Cân nhắc miễn phí 20K cho tháng đầu tiên (M0) để người dùng tập trung trải nghiệm dịch vụ và hình thành thói quen mà không gặp rào cản tài chính.
 - Hoặc áp dụng chính sách phí lũy tiến/hoàn phí (ví dụ: miễn phí hoặc hoàn lại 20K nếu chi tiêu đạt trên một hạn mức nhất định hoặc số lần giao dịch đạt ngưỡng thói quen).
 """)
-    st.info("**Người dùng rời đi vì chưa hình thành thói quen trước khi bị tính phí. Xây dựng hành vi chi tiêu lặp lại trong M0 là đòn bẩy rẻ và nhanh nhất để cải thiện retention.**")
+    st.info("**Người dùng rời đi vì chưa hình thành thói quen trước khi bị tính phí. Xây dựng hành vi chi tiêu lặp lại trong M0 là phương pháp có thể cân nhắc để cải thiện retention.**")
