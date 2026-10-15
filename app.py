@@ -4,7 +4,7 @@ import numpy as np
 import plotly.graph_objects as go
 from scipy.stats import chi2_contingency, mannwhitneyu, norm as _norm
 
-st.set_page_config(page_title="ZaloPay Test", layout="centered")
+st.set_page_config(page_title="ZaloPay Test", layout="centered", initial_sidebar_state="expanded")
 
 # ── Visitor logging ────────────────────────────────────────────────────────────
 @st.cache_resource
