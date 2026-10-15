@@ -708,8 +708,8 @@ with tabs[3]:
     st.markdown("**Kể từ đầu 2025 đến tháng 6/2025, Quick Ratio của Buy Now Pay Later luôn nhỏ hơn 1 - tốc độ user rời đi nhiều hơn số user mới mỗi tháng.**")
 
     # ── Growth accounting ─────────────────────────────────────────────────────
-    months_by_user = active.groupby("user_id")["trxn_month"].apply(set).to_dict()
-    all_um = active.set_index(["user_id","trxn_month"])["month_number"].to_dict()
+    months_by_user = filt.groupby("user_id")["trxn_month"].apply(set).to_dict()
+    all_um = filt.set_index(["user_id","trxn_month"])["month_number"].to_dict()
     rows_ga = []
     for (uid, month), mn in all_um.items():
         prev = month - 1
@@ -803,7 +803,7 @@ Trong tình huống này, đổ thêm ngân sách vào acquisition chỉ bù đ�
     st.markdown("**2. Hành vi giao dịch thực tế** - phân phối khoảng cách giữa 2 lần mua cho thấy P95 = 29 ngày. Vượt 30 ngày là ngoài vùng hành vi bình thường (xem biểu đồ bên dưới).")
 
     # Chart: phân phối khoảng cách giao dịch
-    _tmp = df[["user_id","trxn_date"]].sort_values(["user_id","trxn_date"])
+    _tmp = df[df["user_id"].isin(filt_users)][["user_id","trxn_date"]].sort_values(["user_id","trxn_date"])
     _tmp = _tmp.copy()
     _tmp["prev"] = _tmp.groupby("user_id")["trxn_date"].shift(1)
     _tmp["gap"] = (_tmp["trxn_date"] - _tmp["prev"]).dt.days
