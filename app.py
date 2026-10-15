@@ -754,7 +754,7 @@ with tabs[3]:
         line=dict(color="rgba(59,130,246,0)", width=0),
         fillcolor="rgba(59,130,246,0.07)", yaxis="y",
         text=_lbl_new, textposition="top center",
-        textfont=dict(size=10, color="rgba(59,130,246,0.85)"),
+        textfont=dict(size=8, color="rgba(59,130,246,0.85)"),
         hovertemplate="%{x}<br>New: %{y:,}<extra></extra>",
     ))
     fig_qr.add_trace(go.Scatter(
@@ -764,7 +764,7 @@ with tabs[3]:
         line=dict(color="rgba(239,68,68,0)", width=0),
         fillcolor="rgba(239,68,68,0.07)", yaxis="y",
         text=_lbl_churn, textposition="bottom center",
-        textfont=dict(size=10, color="rgba(239,68,68,0.85)"),
+        textfont=dict(size=8, color="rgba(239,68,68,0.85)"),
         hovertemplate="%{x}<br>Churn User: %{y:,}<extra></extra>",
     ))
     # QR = 1 reference (trục phải)
