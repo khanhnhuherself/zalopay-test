@@ -855,8 +855,11 @@ Trong tình huống này, đổ thêm ngân sách vào acquisition chỉ bù đ�
 **48% user chỉ dùng 1 loại dịch vụ trong M0** - churn cao nhất ({_churn1}, trên mức trung bình {avg_ch:.1%}).
 
 Khi mở rộng sang ≥2 loại, GMV tăng từ {_gmv1} lên {_gmv2} (gấp 2.4×), churn giảm xuống dưới mức trung bình.
+""")
+    with _cd_col2:
+        st.plotly_chart(fig2, use_container_width=True, config={"displayModeBar": False})
 
-**Kiểm định (chi-square):**
+    st.markdown(f"""**Kiểm định (chi-square):**
 
 *Chi-square test of independence (two-tailed): kiểm định xem số loại dịch vụ sử dụng trong M0 và tình trạng churn có liên hệ với nhau không.*
 
@@ -866,10 +869,7 @@ H₁: Tỷ lệ churn khác nhau giữa các nhóm
 
 p = {_p_div:.4f} → bác bỏ H₀. Chiều hướng: dùng ít loại dịch vụ hơn có churn cao hơn.
 
-*Lưu ý: đây là xu hướng quan sát được từ data, không thể kết luận dùng nhiều loại dịch vụ là nguyên nhân khiến user ở lại.*
-""")
-    with _cd_col2:
-        st.plotly_chart(fig2, use_container_width=True, config={"displayModeBar": False})
+*Lưu ý: đây là xu hướng quan sát được từ data, không thể kết luận dùng nhiều loại dịch vụ là nguyên nhân khiến user ở lại.*""")
 
     st.markdown("---")
     st.markdown("**Churn Rate: Số giao dịch × Số loại dịch vụ**")
@@ -959,9 +959,12 @@ p = {_p_div:.4f} → bác bỏ H₀. Chiều hướng: dùng ít loại dịch v
         st.markdown(f"""
 **Churn giảm đều theo mức chi tiêu:** nhóm GMV <200K churn {ts['churn'].iloc[0]:.1%}, nhóm >700K chỉ churn {ts['churn'].iloc[-1]:.1%}.
 
-Phí 20K cố định tạo gánh nặng không đồng đều - nhóm chi tiêu thấp chịu effective fee rate cao hơn gấp nhiều lần.
+Phí 20K cố định tạo gánh nặng không đồng đều - nhóm chi tiêu thấp chịu tỷ lệ phí/GMV cao hơn gấp nhiều lần.
+""")
+    with _gv_col2:
+        st.plotly_chart(fig3, use_container_width=True, config={"displayModeBar": False})
 
-**Kiểm định (chi-square):**
+    st.markdown(f"""**Kiểm định (chi-square):**
 
 *Chi-square test of independence (two-tailed): kiểm định xem mức GMV trong M0 và tình trạng churn có liên hệ với nhau không.*
 
@@ -969,10 +972,7 @@ H₀: Tỷ lệ churn không khác nhau giữa các GMV tier
 
 H₁: Tỷ lệ churn khác nhau giữa các GMV tier
 
-p = {p_chi:.4f} → bác bỏ H₀. Chiều hướng: churn giảm theo GMV.
-""")
-    with _gv_col2:
-        st.plotly_chart(fig3, use_container_width=True, config={"displayModeBar": False})
+p = {p_chi:.4f} → bác bỏ H₀. Chiều hướng: churn giảm theo GMV.""")
 
     st.markdown("---")
     st.markdown("**Fee burden by GMV (Gross Merchandise Value)**")
