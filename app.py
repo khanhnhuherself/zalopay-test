@@ -808,11 +808,8 @@ Trong tình huống này, đổ thêm ngân sách vào acquisition chỉ bù đ�
 """)
 
     st.markdown("#### Churn Threshold")
-    st.markdown("Trong sản phẩm tài chính tín dụng, user không cần đóng tài khoản khi muốn ngừng dùng - cần xác định ngưỡng im lặng để gắn nhãn churn. Với BNPL, **30 ngày** là ngưỡng hợp lý dựa trên hai lý do:")
-    st.markdown("**1. Billing cycle theo tháng, phí 20.000đ/kỳ** - mỗi kỳ là một lần user phải chủ động quyết định có dùng tiếp hay không.")
-    st.markdown("**2. Hành vi giao dịch thực tế** - phân phối khoảng cách giữa 2 lần mua cho thấy P95 = 29 ngày. Vượt 30 ngày là ngoài vùng hành vi bình thường (xem biểu đồ bên dưới).")
 
-    # Chart: phân phối khoảng cách giao dịch
+    # Chart: phân phối khoảng cách giao dịch (tính trước để dùng trong text)
     _tmp = df[df["user_id"].isin(filt_users)][["user_id","trxn_date"]].sort_values(["user_id","trxn_date"])
     _tmp = _tmp.copy()
     _tmp["prev"] = _tmp.groupby("user_id")["trxn_date"].shift(1)
@@ -821,6 +818,10 @@ Trong tình huống này, đổ thêm ngân sách vào acquisition chỉ bù đ�
     _gaps = _gaps[(_gaps > 0) & (_gaps <= 35)]
     _med_gap = int(_gaps.median())
     _p95_gap = int(_gaps.quantile(0.95))
+
+    st.markdown("Trong sản phẩm tài chính tín dụng, user không cần đóng tài khoản khi muốn ngừng dùng - cần xác định ngưỡng im lặng để gắn nhãn churn. Với BNPL, **30 ngày** là ngưỡng hợp lý dựa trên hai lý do:")
+    st.markdown("**1. Billing cycle theo tháng, phí 20.000đ/kỳ** - mỗi kỳ là một lần user phải chủ động quyết định có dùng tiếp hay không.")
+    st.markdown(f"**2. Hành vi giao dịch thực tế** - phân phối khoảng cách giữa 2 lần mua cho thấy P95 = {_p95_gap} ngày. Vượt 30 ngày là ngoài vùng hành vi bình thường (xem biểu đồ bên dưới).")
 
     _fig_gap = go.Figure()
     _fig_gap.add_trace(go.Histogram(
