@@ -780,7 +780,7 @@ with tabs[3]:
     fig_qr.update_layout(
         title=dict(text="Net Growth BNPL User",
                    font=dict(size=19, weight="bold"), x=0.5, xanchor="center"),
-        height=340, margin=dict(l=40, r=60, t=75, b=40),
+        height=420, margin=dict(l=20, r=40, t=75, b=40),
         paper_bgcolor="white", plot_bgcolor="white",
         barmode="overlay",
         legend=dict(orientation="h", y=1.18, x=0.5, xanchor="center", font=dict(size=10)),
