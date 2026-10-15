@@ -36,7 +36,7 @@ _log_visit()
 
 st.markdown("""
 <style>
-    .block-container { max-width: 800px; padding-top: 2rem; }
+    .block-container { max-width: 1050px; padding-top: 2rem; }
     .question-label { font-size: 0.78rem; font-weight: 600; color: #888;
                       text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
     #MainMenu {visibility: hidden;}
@@ -272,7 +272,7 @@ with tabs[1]:
 
     _m1_avg_fmt = f"{_m1_avg:.1%}" if not np.isnan(_m1_avg) else "–"
     _m1_rng_fmt = f"{_m1_min:.1%}–{_m1_max:.1%}" if not np.isnan(_m1_min) else "–"
-    _m1_pp_fmt  = f"{_m1_pp:.1f}pp" if not np.isnan(_m1_pp) else "–"
+    _m1_pp_fmt  = f"{_m1_pp:.1f}%" if not np.isnan(_m1_pp) else "–"
 
     st.write(f"M1 retention trung bình **{_m1_avg_fmt}**, ổn định qua {_n_coh} cohorts ({_m1_rng_fmt}). Tháng đầu là điểm rời lớn nhất - từ M2 trở đi churn rate giảm dần.")
 
@@ -695,7 +695,7 @@ Vấn đề thực tế: **{pct_below:.1%} user mới ({n_low:,}/{total_u:,}) ch
     # ── Phần 4: Causation + A/B Test ─────────────────────────────────────────
     st.markdown("**4. Khuyết điểm chiến lược & Đề xuất Thử nghiệm**")
     st.markdown(f"""- **Tương quan ≠ nhân quả:** User quẹt nhiều trong M0 có thể đơn giản là vì họ có nhiều nhu cầu hơn — không phải vì số giao dịch khiến họ gắn bó. Tặng voucher để ép đủ 4 lần chưa chắc tạo ra thói quen thực sự khi hết khuyến mãi.
-- **Đề xuất A/B Test:** Tặng voucher/hoàn tiền nhắm vào giao dịch thứ 3 và thứ 4 của user mới — đây là vùng mà mỗi giao dịch thêm cải thiện retention nhiều nhất, và cũng là ngưỡng phí/GMV bắt đầu hợp lý. Không nên dàn voucher từ giao dịch 1 (tốn nguồn lực, user có thể giữ lại ngay cả không cần) hoặc nhóm >7 lần (đã tự gắn bó). MDE = 5pp → ~1,300 user/nhóm; acquisition hiện tại ~600 user/tháng: cần ~4 tháng để đủ mẫu.""")
+- **Đề xuất A/B Test:** Tặng voucher/hoàn tiền nhắm vào giao dịch thứ 3 và thứ 4 của user mới — đây là vùng mà mỗi giao dịch thêm cải thiện retention nhiều nhất, và cũng là ngưỡng phí/GMV bắt đầu hợp lý. Không nên dàn voucher từ giao dịch 1 (tốn nguồn lực, user có thể giữ lại ngay cả không cần) hoặc nhóm >7 lần (đã tự gắn bó). MDE = 5% → ~1,300 user/nhóm; acquisition hiện tại ~600 user/tháng: cần ~4 tháng để đủ mẫu.""")
     st.info(f"Giả thuyết được ủng hộ - users hoàn thành ≥{THRESHOLD} giao dịch trong M0 có retention M1 cao hơn có ý nghĩa thống kê (Spearman ρ = {_rho_1c:.3f}, p < 0.05). N = {THRESHOLD} là điểm bão hòa exploratory, cần A/B test để xác nhận nhân quả.")
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -848,7 +848,7 @@ Trong tình huống này, đổ thêm ngân sách vào acquisition chỉ bù đ�
         ("GMV - Median", f"{grp_c['gmv'].median()/1000:.0f}K", f"{grp_a['gmv'].median()/1000:.0f}K", "−66K"),
         ("AOV - Median", f"{grp_c['med_aov'].median()/1000:.0f}K", f"{grp_a['med_aov'].median()/1000:.0f}K", "= bằng nhau"),
         ("Utilization rate - Median", f"{grp_c['util'].median():.1%}", f"{grp_a['util'].median():.1%}", "nhóm churn cao hơn - không phải yếu tố phân biệt"),
-        ("Phí/GMV - Median", f"{grp_c['fee_pct'].median():.1%}", f"{grp_a['fee_pct'].median():.1%}", "+1.0pp"),
+        ("Phí/GMV - Median", f"{grp_c['fee_pct'].median():.1%}", f"{grp_a['fee_pct'].median():.1%}", "+1.0%"),
     ]
     st.dataframe(pd.DataFrame(rows, columns=["Chỉ số (M0)", "Churned", "Active M1", "Chênh lệch"]),
                  use_container_width=True, hide_index=True)
