@@ -1254,17 +1254,16 @@ with tabs[4]:
     _p3_yoy_str = f"{_p3_mau_yoy:.0%}" if not np.isnan(_p3_mau_yoy) else "–"
     st.markdown(f"""
 <div style="background:#fef2f2;border-left:4px solid #ef4444;padding:14px 18px;border-radius:6px">
-<b style="color:#b91c1c">Trong 6 tháng đầu năm 2025, sản phẩm đang mất user nhanh hơn tốc độ có thể bù đắp, giảm {_p3_yoy_str} active user so với cùng kỳ 2024.</b><br>
-<span style="color:#374151">Quick Ratio &lt; 1 liên tục từ đầu 2025 - mỗi tháng có nhiều user rời hơn user mới vào.</span>
+<b style="color:#b91c1c">Trong 6 tháng đầu năm 2025, sản phẩm đang mất user nhanh hơn tốc độ có thể bù đắp, giảm {_p3_yoy_str} active user so với cùng kỳ 2024.</b>
 </div>
 """, unsafe_allow_html=True)
     st.markdown("")
 
     _mp, _c1, _c2, _c3, _mp2 = st.columns([0.5, 3, 3, 3, 0.5])
-    _c1.metric("M1 churn rate", f"{_p3_churn_r:.1%}", "Cứ 4 user mới, mất 1")
-    _c2.metric("Retention nhóm chi tiêu thấp", f"{_p3_ret_lo:.1%}", f"{(_p3_ret_lo-_p3_ret_hi):.1%} vs nhóm cao")
+    _c1.metric("M1 churn rate", f"{_p3_churn_r:.1%}", "Cứ 4 user mới, mất 1", delta_color="off")
+    _c2.metric("Retention nhóm GMV thấp", f"{_p3_ret_lo:.1%}", f"{(_p3_ret_lo-_p3_ret_hi):.1%} vs nhóm cao", delta_color="off")
     _c3.metric("New user/tháng (gần nhất)", f"{_p3_new_last:,}",
-               f"{_p3_new_drop:+.0%} từ đỉnh {_p3_new_peak:,}" if not np.isnan(_p3_new_drop) else "–")
+               f"{_p3_new_drop:+.0%} từ đỉnh {_p3_new_peak:,}" if not np.isnan(_p3_new_drop) else "–", delta_color="off")
 
     st.markdown("---")
 
