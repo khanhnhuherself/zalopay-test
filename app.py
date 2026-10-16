@@ -732,7 +732,7 @@ with tabs[2]:
     fig_drv.update_layout(
         xaxis=dict(title="Số giao dịch M0", showgrid=False),
         yaxis=dict(tickformat=".0%", title="Phí / Tổng chi tiêu", range=[0, drv_plot["fee_20k"].max()*1.35]),
-        yaxis2=dict(tickformat=".0%", title="Retention M1", overlaying="y", side="right", range=[0, 1.0], showgrid=False),
+        yaxis2=dict(tickformat=".0%", title="Retention M1", overlaying="y", side="right", range=[0.5, 1.0], showgrid=False),
         legend=dict(orientation="h", x=0.5, xanchor="center", y=1.08, font=dict(size=10)),
         margin=dict(t=40),
     )
