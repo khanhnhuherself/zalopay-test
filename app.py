@@ -920,7 +920,7 @@ with tabs[3]:
 
     st.markdown("---")
     st.markdown("#### 2. How do they differ?")
-    st.markdown("Nhìn vào M0 - tháng user phát sinh giao dịch mua đầu tiên - hai nhóm có profile gần giống nhau. Sự khác biệt nằm ở **tần suất**, **độ rộng sử dụng** và **gánh nặng phí tương đối**.")
+    st.markdown("Nhìn vào M0 - tháng user phát sinh giao dịch mua đầu tiên - hai nhóm có profile gần giống nhau. Sự khác biệt nằm ở **tần suất**, **mức độ đa dạng dịch vụ** và **gánh nặng phí tương đối**.")
     grp_c = m0s_filt[~m0s_filt["retained"]]
     grp_a = m0s_filt[ m0s_filt["retained"]]
     _m5uid = set(active[active["month_number"] == 5]["user_id"]) & set(filt_users)
@@ -1097,7 +1097,7 @@ with tabs[3]:
     st.plotly_chart(fig_hm, use_container_width=True, config={"displayModeBar": False})
     st.caption(f"Ô trống = dưới 30 user.")
     _mat_avg = float(_zflat.mean()) if len(_zflat) else float("nan")
-    st.markdown(f"Nhóm nguy cơ cao nhất: **1 giao dịch × 1 loại dịch vụ** - churn {_hm_pivot.iloc[0, 0]:.0%}, n={int(_hm_n.iloc[0,0]):,} user. Tăng cả tần suất lẫn độ rộng sử dụng mới thực sự cải thiện retention - một trong hai không đủ.")
+    st.markdown(f"Nhóm nguy cơ cao nhất: **1 giao dịch × 1 loại dịch vụ** - churn {_hm_pivot.iloc[0, 0]:.0%}, n={int(_hm_n.iloc[0,0]):,} user. Tăng cả tần suất lẫn mức độ đa dạng dịch vụ mới thực sự cải thiện retention - một trong hai không đủ.")
 
     st.markdown("---")
     st.markdown("##### Tác động của phí lên hành vi người dùng")
@@ -1205,7 +1205,7 @@ H₁: Nhóm churn có fee/GMV cao hơn nhóm còn lại
 
     st.info("""**How do they differ?**
 - Nhóm churn: ít loại dịch vụ (48% dùng 1 loại), ít giao dịch, GMV thấp → phí 20K chiếm tỷ lệ lớn
-- AOV hai nhóm bằng nhau → không phải vấn đề ticket size, mà là tần suất và độ rộng sử dụng
+- AOV hai nhóm bằng nhau → không phải vấn đề ticket size, mà là tần suất và mức độ đa dạng dịch vụ
 - Churn rate có liên hệ thống kê với cả carrier diversity (p < 0.05), GMV tier (p < 0.05), và fee/GMV (p < 0.05)""")
 
     st.markdown("---")
