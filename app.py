@@ -1272,7 +1272,7 @@ with tabs[4]:
   </div>
 </div>"""
     _mp, _c1, _c2, _c3, _mp2 = st.columns([0.5, 3, 3, 3, 0.5])
-    _c1.markdown(_kpi_card("M1 churn rate", f"{_p3_churn_r:.1%}", "↑ Cứ 4 user mới, mất 1", up=True), unsafe_allow_html=True)
+    _c1.markdown(_kpi_card("M1 churn rate", f"{_p3_churn_r:.1%}", "↑ Cứ 4 user mới, mất 1"), unsafe_allow_html=True)
     _c2.markdown(_kpi_card("Retention nhóm GMV thấp", f"{_p3_ret_lo:.1%}", f"↓ {(_p3_ret_lo-_p3_ret_hi):.1%} vs nhóm cao"), unsafe_allow_html=True)
     _c3.markdown(_kpi_card("New user/tháng (gần nhất)", f"{_p3_new_last:,}", f"↓ {_p3_new_drop_str}"), unsafe_allow_html=True)
 
