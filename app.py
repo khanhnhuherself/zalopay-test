@@ -47,6 +47,7 @@ st.markdown("""
     [data-testid="stMetricLabel"] { justify-content: center !important; display: flex !important; }
     [data-testid="stMetricValue"] { justify-content: center !important; display: flex !important; }
     [data-testid="stMetricDelta"] { justify-content: center !important; display: flex !important; }
+    [data-testid="stMetricDelta"] > div { margin: 0 auto !important; }
     div[data-testid="stMetric"] > label { text-align: center !important; width: 100%; }
     div[data-testid="stMetric"] > div { justify-content: center !important; }
     [role="tablist"] {
@@ -1260,10 +1261,10 @@ with tabs[4]:
     st.markdown("")
 
     _mp, _c1, _c2, _c3, _mp2 = st.columns([0.5, 3, 3, 3, 0.5])
-    _c1.metric("M1 churn rate", f"{_p3_churn_r:.1%}", "Cứ 4 user mới, mất 1", delta_color="off")
-    _c2.metric("Retention nhóm GMV thấp", f"{_p3_ret_lo:.1%}", f"{(_p3_ret_lo-_p3_ret_hi):.1%} vs nhóm cao", delta_color="off")
+    _c1.metric("M1 churn rate", f"{_p3_churn_r:.1%}", "Cứ 4 user mới, mất 1", delta_color="inverse")
+    _c2.metric("Retention nhóm GMV thấp", f"{_p3_ret_lo:.1%}", f"{(_p3_ret_lo-_p3_ret_hi):.1%} vs nhóm cao")
     _c3.metric("New user/tháng (gần nhất)", f"{_p3_new_last:,}",
-               f"{_p3_new_drop:+.0%} từ đỉnh {_p3_new_peak:,}" if not np.isnan(_p3_new_drop) else "–", delta_color="off")
+               f"{_p3_new_drop:+.0%} từ đỉnh {_p3_new_peak:,}" if not np.isnan(_p3_new_drop) else "–")
 
     st.markdown("---")
 
