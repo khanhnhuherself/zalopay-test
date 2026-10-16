@@ -965,10 +965,15 @@ with tabs[3]:
   <th style='text-align:center;padding:10px 12px;font-weight:700;color:#fff;background:#1d4ed8'>Active M1</th>
   <th style='text-align:center;padding:10px 12px;font-weight:700;color:#fff;background:#059669'>Active M5</th>
 </tr>"""
+    _tag_equal = "<span style='font-size:10px;background:#fef9c3;color:#92400e;padding:1px 6px;border-radius:3px;margin-left:6px;font-weight:500'>≈ bằng nhau</span>"
     for row in _rows_data:
         _lbl = row[0]; _vc = row[1]; _va = row[2]; _vm5 = row[3]
+        _is_user = (_lbl == "Số user")
+        _is_aov  = (_lbl == "Giá trị mỗi GD")
+        _lbl_style = "padding:12px;color:#6b7280;font-style:italic;vertical-align:middle;background:#f9fafb" if _is_user else "padding:12px;color:#374151;vertical-align:middle;background:#f9fafb"
+        _lbl_html  = _lbl + (_tag_equal if _is_aov else "")
         _tbl_html += f"""<tr style='border-bottom:1px solid #f3f4f6'>
-  <td style='padding:12px;color:#374151;vertical-align:middle;background:#f9fafb'>{_lbl}</td>
+  <td style='{_lbl_style}'>{_lbl_html}</td>
   <td style='text-align:center;padding:12px;color:#ef4444;vertical-align:middle;background:#fff5f5'>{_vc}</td>
   <td style='text-align:center;padding:12px;color:#1d4ed8;vertical-align:middle;background:#eff6ff'>{_va}</td>
   <td style='text-align:center;padding:12px;color:#059669;vertical-align:middle;background:#f0fdf4'>{_vm5}</td>
