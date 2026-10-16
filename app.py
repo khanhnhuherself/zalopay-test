@@ -752,7 +752,7 @@ with tabs[2]:
     st.markdown("---")
 
     # ── Phần 4: Causation + A/B Test ─────────────────────────────────────────
-    st.markdown("**4. Khuyết điểm chiến lược & Đề xuất Thử nghiệm**")
+    st.markdown("**4. Đánh giá và đề xuất thực hiện A/B testing**")
     st.markdown(f"""- **Tương quan ≠ nhân quả:** User quẹt nhiều trong M0 có thể đơn giản là vì họ có nhiều nhu cầu hơn - không phải vì số giao dịch khiến họ gắn bó. Tặng voucher để ép đủ 4 lần chưa chắc tạo ra thói quen thực sự khi hết khuyến mãi.
 - **Đề xuất A/B Test:** Tặng voucher/hoàn tiền nhắm vào giao dịch thứ 3 và thứ 4 của user mới - đây là vùng mà mỗi giao dịch thêm cải thiện retention nhiều nhất, và cũng là ngưỡng phí/GMV bắt đầu hợp lý. Không nên dàn voucher từ giao dịch 1 (tốn nguồn lực, user có thể giữ lại ngay cả không cần) hoặc nhóm >7 lần (đã tự gắn bó). MDE = 5% → ~1,300 user/nhóm; acquisition hiện tại ~600 user/tháng: cần ~4 tháng để đủ mẫu.""")
     st.info(f"Giả thuyết được ủng hộ - users hoàn thành ≥{THRESHOLD} giao dịch trong M0 có retention M1 cao hơn có ý nghĩa thống kê (Spearman ρ = {_rho_1c:.3f}, p < 0.05). N = {THRESHOLD} là điểm bão hòa exploratory, cần A/B test để xác nhận nhân quả.")
