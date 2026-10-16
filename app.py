@@ -963,7 +963,7 @@ with tabs[3]:
     ]
     _tbl_html = """<table style='width:100%;border-collapse:collapse;font-size:14px'>
 <tr>
-  <th style='text-align:left;padding:10px 12px;font-weight:600;width:28%;color:#374151;background:#f9fafb'></th>
+  <th style='text-align:left;padding:10px 12px;font-weight:600;width:28%;color:#374151;background:#f9fafb'><div style='font-size:10px;color:#9ca3af;font-weight:400;margin-top:2px'>trung vị / avg</div></th>
   <th style='text-align:center;padding:10px 12px;font-weight:700;color:#fff;background:#ef4444'>Churn @ M1</th>
   <th style='text-align:center;padding:10px 12px;font-weight:700;color:#fff;background:#1d4ed8'>Active M1</th>
   <th style='text-align:center;padding:10px 12px;font-weight:700;color:#fff;background:#059669'>Active M5</th>
