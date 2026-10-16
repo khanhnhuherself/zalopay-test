@@ -722,14 +722,15 @@ with tabs[2]:
     ))
     fig_drv = clean_fig(fig_drv, height=350)
     fig_drv.update_layout(
-        title=dict(text="Tỷ lệ phí và Retention M1 theo số giao dịch M0", font=dict(size=14, weight="bold"), x=0.5, xanchor="center", pad=dict(b=12)),
         xaxis=dict(title="Số giao dịch M0", showgrid=False),
         yaxis=dict(tickformat=".0%", title="Phí / Tổng chi tiêu", range=[0, drv_plot["fee_20k"].max()*1.35]),
         yaxis2=dict(tickformat=".0%", title="Retention M1", overlaying="y", side="right", range=[0, 1.0], showgrid=False),
-        legend=dict(orientation="h", x=0.5, xanchor="center", y=1.18, font=dict(size=10)),
+        legend=dict(orientation="h", x=0.5, xanchor="center", y=1.08, font=dict(size=10)),
+        margin=dict(t=40),
     )
     _drv_l, _drv_c, _drv_r = st.columns([1, 8, 1])
     with _drv_c:
+        st.markdown("<div style='text-align:center;font-size:14px;font-weight:700;margin-bottom:0px'>Tỷ lệ phí và Retention M1 theo số giao dịch M0</div>", unsafe_allow_html=True)
         st.plotly_chart(fig_drv, use_container_width=True, config={"displayModeBar": False})
 
     r1 = drv.loc[1] if 1 in drv.index else None
