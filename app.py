@@ -282,7 +282,7 @@ with tabs[1]:
     _m1_rng_fmt = f"{_m1_min:.1%}–{_m1_max:.1%}" if not np.isnan(_m1_min) else "–"
     _m1_pp_fmt  = f"{_m1_pp:.1f}%" if not np.isnan(_m1_pp) else "–"
 
-    st.write(f"M1 retention trung bình **{_m1_avg_fmt}**, ổn định qua {_n_coh} cohorts ({_m1_rng_fmt}). Tháng đầu là điểm rời lớn nhất - từ M2 trở đi churn rate giảm dần.")
+    st.write(f"M1 retention trung bình **{_m1_avg_fmt}**, ổn định qua {_n_coh} cohorts ({_m1_rng_fmt}). Dải dao động chỉ **{_m1_pp_fmt}** cho thấy churn không phải do acquisition hay sự kiện cụ thể - đây là vấn đề cấu trúc sản phẩm.")
 
     # Pre-compute YoY cards
     _mau_mon  = filt.groupby("trxn_month")["user_id"].nunique()
