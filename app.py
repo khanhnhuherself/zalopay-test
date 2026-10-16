@@ -961,7 +961,6 @@ with tabs[3]:
          _cell(f"{_med(grp_a,'fee_pct'):.1%}", f"{_avg(grp_a,'fee_pct'):.1%}"),
          _cell(f"{_med(grp_m5,'fee_pct'):.1%}", f"{_avg(grp_m5,'fee_pct'):.1%}")),
     ]
-    st.markdown("<div style='font-size:11px;color:#9ca3af;margin-bottom:6px'>Số lớn: median &nbsp;|&nbsp; số nhỏ xám: avg</div>", unsafe_allow_html=True)
     _tbl_html = """<table style='width:100%;border-collapse:collapse;font-size:14px'>
 <tr>
   <th style='text-align:left;padding:10px 12px;font-weight:600;width:28%;color:#374151;background:#f9fafb'></th>
@@ -976,11 +975,12 @@ with tabs[3]:
         _is_aov  = (_lbl == "Giá trị mỗi GD")
         _lbl_style = "padding:12px;color:#6b7280;font-style:italic;vertical-align:middle;background:#f9fafb" if _is_user else "padding:12px;color:#374151;vertical-align:middle;background:#f9fafb"
         _lbl_html  = _lbl + (_tag_equal if _is_aov else "")
+        _cc = ("#6b7280","#6b7280","#6b7280") if _is_user else ("#ef4444","#1d4ed8","#059669")
         _tbl_html += f"""<tr style='border-bottom:1px solid #f3f4f6'>
   <td style='{_lbl_style}'>{_lbl_html}</td>
-  <td style='text-align:center;padding:12px;color:#ef4444;vertical-align:middle;background:#fff5f5'>{_vc}</td>
-  <td style='text-align:center;padding:12px;color:#1d4ed8;vertical-align:middle;background:#eff6ff'>{_va}</td>
-  <td style='text-align:center;padding:12px;color:#059669;vertical-align:middle;background:#f0fdf4'>{_vm5}</td>
+  <td style='text-align:center;padding:12px;color:{_cc[0]};vertical-align:middle;background:#fff5f5'>{_vc}</td>
+  <td style='text-align:center;padding:12px;color:{_cc[1]};vertical-align:middle;background:#eff6ff'>{_va}</td>
+  <td style='text-align:center;padding:12px;color:{_cc[2]};vertical-align:middle;background:#f0fdf4'>{_vm5}</td>
 </tr>"""
     _tbl_html += "</table>"
     st.markdown(_tbl_html, unsafe_allow_html=True)
