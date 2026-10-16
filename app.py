@@ -49,6 +49,14 @@ st.markdown("""
     [data-testid="stMetricDelta"] { justify-content: center !important; display: flex !important; }
     div[data-testid="stMetric"] > label { text-align: center !important; width: 100%; }
     div[data-testid="stMetric"] > div { justify-content: center !important; }
+    [role="tablist"] {
+        position: sticky;
+        top: 0;
+        z-index: 999;
+        background-color: white;
+        padding-top: 6px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+    }
 </style>
 """, unsafe_allow_html=True)
 
