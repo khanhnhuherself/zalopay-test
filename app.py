@@ -959,19 +959,19 @@ with tabs[3]:
          _cell(f"{_med(grp_m5,'fee_pct'):.1%}", f"{_avg(grp_m5,'fee_pct'):.1%}")),
     ]
     _tbl_html = """<table style='width:100%;border-collapse:collapse;font-size:14px'>
-<tr style='border-bottom:2px solid #d1d5db'>
-  <th style='text-align:left;padding:8px 12px;font-weight:600;width:28%;color:#374151'>Chỉ số M0</th>
-  <th style='text-align:center;padding:8px 12px;color:#ef4444'>🔴 Churn @ M1</th>
-  <th style='text-align:center;padding:8px 12px;color:#1d4ed8'>🔵 Active M1</th>
-  <th style='text-align:center;padding:8px 12px;color:#059669'>🟢 Active M5</th>
+<tr>
+  <th style='text-align:left;padding:10px 12px;font-weight:600;width:28%;color:#374151;background:#f9fafb'></th>
+  <th style='text-align:center;padding:10px 12px;font-weight:700;color:#fff;background:#ef4444'>Churn @ M1</th>
+  <th style='text-align:center;padding:10px 12px;font-weight:700;color:#fff;background:#1d4ed8'>Active M1</th>
+  <th style='text-align:center;padding:10px 12px;font-weight:700;color:#fff;background:#059669'>Active M5</th>
 </tr>"""
     for row in _rows_data:
         _lbl = row[0]; _vc = row[1]; _va = row[2]; _vm5 = row[3]
         _tbl_html += f"""<tr style='border-bottom:1px solid #f3f4f6'>
-  <td style='padding:12px;color:#374151;vertical-align:middle'>{_lbl}</td>
-  <td style='text-align:center;padding:12px;color:#ef4444;vertical-align:middle'>{_vc}</td>
-  <td style='text-align:center;padding:12px;color:#1d4ed8;vertical-align:middle'>{_va}</td>
-  <td style='text-align:center;padding:12px;color:#059669;vertical-align:middle'>{_vm5}</td>
+  <td style='padding:12px;color:#374151;vertical-align:middle;background:#f9fafb'>{_lbl}</td>
+  <td style='text-align:center;padding:12px;color:#ef4444;vertical-align:middle;background:#fff5f5'>{_vc}</td>
+  <td style='text-align:center;padding:12px;color:#1d4ed8;vertical-align:middle;background:#eff6ff'>{_va}</td>
+  <td style='text-align:center;padding:12px;color:#059669;vertical-align:middle;background:#f0fdf4'>{_vm5}</td>
 </tr>"""
     _tbl_html += "</table>"
     st.markdown(_tbl_html, unsafe_allow_html=True)
