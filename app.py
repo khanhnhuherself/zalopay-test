@@ -873,7 +873,7 @@ with tabs[3]:
     st.markdown("""
 <div style="background:#fef2f2;border-left:4px solid #ef4444;padding:12px 16px;border-radius:6px;margin-bottom:24px">
 <span style="color:#374151">Trong tình huống này, đổ thêm ngân sách vào acquisition chỉ bù đắp tạm thời.</span><br>
-<b style="color:#b91c1c">Tuy nhiên nếu không hiểu được lý do user rời đi, user mới vào rồi cũng sẽ rời theo đúng pattern cũ.</b>
+<b style="color:#b91c1c">Tuy nhiên nếu không hiểu được lý do user rời đi, user mới vào rồi có thể cũng sẽ rời theo pattern cũ.</b>
 </div>
 <h4 style="margin-top:0">Churn Threshold</h4>
 """, unsafe_allow_html=True)
