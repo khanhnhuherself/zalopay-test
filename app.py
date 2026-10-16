@@ -723,9 +723,12 @@ with tabs[2]:
     fig_drv.add_trace(go.Scatter(
         x=drv_plot["x"], y=_ret_drv,
         name="Retention M1", yaxis="y2",
-        mode="lines+markers",
-        line=dict(color="#f97316", width=2),
-        marker=dict(size=6, color="#f97316"),
+        mode="lines+markers+text",
+        line=dict(color="#111827", width=2),
+        marker=dict(size=6, color="#111827"),
+        text=[f"{v:.0%}" if not (isinstance(v, float) and v != v) else "" for v in _ret_drv],
+        textposition="top center",
+        textfont=dict(size=9, color="#111827"),
         hovertemplate="Txn=%{x}<br>Retention M1=%{y:.1%}<extra></extra>",
     ))
     fig_drv = clean_fig(fig_drv, height=350)
