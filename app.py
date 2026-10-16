@@ -195,7 +195,7 @@ Do vậy để xác định metric thật sự có ý nghĩa đối với Zalo P
     st.caption("Nguồn: ZaloPay - Tài khoản Trả Sau thanh toán được những gì?")
     st.markdown("""
 
-Như vậy, Nguồn doanh thu thu trực tiếp của ZaloPay gắn với giao dịch mua. Từ đó, để theo dõi, tối ưu retention cho sản phẩm này, cần xác định 2 thành phần:
+Như vậy, Nguồn doanh thu thu trực tiếp của ZaloPay gắn với giao dịch mua. Từ đó, để theo dõi và tối ưu retention rate cho sản phẩm này, cần xác định 2 thành phần:
 
 - **Active user definition**: tiêu chí xác định user đang sử dụng sản phẩm
 - **Measurement period**: kỳ hạn đo lường phù hợp với chu kỳ sản phẩm
