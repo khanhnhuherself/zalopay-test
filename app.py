@@ -619,7 +619,7 @@ with tabs[2]:
 - H₀: Không có mối tương quan dương giữa số giao dịch M0 và retention M1 (ρ ≤ 0)
 - H₁: Số giao dịch M0 càng cao, tỷ lệ retention M1 càng cao (ρ > 0)
 
-**Kết quả:** Spearman ρ = {_rho_1c:.3f}, p = {_rho_p_1c/2:.4f} (one-tailed) → Chấp nhận H₁.""")
+**Kết quả:** Spearman ρ = {_rho_1c:.3f}, p = {_rho_p_1c/2:.4f} (one-tailed) → Bác bỏ H₀ - có tương quan dương giữa số giao dịch M0 và retention M1.""")
     st.info(f"Giả thuyết được ủng hộ bởi dữ liệu xu hướng lịch sử và kiểm định thống kê - Spearman ρ = {_rho_1c:.3f} (p < 0.05). Đây là tương quan, chưa phải nhân quả.")
 
     st.markdown("---")
@@ -1136,7 +1136,7 @@ H₀: Tỷ lệ churn không khác nhau giữa các GMV tier
 
 H₁: Tỷ lệ churn khác nhau giữa các GMV tier
 
-**Kết quả:** p = {p_chi:.4f} → Chấp nhận H₁. Chiều hướng: churn giảm theo GMV.""")
+**Kết quả:** p = {p_chi:.4f} → Bác bỏ H₀ - tỷ lệ churn khác nhau có ý nghĩa thống kê giữa các GMV tier. Quan sát từ dữ liệu: churn giảm dần theo GMV.""")
 
     st.markdown("---")
     st.markdown("#### Fee burden by GMV (Gross Merchandise Value)")
@@ -1190,11 +1190,11 @@ H₀: Phân phối fee/GMV của nhóm churn bằng nhóm còn lại
 
 H₁: Nhóm churn có fee/GMV cao hơn nhóm còn lại
 
-**Kết quả:** p = {_mw_p:.4f} → Chấp nhận H₁.
+**Kết quả:** p = {_mw_p:.4f} → Bác bỏ H₀ - nhóm churn có fee/GMV cao hơn nhóm còn lại có ý nghĩa thống kê.
 
 *Spearman correlation: tương quan đơn điệu giữa fee/GMV và churn.*
 
-**Kết quả:** Spearman ρ = {_rho:.3f}, p = {_rho_p:.4f} → Chấp nhận H₁ (effect size nhỏ).
+**Kết quả:** Spearman ρ = {_rho:.3f}, p = {_rho_p:.4f} → Bác bỏ H₀ - tương quan dương giữa fee/GMV và churn (effect size nhỏ).
 
 *Lưu ý: fee/GMV = 20K/GMV, không tách được effect phí vs chi tiêu.*
 """)
