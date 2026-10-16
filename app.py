@@ -952,7 +952,7 @@ with tabs[3]:
          _cell(f"{_med(grp_c,'gmv')/1000:.0f}K", f"{_avg(grp_c,'gmv')/1000:.0f}K"),
          _cell(f"{_med(grp_a,'gmv')/1000:.0f}K", f"{_avg(grp_a,'gmv')/1000:.0f}K"),
          _cell(f"{_med(grp_m5,'gmv')/1000:.0f}K", f"{_avg(grp_m5,'gmv')/1000:.0f}K")),
-        ("Giá trị mỗi GD",
+        ("Giá trị mỗi GD (median)",
          _cell(f"{_med(grp_c,'med_aov')/1000:.0f}K", f"{_avg(grp_c,'med_aov')/1000:.0f}K"),
          _cell(f"{_med(grp_a,'med_aov')/1000:.0f}K", f"{_avg(grp_a,'med_aov')/1000:.0f}K"),
          _cell(f"{_med(grp_m5,'med_aov')/1000:.0f}K", f"{_avg(grp_m5,'med_aov')/1000:.0f}K")),
@@ -972,7 +972,7 @@ with tabs[3]:
     for row in _rows_data:
         _lbl = row[0]; _vc = row[1]; _va = row[2]; _vm5 = row[3]
         _is_user = (_lbl == "Số user")
-        _is_aov  = (_lbl == "Giá trị mỗi GD")
+        _is_aov  = (_lbl == "Giá trị mỗi GD (median)")
         _lbl_style = "padding:12px;color:#6b7280;font-style:italic;vertical-align:middle;background:#f9fafb" if _is_user else "padding:12px;color:#374151;vertical-align:middle;background:#f9fafb"
         _lbl_html  = _lbl + (_tag_equal if _is_aov else "")
         _tbl_html += f"""<tr style='border-bottom:1px solid #f3f4f6'>
