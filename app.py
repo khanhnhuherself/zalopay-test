@@ -1260,11 +1260,19 @@ with tabs[4]:
 """, unsafe_allow_html=True)
     st.markdown("")
 
+    _p3_new_drop_str = f"{_p3_new_drop:+.0%} từ đỉnh {_p3_new_peak:,}" if not np.isnan(_p3_new_drop) else "–"
+    def _kpi_card(label, value, delta, delta_color="#ef4444"):
+        return f"""<div style='text-align:center;padding:16px 8px'>
+  <div style='font-size:14px;color:#374151;margin-bottom:6px'>{label}</div>
+  <div style='font-size:36px;font-weight:700;color:#111827;line-height:1.1'>{value}</div>
+  <div style='margin-top:8px;display:flex;justify-content:center'>
+    <span style='font-size:12px;background:#fef2f2;color:{delta_color};padding:3px 10px;border-radius:12px'>{delta}</span>
+  </div>
+</div>"""
     _mp, _c1, _c2, _c3, _mp2 = st.columns([0.5, 3, 3, 3, 0.5])
-    _c1.metric("M1 churn rate", f"{_p3_churn_r:.1%}", "Cứ 4 user mới, mất 1", delta_color="inverse")
-    _c2.metric("Retention nhóm GMV thấp", f"{_p3_ret_lo:.1%}", f"{(_p3_ret_lo-_p3_ret_hi):.1%} vs nhóm cao")
-    _c3.metric("New user/tháng (gần nhất)", f"{_p3_new_last:,}",
-               f"{_p3_new_drop:+.0%} từ đỉnh {_p3_new_peak:,}" if not np.isnan(_p3_new_drop) else "–")
+    _c1.markdown(_kpi_card("M1 churn rate", f"{_p3_churn_r:.1%}", "↑ Cứ 4 user mới, mất 1"), unsafe_allow_html=True)
+    _c2.markdown(_kpi_card("Retention nhóm GMV thấp", f"{_p3_ret_lo:.1%}", f"↓ {(_p3_ret_lo-_p3_ret_hi):.1%} vs nhóm cao"), unsafe_allow_html=True)
+    _c3.markdown(_kpi_card("New user/tháng (gần nhất)", f"{_p3_new_last:,}", f"↓ {_p3_new_drop_str}"), unsafe_allow_html=True)
 
     st.markdown("---")
 
