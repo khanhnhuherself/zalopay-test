@@ -713,7 +713,7 @@ with tabs[2]:
     st.info(f"Cả quan sát và Decision Tree đều chỉ về N=3–4. Cohort 2024 (chiếm 76% data) xác nhận rõ N=4, cohort 2025 ra N=3 nhưng chênh lệch không đáng kể.\n\nCân nhắc chọn **N=4** là ngưỡng. Tuy nhiên khi **triển khai thực tế**, cần thực hiện **A/B Testing** để xác nhận.")
 
     st.markdown("<div style='margin-top:20px'></div>", unsafe_allow_html=True)
-    st.markdown(f"Câu hỏi tiếp theo: cơ chế kinh tế nào giải thích tại sao **N≥4 giao dịch** là ngưỡng user ở lại? **Phân tích GMV** và **cấu trúc phí** cho thấy câu trả lời.")
+    st.markdown(f"Câu hỏi tiếp theo: tại sao **N=4** lại là điểm có ý nghĩa? **Phân tích GMV** và **cấu trúc phí** cho thấy cơ chế kinh tế đằng sau.")
 
     drv_plot = drv[drv.index <= 12].copy()
     drv_plot["fee_20k"] = 20_000 / drv_plot["med_gmv"]
@@ -756,23 +756,27 @@ with tabs[2]:
         name="Retention M1", mode="lines+markers",
         line=dict(color="#111827", width=2),
         marker=dict(size=5, color="#111827"),
+        legend="legend2",
         hovertemplate="Txn=%{x}<br>Retention M1=%{y:.1%}<extra></extra>",
     ), row=1, col=2, secondary_y=True)
-    # N=4 vline on both panels
+    # N=4 vline + label on both panels
     for _xref in ["x", "x2"]:
         fig_drv.add_shape(type="line", x0=2.5, x1=2.5, y0=0, y1=1,
                           xref=_xref, yref="paper",
                           line=dict(color="#374151", width=1.5, dash="dash"))
-    fig_drv.add_annotation(x=2.5, y=1.06, text="N=4", xref="x2", yref="paper",
-                           showarrow=False, font=dict(color="#374151", size=10, weight="bold"))
-    fig_drv.update_layout(height=320, margin=dict(l=20,r=60,t=50,b=40),
+        fig_drv.add_annotation(x=2.5, y=1.06, text="N=4", xref=_xref, yref="paper",
+                               showarrow=False, font=dict(color="#374151", size=10))
+    fig_drv.update_layout(height=320, margin=dict(l=20,r=60,t=50,b=50),
                           paper_bgcolor="white", plot_bgcolor="white",
-                          legend=dict(orientation="h", y=-0.22, x=0, font=dict(size=10)),
+                          legend=dict(orientation="h", y=-0.25, x=0.05, font=dict(size=10)),
+                          legend2=dict(orientation="h", y=-0.25, x=0.6, font=dict(size=10)),
                           font=dict(size=11))
     fig_drv.update_yaxes(showgrid=True, gridcolor="#f0f0f0", ticksuffix="K", row=1, col=1)
     fig_drv.update_yaxes(showgrid=True, gridcolor="#f0f0f0", tickformat=".0%",
                          row=1, col=2, secondary_y=False)
-    fig_drv.update_yaxes(tickformat=".0%", showgrid=False, title_text="Retention M1",
+    fig_drv.update_yaxes(tickformat=".0%", showgrid=False,
+                         title_text="Retention M1", title_font=dict(color="#111827"),
+                         tickfont=dict(color="#111827"),
                          row=1, col=2, secondary_y=True)
     fig_drv.update_xaxes(title_text="Số giao dịch M0", showgrid=False)
     st.plotly_chart(fig_drv, use_container_width=True, config={"displayModeBar": False})
