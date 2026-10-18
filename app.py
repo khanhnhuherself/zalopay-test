@@ -474,7 +474,7 @@ with tabs[1]:
 <b style='color:#1d4ed8'>Retention % ổn định nhưng số lượng tuyệt đối đang giảm.</b><br>
 M1 retention dao động {_m1_rng_fmt} qua {_n_coh} cohorts - product không xấu đi. Tuy nhiên, cùng lúc đó:<br>
 - <b>Số user mới giảm</b> từ ~{_new_peak_val:,} xuống ~{_new_last_val:,}/tháng ({_new_drop_pct:.0%} từ {_new_peak_lbl}) - số user retained tuyệt đối giảm tương ứng<br>
-- Tổng GMV co lại theo base user, dù chi tiêu/user tháng đầu ổn định<br><br>
+- Chi tiêu (GMV)/user ổn định, nhưng tổng giá trị giao dịch và số lượng active user đều co lại<br><br>
 Chỉ nhìn vào % retention sẽ bỏ sót bức tranh thực: <b>số user và GMV đang co lại từng tháng.</b>
 </div>
 <div style='background:#fef2f2;border-left:4px solid #ef4444;padding:12px 16px;border-radius:6px;margin-bottom:10px'>
