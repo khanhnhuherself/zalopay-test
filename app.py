@@ -315,15 +315,25 @@ with tabs[1]:
 
     from plotly.subplots import make_subplots
 
+    def _yoy_card(label, value, yoy):
+        if np.isnan(yoy):
+            delta_html = "<span style='font-size:12px;background:#f3f4f6;color:#6b7280;padding:3px 10px;border-radius:12px'>–</span>"
+        else:
+            up = yoy > 0
+            bg = "#f0fdf4" if up else "#fef2f2"
+            fg = "#16a34a" if up else "#ef4444"
+            arrow = "↑" if up else "↓"
+            delta_html = f"<span style='font-size:12px;background:{bg};color:{fg};padding:3px 10px;border-radius:12px'>{arrow} {yoy:+.0%} YoY</span>"
+        return f"""<div style='text-align:center;padding:12px 4px'>
+  <div style='font-size:13px;color:#6b7280;margin-bottom:4px'>{label}</div>
+  <div style='font-size:30px;font-weight:500;color:#111827;line-height:1.1'>{value}</div>
+  <div style='margin-top:8px;display:flex;justify-content:center'>{delta_html}</div>
+</div>"""
     _mc1, _mc2, _mc3, _mc4 = st.columns(4)
-    _mc1.metric("New users (avg H1)", f"{_new_25:,.0f}" if not np.isnan(_new_25) else "–",
-                f"{_new_yoy:+.0%} YoY" if not np.isnan(_new_yoy) else "–")
-    _mc2.metric("MAU (avg H1)", f"{_mau_25:,.0f}" if not np.isnan(_mau_25) else "–",
-                f"{_mau_yoy:+.0%} YoY" if not np.isnan(_mau_yoy) else "–")
-    _mc3.metric("GMV (H1 2025)", f"{_gmv_25/1e9:.1f}B" if not np.isnan(_gmv_25) else "–",
-                f"{_gmv_yoy:+.0%} YoY" if not np.isnan(_gmv_yoy) else "–")
-    _mc4.metric("GMV / user (avg H1)", f"{_gmv_per_user_25/1000:.0f}K" if not np.isnan(_gmv_per_user_25) else "–",
-                f"{_gpu_yoy:+.0%} YoY" if not np.isnan(_gpu_yoy) else "–")
+    _mc1.markdown(_yoy_card("New users (avg H1)", f"{_new_25:,.0f}" if not np.isnan(_new_25) else "–", _new_yoy), unsafe_allow_html=True)
+    _mc2.markdown(_yoy_card("MAU (avg H1)", f"{_mau_25:,.0f}" if not np.isnan(_mau_25) else "–", _mau_yoy), unsafe_allow_html=True)
+    _mc3.markdown(_yoy_card("GMV (H1 2025)", f"{_gmv_25/1e9:.1f}B" if not np.isnan(_gmv_25) else "–", _gmv_yoy), unsafe_allow_html=True)
+    _mc4.markdown(_yoy_card("GMV / user (avg H1)", f"{_gmv_per_user_25/1000:.0f}K" if not np.isnan(_gmv_per_user_25) else "–", _gpu_yoy), unsafe_allow_html=True)
 
     st.markdown("<div style='text-align:center;font-size:14px;margin-bottom:4px'>Chọn loại Metric cho Cohort Matrix</div>", unsafe_allow_html=True)
     _ml, _mc, _mr = st.columns([1, 2, 1])
