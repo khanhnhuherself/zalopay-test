@@ -713,7 +713,7 @@ with tabs[2]:
     st.info(f"Cả quan sát và Decision Tree đều chỉ về N=3–4. Cohort 2024 (chiếm 76% data) xác nhận rõ N=4, cohort 2025 ra N=3 nhưng chênh lệch không đáng kể.\n\nCân nhắc chọn **N=4** là ngưỡng. Tuy nhiên khi **triển khai thực tế**, cần thực hiện **A/B Testing** để xác nhận.")
 
     st.markdown("<div style='margin-top:20px'></div>", unsafe_allow_html=True)
-    st.markdown(f"Câu hỏi tiếp theo: tại sao **N=4** lại là điểm có ý nghĩa? **Phân tích GMV** và **cấu trúc phí** cho thấy cơ chế kinh tế đằng sau.")
+    st.markdown(f"**N=4** có hay không ý nghĩa nào khác về cơ chế kinh tế? **Phân tích GMV** và **cấu trúc phí** cho thấy cơ chế kinh tế đằng sau.")
 
     drv_plot = drv[drv.index <= 12].copy()
     drv_plot["fee_20k"] = 20_000 / drv_plot["med_gmv"]
