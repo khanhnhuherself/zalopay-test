@@ -483,7 +483,7 @@ M1 retention dao động {_m1_rng_fmt} qua {_n_coh} cohorts - product không x�
 <b style='color:#854d0e'>Các cohorts ổn định, không có cohort bất thường.</b> Dải {_m1_pp_fmt} qua {_n_coh} cohorts - churn không gắn với đợt acquisition hay sự kiện cụ thể nào, mà nhất quán trên toàn bộ dữ liệu.
 </div>
 <div style='background:#faf5ff;border-left:4px solid #a855f7;padding:12px 16px;border-radius:6px;margin-bottom:10px'>
-<b style='color:#7e22ce'>Giả thuyết nguyên nhân:</b> Phí 20K/tháng cố định tạo gánh nặng không đồng đều - user giao dịch ít chịu tỷ lệ phí/GMV cao, khiến sản phẩm không còn đáng dùng. Kiểm định định lượng ở tab <b>Churn Analysis</b>.
+<b style='color:#7e22ce'>Giả thuyết nguyên nhân:</b> Phí 20K/tháng cố định tạo gánh nặng không đồng đều - user giao dịch ít chịu tỷ lệ phí/GMV cao, khiến user cân nhắc rời bỏ sản phẩm. Phân tích chi tiết ở tab <b>Churn Analysis</b>.
 </div>
 """, unsafe_allow_html=True)
 
