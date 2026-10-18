@@ -764,8 +764,9 @@ with tabs[2]:
         fig_drv.add_shape(type="line", x0=2.5, x1=2.5, y0=0, y1=1,
                           xref=_xref, yref="paper",
                           line=dict(color="#374151", width=1.5, dash="dash"))
-        fig_drv.add_annotation(x=2.5, y=1.06, text="N=4", xref=_xref, yref="paper",
-                               showarrow=False, font=dict(color="#374151", size=10))
+        fig_drv.add_annotation(x=2.7, y=0.96, text="N=4", xref=_xref, yref="paper",
+                               showarrow=False, font=dict(color="#374151", size=9),
+                               bgcolor="white", borderpad=2)
     fig_drv.update_layout(height=340, margin=dict(l=20,r=60,t=70,b=50),
                           paper_bgcolor="white", plot_bgcolor="white",
                           legend=dict(orientation="h", y=-0.25, x=0.05, font=dict(size=10)),
