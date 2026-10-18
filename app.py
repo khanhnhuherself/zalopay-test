@@ -291,7 +291,7 @@ with tabs[1]:
     _m1_rng_fmt = f"{_m1_min:.1%}–{_m1_max:.1%}" if not np.isnan(_m1_min) else "–"
     _m1_pp_fmt  = f"{_m1_pp:.1f}%" if not np.isnan(_m1_pp) else "–"
 
-    st.write(f"Về tổng quan, M1 retention rate trung bình đạt **{_m1_avg_fmt}**, ổn định qua {_n_coh} cohorts ({_m1_rng_fmt}) với dải dao động chỉ ~{_m1_pp_fmt}.")
+    st.markdown(f"<div style='background:#f8fafc;border-left:4px solid #94a3b8;padding:12px 16px;border-radius:6px;margin-bottom:12px'>Về tổng quan, M1 retention rate trung bình đạt <b>{_m1_avg_fmt}</b>, ổn định qua {_n_coh} cohorts ({_m1_rng_fmt}) với dải dao động chỉ ~{_m1_pp_fmt}.</div>", unsafe_allow_html=True)
 
     # Pre-compute YoY cards
     _mau_mon  = filt.groupby("trxn_month")["user_id"].nunique()
@@ -409,7 +409,7 @@ with tabs[1]:
 
     pct_piv = filt.groupby(["cohort","month_number"])["user_id"].nunique().unstack().div(cs_filt, axis=0)
 
-    st.markdown("Tuy nhiên khi nhìn tổng thể tất cả cohort, điểm drop lớn nhất trong cả hành trình nằm ở ngay sau tháng đầu tiên user sử dụng sản phẩm (M1 −26%) - trở thành điểm can thiệp quan trọng nhất trong việc giữ chân khách hàng. M2 giảm thêm −19% nhưng sau đó chậm dần và tiếp tục giảm đến M12 (~5%) - không hình thành nhóm user gắn bó ổn định.")
+    st.markdown("<div style='background:#f8fafc;border-left:4px solid #94a3b8;padding:12px 16px;border-radius:6px;margin-bottom:12px'>Tuy nhiên khi nhìn tổng thể tất cả cohort, điểm drop lớn nhất trong cả hành trình nằm ở ngay sau tháng đầu tiên user sử dụng sản phẩm (M1 −26%) - trở thành điểm can thiệp quan trọng nhất trong việc giữ chân khách hàng. M2 giảm thêm −19% nhưng sau đó chậm dần và tiếp tục giảm đến M12 (~5%) - không hình thành nhóm user gắn bó ổn định.</div>", unsafe_allow_html=True)
     st.markdown("**Average retention curve - drop tại từng tháng**")
     avg_all = pct_piv[[c for c in pct_piv.columns if 0 <= c <= 12]].mean(skipna=True)
     x_wf, y_wf, measure, text_wf, hover_wf = [], [], [], [], []
