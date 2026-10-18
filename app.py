@@ -461,11 +461,7 @@ with tabs[1]:
     st.markdown(f"""
 <div style='background:#eff6ff;border-left:4px solid #3b82f6;padding:12px 16px;border-radius:6px;margin-bottom:10px'>
 <b style='color:#1d4ed8'>Retention % ổn định nhưng số lượng tuyệt đối đang giảm.</b><br>
-M1 retention dao động {_m1_rng_fmt} qua {_n_coh} cohorts - product không xấu đi. Tuy nhiên, cùng lúc đó:<br>
-- Số user mới giảm từ ~{_new_peak_val:,} xuống ~{_new_last_val:,}/tháng ({_new_drop_pct:.0%} từ {_new_peak_lbl})<br>
-- Tổng GMV co lại theo base user, dù chi tiêu/user tháng đầu ổn định<br>
-- Quick Ratio &lt; 1 kể từ khi acquisition đạt đỉnh - base user đang giảm mỗi tháng<br><br>
-Chỉ nhìn vào % retention sẽ bỏ sót bức tranh thực: <b>số user và GMV đang co lại từng tháng.</b>
+M1 retention dao động {_m1_rng_fmt} qua {_n_coh} cohorts - product không xấu đi. Tuy nhiên số user mới giảm {_new_drop_pct:.0%} từ đỉnh ({_new_peak_lbl}), kéo Quick Ratio &lt; 1 - <b>số user và GMV đang co lại từng tháng.</b>
 </div>
 <div style='background:#fef2f2;border-left:4px solid #ef4444;padding:12px 16px;border-radius:6px;margin-bottom:10px'>
 <b style='color:#b91c1c'>Churn tập trung ở M1 (−26%).</b> Từ M2 trở đi tốc độ giảm chậm dần nhưng không ổn định. Ai rời thì rời hẳn: tỷ lệ quay lại chỉ <b>{_return_rate:.1%}</b> ({len(_returning_m2):,}/{len(_churned_m1):,} user).
@@ -473,12 +469,10 @@ Chỉ nhìn vào % retention sẽ bỏ sót bức tranh thực: <b>số user và
 <div style='background:#fefce8;border-left:4px solid #eab308;padding:12px 16px;border-radius:6px;margin-bottom:10px'>
 <b style='color:#854d0e'>Không có cohort nào nổi bật.</b> Dải {_m1_pp_fmt} qua {_n_coh} cohorts - churn không gắn với đợt acquisition hay sự kiện cụ thể nào, mà nhất quán trên toàn bộ dữ liệu.
 </div>
+<div style='background:#faf5ff;border-left:4px solid #a855f7;padding:12px 16px;border-radius:6px;margin-bottom:10px'>
+<b style='color:#7e22ce'>Giả thuyết nguyên nhân:</b> Phí 20K/tháng cố định tạo gánh nặng không đồng đều - user giao dịch ít chịu tỷ lệ phí/GMV cao, khiến sản phẩm không còn đáng dùng. Kiểm định định lượng ở tab <b>Churn Analysis</b>.
+</div>
 """, unsafe_allow_html=True)
-
-    st.markdown("**Giả thuyết nguyên nhân:**")
-    st.write("Phí 20K/tháng cố định tạo gánh nặng không đồng đều - user giao dịch ít chịu tỷ lệ phí/GMV cao, khiến sản phẩm không còn đáng dùng. Kiểm định định lượng ở tab **Churn Analysis**.")
-
-    st.info(f"Retention % ổn định ({_m1_avg_fmt}) nhưng tổng user và GMV vẫn giảm vì lượng user mới giảm {abs(_new_drop_pct):.0%} so với đỉnh. User đã rời hầu như không quay lại ({_return_rate:.1%}), nên điểm can thiệp thực tế duy nhất là cải thiện activation ngay trong tháng đầu (M0).")
 
 # ═══════════════════════════════════════════════════════════════════════════════
 with tabs[2]:
