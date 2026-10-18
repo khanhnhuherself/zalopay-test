@@ -410,7 +410,7 @@ with tabs[1]:
     pct_piv = filt.groupby(["cohort","month_number"])["user_id"].nunique().unstack().div(cs_filt, axis=0)
 
     st.markdown("**Average retention curve - drop tại từng tháng**")
-    st.markdown("<div style='background:#f8fafc;border-left:4px solid #94a3b8;padding:12px 16px;border-radius:6px;margin-bottom:12px'>Tuy nhiên khi nhìn tổng thể tất cả cohort, <b>điểm drop lớn nhất</b> trong cả hành trình nằm ở ngay sau tháng đầu tiên user sử dụng sản phẩm (<b>M1 −26%</b>) - trở thành <b>điểm can thiệp quan trọng nhất</b> trong việc giữ chân khách hàng. M2 giảm thêm −19% nhưng sau đó chậm dần và tiếp tục giảm đến M12 (~5%) - không hình thành nhóm user gắn bó ổn định.</div>", unsafe_allow_html=True)
+    st.markdown("<div style='background:#f8fafc;border-left:4px solid #94a3b8;padding:12px 16px;border-radius:6px;margin-bottom:12px'>Tuy nhiên khi nhìn tổng thể tất cả cohort, <b>điểm drop lớn nhất</b> trong cả hành trình nằm ở <b>ngay sau tháng đầu tiên user sử dụng sản phẩm</b> (<b>M1 −26%</b>) - trở thành <b>điểm can thiệp quan trọng nhất</b> trong việc giữ chân khách hàng. M2 giảm thêm −19% nhưng sau đó chậm dần và tiếp tục giảm đến M12 (~5%).</div>", unsafe_allow_html=True)
     avg_all = pct_piv[[c for c in pct_piv.columns if 0 <= c <= 12]].mean(skipna=True)
     x_wf, y_wf, measure, text_wf, hover_wf = [], [], [], [], []
 
