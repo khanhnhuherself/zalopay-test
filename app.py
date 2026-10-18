@@ -459,18 +459,21 @@ with tabs[1]:
 
     st.markdown("**Patterns & Anomalies**")
     st.markdown(f"""
-**Retention % ổn định nhưng số lượng tuyệt đối đang giảm.**
-M1 retention dao động {_m1_rng_fmt} qua {_n_coh} cohorts - product không xấu đi. Tuy nhiên, cùng lúc đó:
-- Số user mới giảm từ ~{_new_peak_val:,} xuống ~{_new_last_val:,}/tháng ({_new_drop_pct:.0%} từ {_new_peak_lbl}) - số user retained tuyệt đối giảm tương ứng
-- Tổng GMV co lại theo base user, dù chi tiêu/user tháng đầu ổn định
-- Quick Ratio < 1 kể từ khi acquisition đạt đỉnh - base user đang giảm mỗi tháng
-
-Chỉ nhìn vào % retention sẽ bỏ sót bức tranh thực: số user và GMV đang co lại từng tháng.
-
-**Churn tập trung ở M1** (−26%). Từ M2 trở đi tốc độ giảm chậm dần nhưng không ổn định - không hình thành nhóm user gắn bó lâu dài. Ai rời thì rời hẳn: tỷ lệ quay lại chỉ {_return_rate:.1%} ({len(_returning_m2):,}/{len(_churned_m1):,} user).
-
-**Không có cohort nào nổi bật.** Dải {_m1_pp_fmt} qua {_n_coh} cohorts - churn không gắn với đợt acquisition hay sự kiện cụ thể nào, mà nhất quán trên toàn bộ dữ liệu.
-""")
+<div style='background:#eff6ff;border-left:4px solid #3b82f6;padding:12px 16px;border-radius:6px;margin-bottom:10px'>
+<b style='color:#1d4ed8'>Retention % ổn định nhưng số lượng tuyệt đối đang giảm.</b><br>
+M1 retention dao động {_m1_rng_fmt} qua {_n_coh} cohorts - product không xấu đi. Tuy nhiên, cùng lúc đó:<br>
+- Số user mới giảm từ ~{_new_peak_val:,} xuống ~{_new_last_val:,}/tháng ({_new_drop_pct:.0%} từ {_new_peak_lbl})<br>
+- Tổng GMV co lại theo base user, dù chi tiêu/user tháng đầu ổn định<br>
+- Quick Ratio &lt; 1 kể từ khi acquisition đạt đỉnh - base user đang giảm mỗi tháng<br><br>
+Chỉ nhìn vào % retention sẽ bỏ sót bức tranh thực: <b>số user và GMV đang co lại từng tháng.</b>
+</div>
+<div style='background:#fef2f2;border-left:4px solid #ef4444;padding:12px 16px;border-radius:6px;margin-bottom:10px'>
+<b style='color:#b91c1c'>Churn tập trung ở M1 (−26%).</b> Từ M2 trở đi tốc độ giảm chậm dần nhưng không ổn định. Ai rời thì rời hẳn: tỷ lệ quay lại chỉ <b>{_return_rate:.1%}</b> ({len(_returning_m2):,}/{len(_churned_m1):,} user).
+</div>
+<div style='background:#fefce8;border-left:4px solid #eab308;padding:12px 16px;border-radius:6px;margin-bottom:10px'>
+<b style='color:#854d0e'>Không có cohort nào nổi bật.</b> Dải {_m1_pp_fmt} qua {_n_coh} cohorts - churn không gắn với đợt acquisition hay sự kiện cụ thể nào, mà nhất quán trên toàn bộ dữ liệu.
+</div>
+""", unsafe_allow_html=True)
 
     st.markdown("**Giả thuyết nguyên nhân:**")
     st.write("Phí 20K/tháng cố định tạo gánh nặng không đồng đều - user giao dịch ít chịu tỷ lệ phí/GMV cao, khiến sản phẩm không còn đáng dùng. Kiểm định định lượng ở tab **Churn Analysis**.")
