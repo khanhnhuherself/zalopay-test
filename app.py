@@ -470,12 +470,11 @@ with tabs[1]:
     st.markdown("**Patterns & Anomalies**")
     st.markdown(f"""
 <div style='background:#eff6ff;border-left:4px solid #3b82f6;padding:12px 16px;border-radius:6px;margin-bottom:10px'>
-<b style='color:#1d4ed8'>Retention % ổn định nhưng số lượng tuyệt đối đang giảm.</b><br>
+<b style='color:#1d4ed8'>Retention % ổn định nhưng số user và GMV đang co lại từng tháng (xem chi tiết tại tab <b>Churn Analysis</b>).</b><br>
 M1 retention dao động {_m1_rng_fmt} qua {_n_coh} cohorts - product không xấu đi. Tuy nhiên, cùng lúc đó:<br>
 - <b>Số user mới giảm</b> từ ~{_new_peak_val:,} xuống ~{_new_last_val:,}/tháng ({_new_drop_pct:.0%} từ {_new_peak_lbl})<br>
 - Chi tiêu (GMV)/user ổn định, do tổng giá trị giao dịch và số lượng active user đều co lại<br>
-- <b>Số active user giảm liên tục</b> mỗi tháng kể từ đỉnh acquisition - user mới không bù đắp được lượng user rời đi<br><br>
-Chỉ nhìn vào % retention sẽ bỏ sót bức tranh thực: <b>số user và GMV đang co lại từng tháng</b> (phân tích chi tiết tại tab <b>Churn Analysis</b>).
+- <b>Số active user giảm liên tục</b> mỗi tháng kể từ đỉnh acquisition - user mới không bù đắp được lượng user rời đi
 </div>
 <div style='background:#fef2f2;border-left:4px solid #ef4444;padding:12px 16px;border-radius:6px;margin-bottom:10px'>
 <b style='color:#b91c1c'>Churn tập trung ở M1 (−26%).</b> Từ M2 trở đi tốc độ giảm chậm dần nhưng không ổn định. Ai rời thì rời hẳn: tỷ lệ quay lại chỉ <b>{_return_rate:.1%}</b> ({len(_returning_m2):,}/{len(_churned_m1):,} user).
