@@ -384,8 +384,7 @@ with tabs[1]:
     text_size = [[f"{s:,}"] for s in sizes]
 
     # Average row
-    pct_piv_raw = filt.groupby(["cohort","month_number"])["user_id"].nunique().unstack().div(cs_filt, axis=0)
-    avg_row_vals = pct_piv_raw[cols].mean(skipna=True)
+    avg_row_vals = pd_data.mean(skipna=True)
     avg_size_val = np.array([s_arr.mean()], dtype=float) / max(s_arr.max(), 1)
     avg_ylabels = ylabels + ["Avg"]
 
@@ -474,7 +473,8 @@ with tabs[1]:
 <b style='color:#1d4ed8'>Retention % ổn định nhưng số lượng tuyệt đối đang giảm.</b><br>
 M1 retention dao động {_m1_rng_fmt} qua {_n_coh} cohorts - product không xấu đi. Tuy nhiên, cùng lúc đó:<br>
 - <b>Số user mới giảm</b> từ ~{_new_peak_val:,} xuống ~{_new_last_val:,}/tháng ({_new_drop_pct:.0%} từ {_new_peak_lbl}) - số user retained tuyệt đối giảm tương ứng<br>
-- Chi tiêu (GMV)/user ổn định, do tổng giá trị giao dịch và số lượng active user đều co lại<br><br>
+- Chi tiêu (GMV)/user ổn định, do tổng giá trị giao dịch và số lượng active user đều co lại<br>
+- Số active user giảm liên tục mỗi tháng kể từ đỉnh acquisition — user mới không bù đắp được lượng user rời đi<br><br>
 Chỉ nhìn vào % retention sẽ bỏ sót bức tranh thực: <b>số user và GMV đang co lại từng tháng</b> (phân tích chi tiết tại tab <b>Churn Analysis</b>).
 </div>
 <div style='background:#fef2f2;border-left:4px solid #ef4444;padding:12px 16px;border-radius:6px;margin-bottom:10px'>
