@@ -720,43 +720,40 @@ with tabs[2]:
     drv_plot["x"] = drv_plot.index.astype(str)
     colors_drv = ["#ef4444" if i < THRESHOLD else "#1d4ed8" for i in drv_plot.index]
 
-    # Fee/GMV chart + retention line overlay — dùng bucket 9 (8+) cho mọi index > 8
-    def _get_ret(i):
-        key = 9 if i > 8 else i
-        return float(freq.loc[key, "ret"]) if key in freq.index else float("nan")
-    _ret_drv = [_get_ret(i) for i in drv_plot.index]
-    fig_drv = go.Figure()
+    from plotly.subplots import make_subplots as _msp2
+    fig_drv = _msp2(rows=1, cols=2,
+                    subplot_titles=["Median GMV vs AOV theo số giao dịch M0",
+                                    "Phí 20K / Median GMV (gánh nặng phí thực tế)"],
+                    horizontal_spacing=0.14)
+    fig_drv.add_trace(go.Bar(
+        x=drv_plot["x"], y=drv_plot["med_gmv"]/1000,
+        name="Median GMV", marker_color=colors_drv, opacity=0.85,
+        hovertemplate="Txn=%{x}<br>Median GMV=%{y:.0f}K<extra></extra>",
+    ), row=1, col=1)
+    fig_drv.add_trace(go.Scatter(
+        x=drv_plot["x"], y=drv_plot["med_aov"]/1000,
+        name="Median AOV", mode="lines+markers",
+        line=dict(color="#374151", width=2, dash="dot"),
+        marker=dict(size=5),
+        hovertemplate="Txn=%{x}<br>Median AOV=%{y:.0f}K<extra></extra>",
+    ), row=1, col=1)
     fig_drv.add_trace(go.Bar(
         x=drv_plot["x"], y=drv_plot["fee_20k"],
-        name="Tỷ lệ phí", yaxis="y",
-        marker_color=colors_drv, opacity=0.85,
+        name="Phí/GMV", marker_color=colors_drv, opacity=0.85,
         text=[f"{v:.0%}" for v in drv_plot["fee_20k"]], textposition="outside",
-        textfont=dict(size=9),
-        hovertemplate="Txn=%{x}<br>Phí/tổng chi tiêu=%{y:.0%}<extra></extra>",
-    ))
-    fig_drv.add_trace(go.Scatter(
-        x=drv_plot["x"], y=_ret_drv,
-        name="Retention M1", yaxis="y2",
-        mode="lines+markers+text",
-        line=dict(color="#111827", width=2),
-        marker=dict(size=6, color="#111827"),
-        text=[f"{v:.0%}" if not (isinstance(v, float) and v != v) else "" for v in _ret_drv],
-        textposition="top center",
-        textfont=dict(size=9, color="#111827"),
-        hovertemplate="Txn=%{x}<br>Retention M1=%{y:.1%}<extra></extra>",
-    ))
-    fig_drv = clean_fig(fig_drv, height=350)
-    fig_drv.update_layout(
-        xaxis=dict(title="Số giao dịch M0", showgrid=False),
-        yaxis=dict(tickformat=".0%", title="Phí / Tổng chi tiêu", range=[0, drv_plot["fee_20k"].max()*1.35]),
-        yaxis2=dict(tickformat=".0%", title="Retention M1", overlaying="y", side="right", range=[0.5, 1.0], showgrid=False),
-        legend=dict(orientation="h", x=0.5, xanchor="center", y=1.08, font=dict(size=10)),
-        margin=dict(t=40),
-    )
-    _drv_l, _drv_c, _drv_r = st.columns([1, 8, 1])
-    with _drv_c:
-        st.markdown("<div style='text-align:center;font-size:14px;font-weight:700;margin-bottom:0px'>Tỷ lệ phí và Retention M1 theo số giao dịch M0</div>", unsafe_allow_html=True)
-        st.plotly_chart(fig_drv, use_container_width=True, config={"displayModeBar": False})
+        hovertemplate="Txn=%{x}<br>Phí/GMV=%{text}<extra></extra>",
+        showlegend=False,
+    ), row=1, col=2)
+    fig_drv.add_hline(y=0.05, line_dash="dot", line_color="#9ca3af",
+                      annotation_text="5%", row=1, col=2)
+    fig_drv.update_layout(height=300, margin=dict(l=20,r=20,t=40,b=40),
+                          paper_bgcolor="white", plot_bgcolor="white",
+                          legend=dict(orientation="h", y=-0.2, x=0, font=dict(size=10)),
+                          font=dict(size=11))
+    fig_drv.update_yaxes(showgrid=True, gridcolor="#f0f0f0", ticksuffix="K", row=1, col=1)
+    fig_drv.update_yaxes(showgrid=True, gridcolor="#f0f0f0", tickformat=".0%", row=1, col=2)
+    fig_drv.update_xaxes(title_text="Số giao dịch M0", showgrid=False)
+    st.plotly_chart(fig_drv, use_container_width=True, config={"displayModeBar": False})
 
     r1 = drv.loc[1] if 1 in drv.index else None
     r4 = drv.loc[4] if 4 in drv.index else None
