@@ -766,7 +766,7 @@ with tabs[2]:
                           line=dict(color="#374151", width=1.5, dash="dash"))
         fig_drv.add_annotation(x=2.5, y=1.06, text="N=4", xref=_xref, yref="paper",
                                showarrow=False, font=dict(color="#374151", size=10))
-    fig_drv.update_layout(height=320, margin=dict(l=20,r=60,t=50,b=50),
+    fig_drv.update_layout(height=340, margin=dict(l=20,r=60,t=70,b=50),
                           paper_bgcolor="white", plot_bgcolor="white",
                           legend=dict(orientation="h", y=-0.25, x=0.05, font=dict(size=10)),
                           legend2=dict(orientation="h", y=-0.25, x=0.6, font=dict(size=10)),
