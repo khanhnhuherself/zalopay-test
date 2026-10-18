@@ -291,7 +291,7 @@ with tabs[1]:
     _m1_rng_fmt = f"{_m1_min:.1%}–{_m1_max:.1%}" if not np.isnan(_m1_min) else "–"
     _m1_pp_fmt  = f"{_m1_pp:.1f}%" if not np.isnan(_m1_pp) else "–"
 
-    st.markdown(f"<div style='background:#f0fdf4;border-left:4px solid #16a34a;padding:12px 16px;border-radius:6px;margin-bottom:12px'>Về tổng quan, M1 retention rate trung bình đạt <b style='color:#15803d;font-size:16px'>{_m1_avg_fmt}</b>, ổn định qua <b>{_n_coh} cohorts</b> ({_m1_rng_fmt}) với dải dao động chỉ <b>~{_m1_pp_fmt}</b>.</div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='background:#f0fdf4;border-left:4px solid #16a34a;padding:12px 16px;border-radius:6px;margin-bottom:12px;text-align:center'>Về tổng quan, M1 retention rate trung bình đạt <b style='color:#15803d;font-size:16px'>{_m1_avg_fmt}</b>, ổn định qua <b>{_n_coh} cohorts</b> ({_m1_rng_fmt})<br>với dải dao động chỉ <b>~{_m1_pp_fmt}</b>.</div>", unsafe_allow_html=True)
 
     # Pre-compute YoY cards
     _mau_mon  = filt.groupby("trxn_month")["user_id"].nunique()
