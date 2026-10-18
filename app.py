@@ -461,7 +461,11 @@ with tabs[1]:
     st.markdown(f"""
 <div style='background:#eff6ff;border-left:4px solid #3b82f6;padding:12px 16px;border-radius:6px;margin-bottom:10px'>
 <b style='color:#1d4ed8'>Retention % ổn định nhưng số lượng tuyệt đối đang giảm.</b><br>
-M1 retention dao động {_m1_rng_fmt} qua {_n_coh} cohorts - product không xấu đi. Tuy nhiên số user mới giảm {_new_drop_pct:.0%} từ đỉnh ({_new_peak_lbl}), kéo Quick Ratio &lt; 1 - <b>số user và GMV đang co lại từng tháng.</b>
+M1 retention dao động {_m1_rng_fmt} qua {_n_coh} cohorts - product không xấu đi. Tuy nhiên, cùng lúc đó:<br>
+- Số user mới giảm từ ~{_new_peak_val:,} xuống ~{_new_last_val:,}/tháng ({_new_drop_pct:.0%} từ {_new_peak_lbl}) - số user retained tuyệt đối giảm tương ứng<br>
+- Tổng GMV co lại theo base user, dù chi tiêu/user tháng đầu ổn định<br>
+- Quick Ratio &lt; 1 kể từ khi acquisition đạt đỉnh - base user đang giảm mỗi tháng<br><br>
+Chỉ nhìn vào % retention sẽ bỏ sót bức tranh thực: <b>số user và GMV đang co lại từng tháng.</b>
 </div>
 <div style='background:#fef2f2;border-left:4px solid #ef4444;padding:12px 16px;border-radius:6px;margin-bottom:10px'>
 <b style='color:#b91c1c'>Churn tập trung ở M1 (−26%).</b> Từ M2 trở đi tốc độ giảm chậm dần nhưng không ổn định. Ai rời thì rời hẳn: tỷ lệ quay lại chỉ <b>{_return_rate:.1%}</b> ({len(_returning_m2):,}/{len(_churned_m1):,} user).
