@@ -713,18 +713,24 @@ with tabs[2]:
     st.info(f"Cả quan sát và Decision Tree đều chỉ về N=3–4. Cohort 2024 (chiếm 76% data) xác nhận rõ N=4, cohort 2025 ra N=3 nhưng chênh lệch không đáng kể.\n\nCân nhắc chọn **N=4** là ngưỡng. Tuy nhiên khi **triển khai thực tế**, cần thực hiện **A/B Testing** để xác nhận.")
 
     st.markdown("<div style='margin-top:20px'></div>", unsafe_allow_html=True)
-    st.markdown(f"Câu hỏi tiếp theo: tại sao **N=4** lại là điểm có ý nghĩa, không phải N=3 hay N=5? **Phân tích GMV** và **cấu trúc phí** cho thấy cơ chế kinh tế đằng sau.")
+    st.markdown(f"Câu hỏi tiếp theo: cơ chế kinh tế nào giải thích tại sao **N≥4 giao dịch** là ngưỡng user ở lại? **Phân tích GMV** và **cấu trúc phí** cho thấy câu trả lời.")
 
     drv_plot = drv[drv.index <= 12].copy()
     drv_plot["fee_20k"] = 20_000 / drv_plot["med_gmv"]
     drv_plot["x"] = drv_plot.index.astype(str)
     colors_drv = ["#ef4444" if i < THRESHOLD else "#1d4ed8" for i in drv_plot.index]
+    _ret_drv2 = [
+        float(freq.loc[i, "ret"]) if i in freq.index else
+        (float(freq.loc[9, "ret"]) if 9 in freq.index else float("nan"))
+        for i in drv_plot.index
+    ]
 
     from plotly.subplots import make_subplots as _msp2
     fig_drv = _msp2(rows=1, cols=2,
                     subplot_titles=["Median GMV vs AOV theo số giao dịch M0",
-                                    "Phí 20K / Median GMV (gánh nặng phí thực tế)"],
-                    horizontal_spacing=0.14)
+                                    "Phí / GMV và Retention M1"],
+                    horizontal_spacing=0.14,
+                    specs=[[{}, {"secondary_y": True}]])
     fig_drv.add_trace(go.Bar(
         x=drv_plot["x"], y=drv_plot["med_gmv"]/1000,
         name="Median GMV", marker_color=colors_drv, opacity=0.85,
@@ -741,17 +747,33 @@ with tabs[2]:
         x=drv_plot["x"], y=drv_plot["fee_20k"],
         name="Phí/GMV", marker_color=colors_drv, opacity=0.85,
         text=[f"{v:.0%}" for v in drv_plot["fee_20k"]], textposition="outside",
+        textfont=dict(size=9),
         hovertemplate="Txn=%{x}<br>Phí/GMV=%{text}<extra></extra>",
         showlegend=False,
-    ), row=1, col=2)
-    fig_drv.add_hline(y=0.05, line_dash="dot", line_color="#9ca3af",
-                      annotation_text="5%", row=1, col=2)
-    fig_drv.update_layout(height=300, margin=dict(l=20,r=20,t=40,b=40),
+    ), row=1, col=2, secondary_y=False)
+    fig_drv.add_trace(go.Scatter(
+        x=drv_plot["x"], y=_ret_drv2,
+        name="Retention M1", mode="lines+markers",
+        line=dict(color="#111827", width=2),
+        marker=dict(size=5, color="#111827"),
+        hovertemplate="Txn=%{x}<br>Retention M1=%{y:.1%}<extra></extra>",
+    ), row=1, col=2, secondary_y=True)
+    # N=4 vline on both panels
+    for _xref in ["x", "x2"]:
+        fig_drv.add_shape(type="line", x0=2.5, x1=2.5, y0=0, y1=1,
+                          xref=_xref, yref="paper",
+                          line=dict(color="#374151", width=1.5, dash="dash"))
+    fig_drv.add_annotation(x=2.5, y=1.06, text="N=4", xref="x2", yref="paper",
+                           showarrow=False, font=dict(color="#374151", size=10, weight="bold"))
+    fig_drv.update_layout(height=320, margin=dict(l=20,r=60,t=50,b=40),
                           paper_bgcolor="white", plot_bgcolor="white",
-                          legend=dict(orientation="h", y=-0.2, x=0, font=dict(size=10)),
+                          legend=dict(orientation="h", y=-0.22, x=0, font=dict(size=10)),
                           font=dict(size=11))
     fig_drv.update_yaxes(showgrid=True, gridcolor="#f0f0f0", ticksuffix="K", row=1, col=1)
-    fig_drv.update_yaxes(showgrid=True, gridcolor="#f0f0f0", tickformat=".0%", row=1, col=2)
+    fig_drv.update_yaxes(showgrid=True, gridcolor="#f0f0f0", tickformat=".0%",
+                         row=1, col=2, secondary_y=False)
+    fig_drv.update_yaxes(tickformat=".0%", showgrid=False, title_text="Retention M1",
+                         row=1, col=2, secondary_y=True)
     fig_drv.update_xaxes(title_text="Số giao dịch M0", showgrid=False)
     st.plotly_chart(fig_drv, use_container_width=True, config={"displayModeBar": False})
 
