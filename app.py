@@ -631,7 +631,7 @@ with tabs[2]:
 - H₁: Số giao dịch M0 càng cao, tỷ lệ retention M1 càng cao (ρ > 0)
 
 **Kết quả:** Spearman ρ = {_rho_1c:.3f}, p = {_rho_p_1c/2:.4f} (one-tailed) → Bác bỏ H₀ - có tương quan dương giữa số giao dịch M0 và retention M1.""")
-    st.info(f"Giả thuyết được ủng hộ bởi dữ liệu xu hướng lịch sử và kiểm định thống kê - Spearman ρ = {_rho_1c:.3f} (p < 0.05). Đây là tương quan, chưa phải nhân quả.")
+    st.info(f"**Giả thuyết được ủng hộ** bởi dữ liệu xu hướng lịch sử và kiểm định thống kê - **Spearman ρ = {_rho_1c:.3f} (p < 0.05)**. Đây là **tương quan**, chưa phải **nhân quả**.")
 
     st.markdown("---")
 
@@ -715,9 +715,16 @@ with tabs[2]:
     st.markdown("<div style='margin-top:20px'></div>", unsafe_allow_html=True)
     st.markdown(f"Câu hỏi tiếp theo: tại sao **N=4** lại là điểm có ý nghĩa, không phải N=3 hay N=5? **Phân tích GMV** và **cấu trúc phí** cho thấy cơ chế kinh tế đằng sau.")
 
-    drv_plot = drv[drv.index <= 12].copy()
+    drv_plot = drv[drv.index <= 8].copy()
+    _drv_a8 = m0_all2[m0_all2["m0_txn"] > 8]
+    if len(_drv_a8):
+        drv_plot.loc[9] = {
+            "med_gmv": _drv_a8["gmv"].median(),
+            "med_aov": _drv_a8["med_aov"].median(),
+            "med_fee_pct": (20_000 / _drv_a8["gmv"]).median()
+        }
     drv_plot["fee_20k"] = 20_000 / drv_plot["med_gmv"]
-    drv_plot["x"] = drv_plot.index.astype(str)
+    drv_plot["x"] = ["8+" if i == 9 else str(i) for i in drv_plot.index]
     colors_drv = ["#ef4444" if i < THRESHOLD else "#1d4ed8" for i in drv_plot.index]
 
     # Fee/GMV chart + retention line overlay
