@@ -334,6 +334,7 @@ with tabs[1]:
     _mc2.markdown(_yoy_card("MAU (avg H1)", f"{_mau_25:,.0f}" if not np.isnan(_mau_25) else "–", _mau_yoy), unsafe_allow_html=True)
     _mc3.markdown(_yoy_card("GMV (H1 2025)", f"{_gmv_25/1e9:.1f}B" if not np.isnan(_gmv_25) else "–", _gmv_yoy), unsafe_allow_html=True)
     _mc4.markdown(_yoy_card("GMV / user (avg H1)", f"{_gmv_per_user_25/1000:.0f}K" if not np.isnan(_gmv_per_user_25) else "–", _gpu_yoy), unsafe_allow_html=True)
+    st.caption("GMV = Gross Merchandise Value - tổng giá trị giao dịch. So sánh H1 2025 vs H1 2024.")
 
     st.markdown("<div style='text-align:center;font-size:14px;margin-bottom:4px'>Chọn loại Metric cho Cohort Matrix</div>", unsafe_allow_html=True)
     _ml, _mc, _mr = st.columns([1, 2, 1])
