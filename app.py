@@ -1301,7 +1301,7 @@ with tabs[4]:
     st.markdown("#### 1. What is happening?")
     _p3_yoy_str = f"{_p3_mau_yoy:.0%}" if not np.isnan(_p3_mau_yoy) else "–"
     st.markdown(f"""
-<div style="background:#fef2f2;border-left:4px solid #ef4444;padding:14px 18px;border-radius:6px">
+<div style="background:#fef2f2;border-left:4px solid #ef4444;padding:14px 18px;border-radius:6px;text-align:center">
 <b style="color:#b91c1c">Trong 6 tháng đầu năm 2025, sản phẩm đang mất user nhanh hơn tốc độ có thể bù đắp, giảm {_p3_yoy_str} active user so với cùng kỳ 2024.</b>
 </div>
 """, unsafe_allow_html=True)
