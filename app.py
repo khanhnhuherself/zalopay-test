@@ -630,8 +630,8 @@ with tabs[2]:
 - H₀: Không có mối tương quan dương giữa số giao dịch M0 và retention M1 (ρ ≤ 0)
 - H₁: Số giao dịch M0 càng cao, tỷ lệ retention M1 càng cao (ρ > 0)
 
-**Kết quả:** Spearman ρ = {_rho_1c:.3f}, p = {_rho_p_1c/2:.4f} (one-tailed) → Bác bỏ H₀ - có tương quan dương giữa số giao dịch M0 và retention M1.""")
-    st.info(f"Giả thuyết được ủng hộ bởi **dữ liệu xu hướng lịch sử và kiểm định thống kê** - **Spearman ρ = {_rho_1c:.3f} (p < 0.05)**. Đây là tương quan, chưa phải nhân quả.")
+**Kết quả:** Spearman ρ = {_rho_1c:.3f}, p = {_rho_p_1c/2:.4f} (one-tailed) → Bác bỏ H₀ về chiều tương quan. Tuy nhiên ρ = {_rho_1c:.3f} là **effect size yếu** — p nhỏ chủ yếu do sample lớn (~{total_u:,} users), không phản ánh độ mạnh thực tế của mối liên hệ. Trend rõ hơn khi nhìn vào retention trung bình theo từng nhóm giao dịch (biểu đồ trên).""")
+    st.info(f"Giả thuyết được ủng hộ về **chiều tương quan** bởi **dữ liệu xu hướng lịch sử và kiểm định thống kê** - **Spearman ρ = {_rho_1c:.3f} (p < 0.05, effect size yếu)**. Đây là tương quan, chưa phải nhân quả.")
 
     st.markdown("---")
 
