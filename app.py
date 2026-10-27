@@ -1056,7 +1056,9 @@ with tabs[3]:
     _churn1 = f"{_cd1['churn'].values[0]:.1%}" if len(_cd1) else "31.8%"
     _gmv1   = f"{_cd1['med_gmv'].values[0]/1000:.0f}K" if len(_cd1) else "197K"
     _gmv2   = f"{_cd2['med_gmv'].values[0]/1000:.0f}K" if len(_cd2) else "478K"
-    _, _p_div, *_ = chi2_contingency(pd.crosstab(m0s_filt["n_carriers"], m0s_filt["retained"]))
+    _chi2_div, _p_div, _dof_div, _ = chi2_contingency(pd.crosstab(m0s_filt["n_carriers"], m0s_filt["retained"]))
+    _n_div = len(m0s_filt)
+    _v_div = np.sqrt(_chi2_div / (_n_div * (min(m0s_filt["n_carriers"].nunique(), 2) - 1)))
 
     # n_txn chart
     _txn_tmp = m0s_filt.copy()
@@ -1080,18 +1082,21 @@ with tabs[3]:
         xaxis_title="Số giao dịch",
         yaxis=dict(tickformat=".0%"),
     )
-    _, _p_txn, *_ = chi2_contingency(pd.crosstab(
+    _ct_txn = pd.crosstab(
         pd.cut(m0s_filt["n_txn"], bins=[0,1,3,9999], labels=["1","2-3","4+"]),
         m0s_filt["retained"]
-    ))
+    )
+    _chi2_txn, _p_txn, _dof_txn, _ = chi2_contingency(_ct_txn)
+    _n_txn2 = len(m0s_filt)
+    _v_txn = np.sqrt(_chi2_txn / (_n_txn2 * (min(_ct_txn.shape) - 1)))
 
     _div_col, _txn_col = st.columns(2)
     with _div_col:
         st.plotly_chart(fig2, use_container_width=True, config={"displayModeBar": False})
-        st.caption(f"48% user dùng 1 loại dịch vụ - churn {_churn1}, trên TB {avg_ch:.1%}. Dùng ≥2 loại, GMV tăng từ {_gmv1} → {_gmv2}, churn giảm dưới mức TB. (Chi-square vì cả 2 biến đều categorical. p={_p_div:.4f})")
+        st.caption(f"48% user dùng 1 loại dịch vụ - churn {_churn1}, trên TB {avg_ch:.1%}. Dùng ≥2 loại, GMV tăng từ {_gmv1} → {_gmv2}, churn giảm dưới mức TB. (Chi-square vì cả 2 biến đều categorical. p={_p_div:.4f}, Cramér's V={_v_div:.3f})")
     with _txn_col:
         st.plotly_chart(fig_txn, use_container_width=True, config={"displayModeBar": False})
-        st.caption(f"Churn giảm rõ rệt khi đạt ≥4 giao dịch trong M0 - ngưỡng bắt đầu hình thành thói quen. (Chi-square vì cả 2 biến đều categorical. p={_p_txn:.4f})")
+        st.caption(f"Churn giảm rõ rệt khi đạt ≥4 giao dịch trong M0 - ngưỡng bắt đầu hình thành thói quen. (Chi-square vì cả 2 biến đều categorical. p={_p_txn:.4f}, Cramér's V={_v_txn:.3f})")
 
     st.markdown("**Churn Rate: Số giao dịch × Số loại dịch vụ** (đỏ = trên mức TB, xanh = dưới mức TB)")
 
@@ -1150,7 +1155,9 @@ with tabs[3]:
     ).reset_index()
     ts["churn"] = 1 - ts["m1"]
     ts["fee_pct"] = 20_000 / ts["med"]
-    _, p_chi, *_ = chi2_contingency(pd.crosstab(_m["gmv_tier"], _m["retained"]))
+    _ct_gmv = pd.crosstab(_m["gmv_tier"], _m["retained"])
+    _chi2_gmv, p_chi, _dof_gmv, _ = chi2_contingency(_ct_gmv)
+    _v_gmv = np.sqrt(_chi2_gmv / (len(_m) * (min(_ct_gmv.shape) - 1)))
 
     fig3 = go.Figure(go.Bar(
         x=ts["gmv_tier"].astype(str), y=ts["churn"],
@@ -1178,7 +1185,7 @@ H₀: Tỷ lệ churn không khác nhau giữa các GMV tier
 
 H₁: Tỷ lệ churn khác nhau giữa các GMV tier
 
-**Kết quả:** p = {p_chi:.4f} → Bác bỏ H₀ - tỷ lệ churn khác nhau có ý nghĩa thống kê giữa các GMV tier. Quan sát từ dữ liệu: churn giảm dần theo GMV.""")
+**Kết quả:** p = {p_chi:.4f}, Cramér's V = {_v_gmv:.3f} → Bác bỏ H₀ - tỷ lệ churn khác nhau có ý nghĩa thống kê giữa các GMV tier (effect size nhỏ-trung bình). Quan sát từ dữ liệu: churn giảm dần theo GMV.""")
 
     st.markdown("---")
     st.markdown("#### Fee burden by GMV (Gross Merchandise Value)")
