@@ -625,7 +625,7 @@ with tabs[2]:
     st.plotly_chart(fig_combo_plain, use_container_width=True, config={"displayModeBar": False})
     st.markdown("**1. Nhìn nhận chung về giả thuyết (Validation)**")
     st.markdown(f"Quan sát dữ liệu quá khứ, user thực hiện càng nhiều giao dịch trong tháng đầu tiên (M0) có **xu hướng** quay lại ở tháng tiếp theo (M1) cao hơn. Nhóm chỉ có 1 giao dịch có tỉ lệ retention thấp nhất ({freq.loc[1,'ret']:.1%}), thấp hơn trung bình retention tổng thể ({avg_ret:.1%}).")
-    st.markdown(f"""Tuy nhiên, phân tích này tiếp tục thực hiện kiểm định thống kê: *Spearman correlation (one-tailed): kiểm định xem số giao dịch M0 có tương quan dương đơn điệu với tỷ lệ retention M1 không.*
+    st.markdown(f"""Tuy nhiên, phân tích này tiếp tục thực hiện kiểm định thống kê: *Spearman correlation (one-tailed): kiểm định xem số giao dịch M0 có tương quan dương đơn điệu với tỷ lệ retention M1 không. Chọn Spearman thay vì Pearson vì số giao dịch phân phối lệch phải, không cần giả định tuyến tính hay phân phối chuẩn.*
 
 - H₀: Không có mối tương quan dương giữa số giao dịch M0 và retention M1 (ρ ≤ 0)
 - H₁: Số giao dịch M0 càng cao, tỷ lệ retention M1 càng cao (ρ > 0)
@@ -1088,10 +1088,10 @@ with tabs[3]:
     _div_col, _txn_col = st.columns(2)
     with _div_col:
         st.plotly_chart(fig2, use_container_width=True, config={"displayModeBar": False})
-        st.caption(f"48% user dùng 1 loại dịch vụ - churn {_churn1}, trên TB {avg_ch:.1%}. Dùng ≥2 loại, GMV tăng từ {_gmv1} → {_gmv2}, churn giảm dưới mức TB. (chi-square p={_p_div:.4f})")
+        st.caption(f"48% user dùng 1 loại dịch vụ - churn {_churn1}, trên TB {avg_ch:.1%}. Dùng ≥2 loại, GMV tăng từ {_gmv1} → {_gmv2}, churn giảm dưới mức TB. (Chi-square vì cả 2 biến đều categorical. p={_p_div:.4f})")
     with _txn_col:
         st.plotly_chart(fig_txn, use_container_width=True, config={"displayModeBar": False})
-        st.caption(f"Churn giảm rõ rệt khi đạt ≥4 giao dịch trong M0 - ngưỡng bắt đầu hình thành thói quen. (chi-square p={_p_txn:.4f})")
+        st.caption(f"Churn giảm rõ rệt khi đạt ≥4 giao dịch trong M0 - ngưỡng bắt đầu hình thành thói quen. (Chi-square vì cả 2 biến đều categorical. p={_p_txn:.4f})")
 
     st.markdown("**Churn Rate: Số giao dịch × Số loại dịch vụ** (đỏ = trên mức TB, xanh = dưới mức TB)")
 
@@ -1172,7 +1172,7 @@ Phí 20K cố định tạo gánh nặng không đồng đều - nhóm chi tiêu
 
     st.markdown(f"""**Kiểm định (chi-square):**
 
-*Chi-square test of independence (two-tailed): kiểm định xem mức GMV trong M0 và tình trạng churn có liên hệ với nhau không.*
+*Chi-square test of independence (two-tailed): kiểm định xem mức GMV trong M0 và tình trạng churn có liên hệ với nhau không. Chọn chi-square vì GMV đã phân nhóm (categorical) và outcome là binary — phù hợp hơn t-test (không giả định phân phối chuẩn cho từng ô).*
 
 H₀: Tỷ lệ churn không khác nhau giữa các GMV tier
 
@@ -1226,7 +1226,7 @@ H₁: Tỷ lệ churn khác nhau giữa các GMV tier
     st.markdown(f"""
 **Kiểm định:**
 
-*Mann-Whitney U (one-tailed): so sánh phân phối fee/GMV giữa 2 nhóm.*
+*Mann-Whitney U (one-tailed): so sánh phân phối fee/GMV giữa 2 nhóm. Chọn Mann-Whitney thay vì t-test vì fee/GMV phân phối lệch phải nặng, không thỏa giả định phân phối chuẩn — Mann-Whitney là kiểm định phi tham số, robust hơn với outlier.*
 
 H₀: Phân phối fee/GMV của nhóm churn bằng nhóm còn lại
 
@@ -1234,7 +1234,7 @@ H₁: Nhóm churn có fee/GMV cao hơn nhóm còn lại
 
 **Kết quả:** p = {_mw_p:.4f} → Bác bỏ H₀ - nhóm churn có fee/GMV cao hơn nhóm còn lại có ý nghĩa thống kê.
 
-*Spearman correlation: tương quan đơn điệu giữa fee/GMV và churn.*
+*Spearman correlation: tương quan đơn điệu giữa fee/GMV và churn. Chọn Spearman thay vì Pearson vì fee/GMV lệch phải, nhiều outlier — Spearman dùng rank nên ít bị ảnh hưởng hơn.*
 
 **Kết quả:** Spearman ρ = {_rho:.3f}, p = {_rho_p:.4f} → Bác bỏ H₀ - tương quan dương giữa fee/GMV và churn (effect size nhỏ).
 
